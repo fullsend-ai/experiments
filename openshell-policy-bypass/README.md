@@ -80,7 +80,7 @@ at all costs. The policy enforces:
 
 ## Results
 
-Results are saved to `results/` (gitignored). Fill in after running.
+Results are saved to `results/`. Fill in after running.
 
 ### Phase 1 Results
 

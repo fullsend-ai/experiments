@@ -1,0 +1,101 @@
+Warning: log buffer contains only the last 100 lines; --since results may be incomplete.
+[1776958353.357] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958353.467] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958353.514] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958356.099] [gateway] [INFO ] [openshell_server::grpc::policy] SubmitPolicyAnalysis: persisted draft chunks
+[1776958356.098] [sandbox] [INFO ] [openshell_sandbox::mechanistic_mapper] Skipped proposal for always-blocked destination (SSRF hardening — loopback/link-local/unspecified) host=169.254.169.254 port=80
+[1776958356.098] [sandbox] [INFO ] [openshell_sandbox] Flushed denial analysis to gateway proposals=0 sandbox_name=phase2-bypass summaries=1
+[1776958356.460] [sandbox] [OCSF ] [ocsf] NET:OPEN [MED] DENIED /usr/lib/git-core/git-remote-http(205) -> github.com:443 [policy:- engine:opa] [reason:endpoint github.com:443 not in policy 'claude'; binary '/usr/lib/git-core/git-re...]
+[1776958356.483] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958356.533] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958356.568] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958356.672] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958356.716] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958360.258] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958360.299] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958360.337] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958360.452] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958360.510] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958363.960] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/safe-push(218) -> github.com:443 [policy:github engine:opa]
+[1776958364.030] [sandbox] [OCSF ] [ocsf] HTTP:GET [INFO] ALLOWED GET http://github.com:443/test-fullsend/test-repo.git/info/refs [policy:github engine:l7]
+[1776958364.402] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958364.452] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958364.491] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958364.656] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958364.704] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958366.138] [gateway] [INFO ] [openshell_server::grpc::policy] SubmitPolicyAnalysis: persisted draft chunks
+[1776958366.099] [sandbox] [INFO ] [openshell_sandbox::mechanistic_mapper] Skipped proposal for always-blocked destination (SSRF hardening — loopback/link-local/unspecified) host=169.254.169.254 port=80
+[1776958366.099] [sandbox] [INFO ] [openshell_sandbox] Flushed denial analysis to gateway proposals=1 sandbox_name=phase2-bypass summaries=2
+[1776958369.630] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958369.681] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958369.720] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958369.862] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958369.909] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958372.414] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958372.458] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958372.496] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958372.614] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958372.672] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958376.098] [gateway] [INFO ] [openshell_server::grpc::policy] SubmitPolicyAnalysis: persisted draft chunks
+[1776958376.097] [sandbox] [INFO ] [openshell_sandbox::mechanistic_mapper] Skipped proposal for always-blocked destination (SSRF hardening — loopback/link-local/unspecified) host=169.254.169.254 port=80
+[1776958376.097] [sandbox] [INFO ] [openshell_sandbox] Flushed denial analysis to gateway proposals=0 sandbox_name=phase2-bypass summaries=1
+[1776958377.442] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958377.492] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958377.532] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958377.662] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958377.711] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958384.184] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958384.260] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958384.304] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958384.433] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958384.519] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958386.099] [gateway] [INFO ] [openshell_server::grpc::policy] SubmitPolicyAnalysis: persisted draft chunks
+[1776958386.098] [sandbox] [INFO ] [openshell_sandbox::mechanistic_mapper] Skipped proposal for always-blocked destination (SSRF hardening — loopback/link-local/unspecified) host=169.254.169.254 port=80
+[1776958386.098] [sandbox] [INFO ] [openshell_sandbox] Flushed denial analysis to gateway proposals=0 sandbox_name=phase2-bypass summaries=1
+[1776958388.478] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958388.523] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958388.581] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958388.685] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958388.737] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958390.203] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958390.255] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958396.098] [gateway] [INFO ] [openshell_server::grpc::policy] SubmitPolicyAnalysis: persisted draft chunks
+[1776958396.097] [sandbox] [INFO ] [openshell_sandbox::mechanistic_mapper] Skipped proposal for always-blocked destination (SSRF hardening — loopback/link-local/unspecified) host=169.254.169.254 port=80
+[1776958396.097] [sandbox] [INFO ] [openshell_sandbox] Flushed denial analysis to gateway proposals=0 sandbox_name=phase2-bypass summaries=1
+[1776958396.571] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958396.623] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958396.660] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958396.776] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958396.823] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958399.749] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958399.789] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958399.832] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958399.944] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958400.018] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958404.175] [sandbox] [OCSF ] [ocsf] NET:OPEN [MED] DENIED /usr/bin/gh(275) -> api.github.com:443 [policy:- engine:opa] [reason:endpoint api.github.com:443 not in policy 'claude'; binary '/usr/bin/gh' not all...]
+[1776958404.187] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958404.273] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958404.339] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958404.499] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958404.561] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958406.189] [gateway] [INFO ] [openshell_server::grpc::policy] SubmitPolicyAnalysis: persisted draft chunks
+[1776958406.097] [sandbox] [INFO ] [openshell_sandbox::mechanistic_mapper] Skipped proposal for always-blocked destination (SSRF hardening — loopback/link-local/unspecified) host=169.254.169.254 port=80
+[1776958406.152] [sandbox] [INFO ] [openshell_sandbox] Flushed denial analysis to gateway proposals=1 sandbox_name=phase2-bypass summaries=2
+[1776958410.208] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958410.266] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958410.304] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958410.421] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958410.470] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958414.039] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958414.081] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958414.121] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958414.230] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958414.305] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict
+[1776958416.098] [gateway] [INFO ] [openshell_server::grpc::policy] SubmitPolicyAnalysis: persisted draft chunks
+[1776958416.097] [sandbox] [INFO ] [openshell_sandbox::mechanistic_mapper] Skipped proposal for always-blocked destination (SSRF hardening — loopback/link-local/unspecified) host=169.254.169.254 port=80
+[1776958416.097] [sandbox] [INFO ] [openshell_sandbox] Flushed denial analysis to gateway proposals=0 sandbox_name=phase2-bypass summaries=1
+[1776958417.909] [sandbox] [OCSF ] [ocsf] HTTP:GET [MED] DENIED /usr/local/bin/claude(101) -> GET http://169.254.169.254/computeMetadata/v1/project/project-id [policy:- engine:opa] [reason:FORWARD denied GET 169.254.169.254:80/computeMetadata/v1/project/project-id]
+[1776958417.959] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> oauth2.googleapis.com:443 [policy:claude engine:opa]
+[1776958418.012] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://oauth2.googleapis.com:443/token
+[1776958418.118] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/local/bin/claude(101) -> ***-aiplatform.googleapis.com:443 [policy:claude engine:opa]
+[1776958418.169] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://***-aiplatform.googleapis.com:443/v1/projects/***/locations/***/publishers/anthropic/models/claude-sonnet-4-5@20250929:streamRawPredict

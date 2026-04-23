@@ -1,0 +1,50 @@
+Warning: log buffer contains only the last 100 lines; --since results may be incomplete.
+[1776956529.966] [sandbox] [OCSF ] [ocsf] CONFIG:ENRICHED [INFO] Enriched policy with baseline filesystem paths for proxy mode
+[1776956530.068] [sandbox] [INFO ] [openshell_sandbox] Creating OPA engine from proto policy data
+[1776956530.071] [sandbox] [OCSF ] [ocsf] CONFIG:VALIDATED [INFO] Validated 'sandbox' user exists in image
+[1776956530.115] [sandbox] [OCSF ] [ocsf] CONFIG:LOADED [INFO] Fetched provider environment [env_count:1]
+[1776956530.118] [sandbox] [OCSF ] [ocsf] CONFIG:ENABLED [INFO] TLS termination enabled: ephemeral CA generated
+[1776956530.118] [sandbox] [OCSF ] [ocsf] CONFIG:CREATING [INFO] Creating network namespace [ns:sandbox-76d0db81 host_veth:veth-h-76d0db81 sandbox_veth:veth-s-76d0db81]
+[1776956530.168] [sandbox] [OCSF ] [ocsf] CONFIG:CREATED [INFO] Network namespace created [ns:sandbox-76d0db81 host_ip:10.200.0.1 sandbox_ip:10.200.0.2]
+[1776956530.247] [sandbox] [OCSF ] [ocsf] CONFIG:INSTALLED [INFO] Bypass detection rules installed [ns:sandbox-76d0db81]
+[1776956530.247] [sandbox] [INFO ] [openshell_sandbox] Fetching inference route bundle from gateway endpoint=https://openshell.openshell.svc.cluster.local:8080
+[1776956530.292] [sandbox] [OCSF ] [ocsf] CONFIG:LOADED [INFO] Loaded inference route bundle [route_count:0 revision:d1fba762150c532c]
+[1776956530.292] [sandbox] [OCSF ] [ocsf] CONFIG:WAITING [INFO] Inference route bundle is empty; keeping routing enabled and waiting for refresh
+[1776956530.292] [sandbox] [OCSF ] [ocsf] CONFIG:ENABLED [INFO] Inference routing enabled with local execution [route_count:0]
+[1776956530.293] [sandbox] [OCSF ] [ocsf] NET:LISTEN [INFO] 10.200.0.1:3128
+[1776956530.296] [sandbox] [OCSF ] [ocsf] SSH:LISTEN [INFO] 0.0.0.0:2222
+[1776956530.296] [sandbox] [OCSF ] [ocsf] LIFECYCLE:INSTALL [INFO] OpenShell Sandbox Supervisor success
+[1776956530.296] [sandbox] [OCSF ] [ocsf] CONFIG:PROBED [INFO] Landlock filesystem sandbox available [abi:v7 compat:BestEffort ro:6 rw:4]
+[1776956530.296] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956530.296] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956530.299] [sandbox] [OCSF ] [ocsf] PROC:LAUNCH [INFO] sleep(54)
+[1776956530.801] [sandbox] [INFO ] [openshell_sandbox] Container filesystem accessible, resolving policy binary symlinks attempt=1 pid=54
+[1776956530.804] [sandbox] [INFO ] [openshell_sandbox] Policy binary symlink resolution complete (check logs above for per-binary results) pid=54
+[1776956530.836] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:33704 [auth:NSSH1]
+[1776956530.891] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956530.892] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956531.033] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:33706 [auth:NSSH1]
+[1776956531.131] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956531.131] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956531.297] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:33714 [auth:NSSH1]
+[1776956531.355] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956531.355] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956531.507] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:33724 [auth:NSSH1]
+[1776956531.604] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956531.604] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956531.746] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:33736 [auth:NSSH1]
+[1776956531.844] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956531.844] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956531.993] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:59332 [auth:NSSH1]
+[1776956532.088] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956532.088] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956532.207] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/lib/git-core/git-remote-http(101) -> github.com:443 [policy:github engine:opa]
+[1776956532.279] [sandbox] [OCSF ] [ocsf] HTTP:GET [INFO] ALLOWED GET http://github.com:443/test-fullsend/test-repo.git/info/refs [policy:github engine:l7]
+[1776956532.465] [sandbox] [OCSF ] [ocsf] HTTP:GET [INFO] ALLOWED GET http://github.com:443/test-fullsend/test-repo.git/info/refs [policy:github engine:l7]
+[1776956532.920] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:59336 [auth:NSSH1]
+[1776956532.980] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956532.980] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956533.127] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:59346 [auth:NSSH1]
+[1776956533.229] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956533.229] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956533.260] [sandbox] [OCSF ] [ocsf] NET:OPEN [MED] DENIED /usr/lib/git-core/git-remote-http(121) -> github.com:443 [policy:- engine:opa] [reason:endpoint github.com:443 not in policy 'claude'; binary '/usr/lib/git-core/git-re...]

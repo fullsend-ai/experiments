@@ -1,0 +1,98 @@
+Phase 1: Proxy Binary Tracking — Results Summary
+=================================================
+Date: 2026-04-23
+Repo: test-fullsend/test-repo
+Branch: experiment/policy-test
+
+Policy: only /usr/local/bin/safe-push allowed to reach github.com
+
+Variant S: shebang (Python script with #!/usr/bin/env python3)
+--------------------------------------------------------------
+  Regular push (safe-push):  DENIED
+    Proxy log: DENIED /usr/lib/git-core/git-remote-http(97) -> github.com:443
+    Reason:    endpoint github.com:443 not in policy 'claude'; binary '/usr/lib/git-core/git-remote-http' not allowed
+    Analysis:  Python interpreter runs the script. git-remote-http spawned by git push.
+               Neither python3 nor git-remote-http is in the github policy binary list.
+               No ancestor in process tree matches /usr/local/bin/safe-push.
+
+  Force push (safe-push --force):  REJECTED by binary
+    Output: "ERROR: safe-push: force push is not allowed"
+    No network call made.
+
+  Control (direct git push):  DENIED
+    Proxy log: DENIED /usr/lib/git-core/git-remote-http(111) -> github.com:443
+    Reason:    /usr/bin/git not in policy binary list.
+
+Variant B: exec (Go binary, syscall.Exec replaces process with git)
+--------------------------------------------------------------------
+  Regular push (safe-push):  DENIED
+    Proxy log: DENIED /usr/lib/git-core/git-remote-http(100) -> github.com:443
+    Reason:    After syscall.Exec, process image is /usr/bin/git.
+               /proc/pid/exe no longer points to safe-push.
+               safe-push is not in the parent process chain (process was replaced, not forked).
+
+  Force push (safe-push --force):  REJECTED by binary
+    Output: "ERROR: safe-push: force push is not allowed"
+    No network call made.
+
+  Control (direct git push):  DENIED
+    Proxy log: same as regular push — git-remote-http DENIED.
+
+Variant A: subprocess (Go binary, exec.Command spawns git as child)
+--------------------------------------------------------------------
+  Regular push (safe-push):  ALLOWED
+    Proxy log: ALLOWED /usr/lib/git-core/git-remote-http(101) -> github.com:443 [policy:github engine:opa]
+    L7 log:    ALLOWED GET http://github.com:443/test-fullsend/test-repo.git/info/refs
+    Result:    "Everything up-to-date" (push succeeded, no data to transfer)
+    Analysis:  safe-push (parent) -> git (child) -> git-remote-http (child).
+               Proxy walks /proc/<pid>/status PPid chain and finds
+               /usr/local/bin/safe-push as an ancestor. Ancestor match succeeds.
+
+  Force push (safe-push --force):  REJECTED by binary
+    Output: "ERROR: safe-push: force push is not allowed"
+    No network call made.
+
+  Control (direct git push):  DENIED
+    Proxy log: DENIED /usr/lib/git-core/git-remote-http -> github.com:443
+    Reason:    No safe-push in process tree when git is run directly.
+
+Variant C: http (Go binary, go-git pure HTTP — no git binary)
+--------------------------------------------------------------
+  Regular push (safe-push):  ALLOWED
+    Proxy log: ALLOWED /usr/local/bin/safe-push(89) -> github.com:443 [policy:github engine:opa]
+    L7 log:    ALLOWED GET http://github.com:443/test-fullsend/test-repo.git/info/refs
+    Result:    "Everything up-to-date" (push succeeded, no data to transfer)
+    Analysis:  safe-push IS the binary making the TCP connection.
+               Direct binary match — no ancestor walk needed.
+
+  Force push (safe-push --force):  REJECTED by binary
+    Output: "ERROR: safe-push: force push is not allowed"
+    No network call made.
+
+  Control (direct git push):  DENIED
+    Proxy log: DENIED /usr/lib/git-core/git-remote-http -> github.com:443
+
+Summary Table
+=============
+  Variant      | Regular push | Force push | Direct git | Proxy binary seen
+  -------------|-------------|-----------|-----------|------------------
+  S (shebang)  | DENIED      | Rejected  | DENIED    | /usr/lib/git-core/git-remote-http
+  B (exec)     | DENIED      | Rejected  | DENIED    | /usr/lib/git-core/git-remote-http
+  A (subprocess)| ALLOWED    | Rejected  | DENIED    | /usr/lib/git-core/git-remote-http (ancestor: safe-push)
+  C (http)     | ALLOWED     | Rejected  | DENIED    | /usr/local/bin/safe-push (direct)
+
+Key Finding: Proxy Binary Tracking Mechanism
+=============================================
+The proxy checks binary identity at TCP connection time using /proc/<pid>/exe,
+then walks the parent process tree via /proc/<pid>/status PPid chain.
+
+The OPA policy (sandbox-policy.rego) has three matching modes:
+  1. Direct match:   /proc/<pid>/exe matches a policy binary path
+  2. Ancestor match: a parent process in the PPid chain matches a policy binary
+  3. Glob match:     binary path matches a glob pattern in the policy
+
+This explains the results:
+  - Shebang: /proc/pid/exe = /usr/bin/python3 (interpreter). No safe-push ancestor.
+  - Exec:    /proc/pid/exe = /usr/bin/git (replaced). No safe-push ancestor.
+  - Subprocess: /proc/pid/exe = git-remote-http, but safe-push is in PPid chain. Ancestor match.
+  - HTTP:    /proc/pid/exe = /usr/local/bin/safe-push. Direct match.
