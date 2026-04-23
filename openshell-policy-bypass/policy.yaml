@@ -1,0 +1,39 @@
+version: 1
+
+filesystem_policy:
+  include_workdir: true
+  read_only: [/usr, /lib, /proc, /etc, /dev/urandom]
+  read_write: [/sandbox, /tmp, /dev/null, /home/sandbox]
+
+network_policies:
+  github:
+    name: github
+    endpoints:
+      - host: github.com
+        port: 443
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow: { method: GET, path: "/**/*.git/info/refs*" }
+          - allow: { method: POST, path: "/**/*.git/git-upload-pack" }
+          - allow: { method: POST, path: "/**/*.git/git-receive-pack" }
+      - host: api.github.com
+        port: 443
+        protocol: rest
+        enforcement: enforce
+        access: read-only
+    binaries:
+      - { path: /usr/local/bin/safe-push }
+
+  claude:
+    name: claude
+    endpoints:
+      - { host: "*.googleapis.com", port: 443 }
+      - { host: api.anthropic.com, port: 443, protocol: rest, enforcement: enforce, access: full }
+      - { host: statsig.anthropic.com, port: 443 }
+      - { host: sentry.io, port: 443 }
+      - { host: raw.githubusercontent.com, port: 443 }
+      - { host: platform.claude.com, port: 443 }
+    binaries:
+      - { path: /usr/local/bin/claude }
+      - { path: /usr/bin/node }
