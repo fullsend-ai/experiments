@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+"""safe-push via shebang — tests if proxy sees python3 or safe-push."""
+import os
+import subprocess
+import sys
+
+
+def is_force_push(args):
+    for arg in args:
+        if arg in ("--force", "-f", "--force-with-lease"):
+            return True
+        if arg.startswith("+") and ":" in arg:
+            return True
+    return False
+
+
+args = sys.argv[1:]
+print(f"safe-push-shebang: called with args={args}", flush=True)
+
+if is_force_push(args):
+    print("ERROR: safe-push: force push is not allowed", file=sys.stderr)
+    sys.exit(1)
+
+env = dict(os.environ, GIT_SSL_NO_VERIFY="1")
+result = subprocess.run(["git", "push"] + args, env=env)
+sys.exit(result.returncode)

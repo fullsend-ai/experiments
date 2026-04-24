@@ -1,0 +1,100 @@
+Warning: log buffer contains only the last 99 lines; --since results may be incomplete.
+[1776956425.313] [gateway] [INFO ] [openshell_driver_kubernetes::driver] Creating sandbox in Kubernetes
+[1776956425.324] [gateway] [INFO ] [openshell_driver_kubernetes::driver] Sandbox created in Kubernetes successfully
+[1776956425.324] [gateway] [INFO ] [openshell_server::grpc::sandbox] CreateSandbox request completed successfully
+[1776956425.325] [gateway] [INFO ] [openshell_server::compute] Sandbox phase changed
+[1776956426.326] [gateway] [INFO ] [openshell_server::compute] Sandbox phase changed
+[1776956433.577] [sandbox] [INFO ] [openshell_sandbox] Starting sandbox command=["sleep", "infinity"]
+[1776956433.577] [sandbox] [INFO ] [openshell_sandbox] Fetching sandbox policy via gRPC endpoint=https://openshell.openshell.svc.cluster.local:8080 sandbox_id=5e184b17-d789-420f-9017-e79f1422a59b
+[1776956433.632] [gateway] [INFO ] [openshell_server::grpc::policy] GetSandboxConfig served from spec (backfilled version 1)
+[1776956433.733] [gateway] [INFO ] [openshell_server::grpc::policy] UpdateConfig: new policy version persisted
+[1776956433.740] [gateway] [INFO ] [openshell_server::grpc::policy] GetSandboxProviderEnvironment request completed successfully
+[1776956433.674] [sandbox] [OCSF ] [ocsf] CONFIG:ENRICHED [INFO] Enriched policy with baseline filesystem paths for proxy mode
+[1776956433.733] [sandbox] [INFO ] [openshell_sandbox] Creating OPA engine from proto policy data
+[1776956433.736] [sandbox] [OCSF ] [ocsf] CONFIG:VALIDATED [INFO] Validated 'sandbox' user exists in image
+[1776956433.780] [sandbox] [OCSF ] [ocsf] CONFIG:LOADED [INFO] Fetched provider environment [env_count:1]
+[1776956433.782] [sandbox] [OCSF ] [ocsf] CONFIG:ENABLED [INFO] TLS termination enabled: ephemeral CA generated
+[1776956433.782] [sandbox] [OCSF ] [ocsf] CONFIG:CREATING [INFO] Creating network namespace [ns:sandbox-da039127 host_veth:veth-h-da039127 sandbox_veth:veth-s-da039127]
+[1776956433.831] [sandbox] [OCSF ] [ocsf] CONFIG:CREATED [INFO] Network namespace created [ns:sandbox-da039127 host_ip:10.200.0.1 sandbox_ip:10.200.0.2]
+[1776956433.904] [sandbox] [OCSF ] [ocsf] CONFIG:INSTALLED [INFO] Bypass detection rules installed [ns:sandbox-da039127]
+[1776956433.904] [sandbox] [INFO ] [openshell_sandbox] Fetching inference route bundle from gateway endpoint=https://openshell.openshell.svc.cluster.local:8080
+[1776956433.949] [sandbox] [OCSF ] [ocsf] CONFIG:LOADED [INFO] Loaded inference route bundle [route_count:0 revision:d1fba762150c532c]
+[1776956433.950] [sandbox] [OCSF ] [ocsf] CONFIG:WAITING [INFO] Inference route bundle is empty; keeping routing enabled and waiting for refresh
+[1776956433.950] [sandbox] [OCSF ] [ocsf] CONFIG:ENABLED [INFO] Inference routing enabled with local execution [route_count:0]
+[1776956433.950] [sandbox] [OCSF ] [ocsf] NET:LISTEN [INFO] 10.200.0.1:3128
+[1776956433.952] [sandbox] [OCSF ] [ocsf] SSH:LISTEN [INFO] 0.0.0.0:2222
+[1776956433.952] [sandbox] [OCSF ] [ocsf] LIFECYCLE:INSTALL [INFO] OpenShell Sandbox Supervisor success
+[1776956433.952] [sandbox] [OCSF ] [ocsf] CONFIG:PROBED [INFO] Landlock filesystem sandbox available [abi:v7 compat:BestEffort ro:6 rw:4]
+[1776956433.952] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956433.952] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956433.955] [sandbox] [OCSF ] [ocsf] PROC:LAUNCH [INFO] sleep(55)
+[1776956434.423] [gateway] [INFO ] [openshell_server::compute] Sandbox phase changed
+[1776956434.542] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: connecting to sandbox
+[1776956434.544] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: TCP connected to sandbox
+[1776956434.544] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: sending NSSH1 handshake preface
+[1776956434.544] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: waiting for handshake response
+[1776956434.544] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: handshake response received
+[1776956434.544] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel established
+[1776956434.456] [sandbox] [INFO ] [openshell_sandbox] Container filesystem accessible, resolving policy binary symlinks attempt=1 pid=55
+[1776956434.459] [sandbox] [INFO ] [openshell_sandbox] Policy binary symlink resolution complete (check logs above for per-binary results) pid=55
+[1776956434.544] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:48020 [auth:NSSH1]
+[1776956434.789] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: connecting to sandbox
+[1776956434.790] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: TCP connected to sandbox
+[1776956434.790] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: sending NSSH1 handshake preface
+[1776956434.790] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: waiting for handshake response
+[1776956434.790] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: handshake response received
+[1776956434.790] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel established
+[1776956435.053] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: connecting to sandbox
+[1776956435.055] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: TCP connected to sandbox
+[1776956435.055] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: sending NSSH1 handshake preface
+[1776956435.055] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: waiting for handshake response
+[1776956435.055] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: handshake response received
+[1776956435.055] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel established
+[1776956434.642] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956434.642] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956434.790] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:48030 [auth:NSSH1]
+[1776956434.891] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956434.891] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956435.055] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:48040 [auth:NSSH1]
+[1776956435.313] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: connecting to sandbox
+[1776956435.315] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: TCP connected to sandbox
+[1776956435.315] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: sending NSSH1 handshake preface
+[1776956435.315] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: waiting for handshake response
+[1776956435.315] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: handshake response received
+[1776956435.315] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel established
+[1776956435.567] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: connecting to sandbox
+[1776956435.569] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: TCP connected to sandbox
+[1776956435.569] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: sending NSSH1 handshake preface
+[1776956435.569] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: waiting for handshake response
+[1776956435.569] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: handshake response received
+[1776956435.569] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel established
+[1776956435.162] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956435.162] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956435.316] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:48056 [auth:NSSH1]
+[1776956435.415] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956435.415] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956435.569] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:48066 [auth:NSSH1]
+[1776956435.820] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: connecting to sandbox
+[1776956435.822] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: TCP connected to sandbox
+[1776956435.822] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: sending NSSH1 handshake preface
+[1776956435.822] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: waiting for handshake response
+[1776956435.822] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: handshake response received
+[1776956435.822] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel established
+[1776956435.671] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956435.672] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956435.822] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED 10.42.0.74:48072 [auth:NSSH1]
+[1776956435.920] [sandbox] [OCSF ] [ocsf] CONFIG:APPLYING [INFO] Applying Landlock filesystem sandbox [abi:V2 compat:BestEffort ro:6 rw:4]
+[1776956435.920] [sandbox] [OCSF ] [ocsf] CONFIG:BUILT [INFO] Landlock ruleset built [rules_applied:10 skipped:0]
+[1776956436.000] [sandbox] [OCSF ] [ocsf] NET:OPEN [MED] DENIED /usr/lib/git-core/git-remote-http(100) -> github.com:443 [policy:- engine:opa] [reason:endpoint github.com:443 not in policy 'claude'; binary '/usr/lib/git-core/git-re...]
+[1776956436.104] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: connecting to sandbox
+[1776956436.105] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: TCP connected to sandbox
+[1776956436.105] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: sending NSSH1 handshake preface
+[1776956436.106] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: waiting for handshake response
+[1776956436.106] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: handshake response received
+[1776956436.106] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel established
+[1776956436.354] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: connecting to sandbox
+[1776956436.355] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: TCP connected to sandbox
+[1776956436.355] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: sending NSSH1 handshake preface
+[1776956436.356] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: waiting for handshake response
+[1776956436.356] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel: handshake response received
+[1776956436.356] [gateway] [INFO ] [openshell_server::ssh_tunnel] SSH tunnel established
