@@ -93,7 +93,7 @@ run_triage() {
 
   # Clone target repo to a temp dir.
   repo_dir=$(mktemp -d)
-  git clone "https://github.com/${FULL_REPO}.git" "${repo_dir}/repo"
+  git clone "git@github.com:${FULL_REPO}.git" "${repo_dir}/repo"
   info "Cloned to ${repo_dir}/repo"
 
   # Run fullsend triage.
@@ -147,7 +147,7 @@ run_triage "control"
 # ── Add skill to target repo ──────────────────────────────────────
 step "Adding triage-guidance skill to target repo"
 SKILL_WORK_DIR=$(mktemp -d)
-git clone "https://github.com/${FULL_REPO}.git" "${SKILL_WORK_DIR}/repo"
+git clone "git@github.com:${FULL_REPO}.git" "${SKILL_WORK_DIR}/repo"
 cp -r "${SCRIPT_DIR}/skill-files/.claude" "${SKILL_WORK_DIR}/repo/"
 git -C "${SKILL_WORK_DIR}/repo" add -A
 git -C "${SKILL_WORK_DIR}/repo" commit -m "Add .claude/skills/triage-guidance for experiment"

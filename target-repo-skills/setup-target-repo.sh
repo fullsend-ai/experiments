@@ -49,7 +49,7 @@ fi
 
 git -C "${WORK_DIR}" add -A
 git -C "${WORK_DIR}" commit -m "Initial commit: minimal Go REST API"
-git -C "${WORK_DIR}" remote add origin "https://github.com/${FULL_REPO}.git"
+git -C "${WORK_DIR}" remote add origin "git@github.com:${FULL_REPO}.git"
 git -C "${WORK_DIR}" push -u origin main --force
 pass "Source files pushed"
 
