@@ -38,23 +38,57 @@ fullsend scaffold (agent, harness, policy, scripts), same model.
 
 ## Results
 
-_To be filled after running the experiment._
-
 ### Control
 
-_Paste or link to `results/control/agent-result.json` summary._
+- **Severity:** high
+- **Labels:** none (no skill-specific labels referenced)
+- **Overall clarity score:** 0.89
+- Full output: [`results/control/agent-result.json`](results/control/agent-result.json)
 
 ### Treatment
 
-_Paste or link to `results/treatment/agent-result.json` summary._
+- **Severity:** critical
+- **Labels:** `area:api`, `area:data`, `priority:critical`, `type:bug`
+- **Overall clarity score:** 0.90
+- Reasoning explicitly cites: _"Per triage guidance"_
+- Full output: [`results/treatment/agent-result.json`](results/treatment/agent-result.json)
 
 ### Skill Discovery
 
-_Did `triage-guidance` appear in the treatment transcript's system prompt?_
+**Yes.** The treatment transcript shows 3 mentions of `triage-guidance`:
+
+1. The agent called `Skill("triage-guidance")` during triage.
+2. The skill content was loaded from `/tmp/workspace/repo/.claude/skills/triage-guidance`.
+3. The skill instructions appeared in the agent's context.
+
+The control transcript contains 0 mentions of `triage-guidance`.
+
+```bash
+$ grep -c 'triage-guidance' results/treatment/transcript.jsonl
+3
+$ grep -c 'triage-guidance' results/control/transcript.jsonl
+0
+```
 
 ## Conclusion
 
-_To be filled after analyzing results._
+**Hypothesis confirmed.** Target repository `.claude/skills/` are discovered and
+used by the fullsend triage agent inside OpenShell sandboxes, even though
+`CLAUDE_CONFIG_DIR` is overridden to `/tmp/claude-config`.
+
+Claude Code's CWD-based project skill discovery (`cd <target-repo> && claude`)
+operates independently of `CLAUDE_CONFIG_DIR`. The agent discovers skills from
+the git root of its working directory regardless of where user-level config
+points.
+
+**Behavioral impact:** The triage guidance skill changed the agent's output in
+two measurable ways:
+
+1. **Severity escalation:** "high" → "critical" (matching the skill's rule that
+   panic/500 errors are `priority:critical`)
+2. **Structured labeling:** The treatment output includes explicit label
+   references (`area:api`, `area:data`, `priority:critical`, `type:bug`) that
+   match the skill's taxonomy exactly
 
 ## See Also
 
