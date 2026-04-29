@@ -102,6 +102,13 @@ two measurable ways:
 The triage agent comments (control and treatment) can be seen on the target
 repo issue: https://github.com/maruiz93/experiment-target-repo-skills/issues/1
 
+**Note:** The treatment agent referenced the skill's taxonomy labels (`area:api`,
+`priority:critical`, etc.) in its comment text, but these were not assigned to
+the GitHub issue. The `post-triage.sh` script only applies workflow labels
+(`ready-to-code`, `needs-info`, `duplicate`) — it does not parse or apply
+taxonomy labels from the agent's output. Extracting and assigning skill-defined
+labels is a potential improvement to the post-triage pipeline.
+
 ## See Also
 
 - [Design spec](docs/2026-04-28-target-repo-skills-design.md)
