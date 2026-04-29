@@ -90,6 +90,9 @@ two measurable ways:
    references (`area:api`, `area:data`, `priority:critical`, `type:bug`) that
    match the skill's taxonomy exactly
 
+The triage agent comments (control and treatment) can be seen on the target
+repo issue: https://github.com/maruiz93/experiment-target-repo-skills/issues/1
+
 ## See Also
 
 - [Design spec](docs/2026-04-28-target-repo-skills-design.md)
