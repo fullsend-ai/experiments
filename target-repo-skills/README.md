@@ -29,6 +29,15 @@ discovery still works when `CLAUDE_CONFIG_DIR` is overridden.
 All other inputs are held constant: same codebase, same GitHub issue, same
 fullsend scaffold (agent, harness, policy, scripts), same model.
 
+### Versions
+
+| Component | Version |
+|-----------|---------|
+| fullsend | `de54df2` (built from source) |
+| OpenShell | 0.0.36 |
+| Sandbox image | `ghcr.io/fullsend-ai/fullsend-sandbox:latest` |
+| Harness | `internal/scaffold/fullsend-repo/harness/triage.yaml` |
+
 ### Evidence
 
 1. **JSONL transcript** (primary) — shows whether the skill appears in Claude's
