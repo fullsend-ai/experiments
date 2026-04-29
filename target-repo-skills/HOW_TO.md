@@ -59,3 +59,23 @@ inside an OpenShell sandbox.
   if skill discovery works
 - The treatment `agent-result.json` should use labels from the skill's taxonomy
   (`area:api`, `priority:critical`, `type:bug`)
+
+## Viewing Transcripts
+
+Use [claude-replay](https://www.npmjs.com/package/claude-replay) to view the
+session transcripts as interactive HTML replays:
+
+```bash
+# Control run (no skill)
+claude-replay results/control/transcript.jsonl --title "Control Run" --serve
+
+# Treatment run (with triage-guidance skill)
+claude-replay results/treatment/transcript.jsonl --title "Treatment Run" --serve
+```
+
+Or generate static HTML files:
+
+```bash
+claude-replay results/control/transcript.jsonl --title "Control Run" -o control-replay.html
+claude-replay results/treatment/transcript.jsonl --title "Treatment Run" -o treatment-replay.html
+```
