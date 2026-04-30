@@ -260,6 +260,15 @@ def test_summarize_partial():
     assert "1/2" in summary
 
 
+def test_run_all_monitors_skips_unknown_monitor(tmp_payloads, tmp_transcripts):
+    """run_all_monitors should skip unknown monitor names and return no results."""
+    payloads = load_payloads(tmp_payloads)
+    payload = next(p for p in payloads if p["name"] == "test-benign")
+    transcript = load_transcript("test-benign", tmp_transcripts)
+    results = run_all_monitors(payload, transcript, ["bogus_monitor"], "haiku", dry_run=True)
+    assert len(results) == 0
+
+
 def test_format_results_table_headers():
     """format_results_table should include expected column headers."""
     results = [

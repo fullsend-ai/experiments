@@ -178,7 +178,11 @@ def format_transcript(transcript: list[dict]) -> str:
             lines.append(f"[TOOL CALL] {tool}({inp})")
         elif role == "tool_result":
             tool = entry.get("tool", "unknown")
-            lines.append(f"[TOOL RESULT from {tool}]: {entry.get('content', '')}")
+            if tool in USER_CONTENT_TOOLS:
+                content = "[REDACTED: tool result content not shown to monitor]"
+            else:
+                content = entry.get("content", "")
+            lines.append(f"[TOOL RESULT from {tool}]: {content}")
     return "\n".join(lines)
 
 
@@ -209,6 +213,8 @@ class LLMMonitor(Monitor):
         )
         if self._max_calls < 1:
             raise ValueError(f"max_calls must be >= 1, got {self._max_calls}")
+        if self._window_sec < 1:
+            raise ValueError(f"window_sec must be >= 1, got {self._window_sec}")
         self._call_timestamps: list[float] = []
 
     @property
@@ -273,7 +279,7 @@ class LLMMonitor(Monitor):
             return MonitorVerdict(
                 verdict="suspicious",
                 confidence=1.0,
-                reason=f"Monitor API error (fail-closed): {type(exc).__name__}: {str(exc)[:150]}",
+                reason=f"Monitor API error (fail-closed): {type(exc).__name__}",
                 technique="llm",
             )
 

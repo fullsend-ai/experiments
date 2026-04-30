@@ -407,6 +407,22 @@ def test_format_transcript_redacts_user_content_tool_inputs():
     assert '"bug"' in formatted
 
 
+def test_monitor_rejects_invalid_model():
+    """LLMMonitor must raise ValueError for unknown model aliases."""
+    import pytest
+
+    with pytest.raises(ValueError, match="Unknown model alias"):
+        LLMMonitor(model="gpt-4", client=MagicMock())  # type: ignore[arg-type]
+
+
+def test_monitor_rejects_zero_window_sec():
+    """LLMMonitor must reject window_sec < 1 to prevent silent rate limit bypass."""
+    import pytest
+
+    with pytest.raises(ValueError, match="window_sec must be >= 1"):
+        LLMMonitor(model="haiku", client=MagicMock(), window_sec=0)
+
+
 def test_monitor_model_mapping():
     """Model aliases should map to correct model IDs."""
     from monitor.llm_monitor import MODEL_MAP
