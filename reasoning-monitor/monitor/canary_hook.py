@@ -47,10 +47,9 @@ _ERR_UNEXPECTED = (
 
 
 def _normalize(text: str) -> str:
-    """Normalize text for canary comparison: strip non-printable/zero-width chars, collapse whitespace, lowercase."""
-    # Strip zero-width and non-printable unicode characters
-    text = "".join(ch for ch in text if unicodedata.category(ch)[0] not in ("C", "M") or ch in ("\n", "\t"))
-    # Collapse whitespace
+    """Normalize text for canary comparison: NFKD decomposition, strip non-printable/zero-width chars, collapse whitespace, lowercase."""
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(ch for ch in text if unicodedata.category(ch)[0] not in ("C", "M"))
     text = re.sub(r"\s+", " ", text)
     return text.lower()
 

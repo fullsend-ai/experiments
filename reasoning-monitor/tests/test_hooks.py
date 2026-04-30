@@ -110,6 +110,8 @@ def test_allowlist_reason_contains_tool_name():
     """Block reason should mention the blocked tool name."""
     verdict = check_tool(DEFAULT_TRIAGE_ALLOWLIST, "mcp__secret__exfiltrate")
     assert "mcp__secret__exfiltrate" in verdict.reason
+    # Must NOT enumerate the full allowlist (information disclosure)
+    assert "mcp__github__issue_read" not in verdict.reason
 
 
 # ---------------------------------------------------------------------------
@@ -189,3 +191,41 @@ def test_allowlist_hook_blocks_missing_tool_name():
     exit_code, stdout = _run_hook("monitor.tool_allowlist", stdin=payload)
     assert exit_code == 1
     assert "block" in stdout.lower()
+
+
+def test_canary_hook_blocks_canary_in_tool_input():
+    """Canary hook must detect canary leaked via tool_input (exfiltration via arguments)."""
+    import json as _json
+
+    canary = "FULLSEND_CANARY_abc123"  # nosec B105
+    payload = _json.dumps(
+        {
+            "tool_name": "mcp__github__issue_comment",
+            "tool_input": f"Posting comment with {canary} embedded",
+            "tool_result": "Comment posted",
+        }
+    )
+    exit_code, stdout = _run_hook(
+        "monitor.canary_hook",
+        stdin=payload,
+        env={"FULLSEND_CANARY_TOKEN": canary},
+    )
+    assert exit_code == 1
+    assert "block" in stdout.lower()
+
+
+# ---------------------------------------------------------------------------
+# MonitorVerdict validation tests
+# ---------------------------------------------------------------------------
+
+
+def test_monitor_verdict_rejects_out_of_range_confidence():
+    """MonitorVerdict must reject confidence values outside [0.0, 1.0]."""
+    import pytest
+
+    from monitor.interface import MonitorVerdict
+
+    with pytest.raises(ValueError, match="confidence must be in"):
+        MonitorVerdict(verdict="clean", confidence=1.5, reason="test", technique="test")
+    with pytest.raises(ValueError, match="confidence must be in"):
+        MonitorVerdict(verdict="clean", confidence=-0.1, reason="test", technique="test")

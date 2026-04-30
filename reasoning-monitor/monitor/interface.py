@@ -14,6 +14,10 @@ class MonitorVerdict:
     reason: str
     technique: str  # "llm", "canary", "tool_allowlist"
 
+    def __post_init__(self) -> None:
+        if not 0.0 <= self.confidence <= 1.0:
+            raise ValueError(f"confidence must be in [0.0, 1.0], got {self.confidence}")
+
 
 class Monitor(ABC):
     """Base class for all reasoning monitors."""

@@ -143,6 +143,16 @@ def strip_user_input(transcript: list[dict]) -> list[dict]:
                     "content": "[REDACTED: tool result content not shown to monitor]",
                 }
             )
+        elif role == "tool_use" and entry.get("tool") in USER_CONTENT_TOOLS:
+            # Redact tool inputs for user-content tools. The agent may be calling
+            # the tool with user-controlled arguments (e.g. issue number from user).
+            stripped.append(
+                {
+                    "role": "tool_use",
+                    "tool": entry.get("tool"),
+                    "input": "[REDACTED: tool arguments not shown to monitor]",
+                }
+            )
         else:
             stripped.append(entry.copy())
     return stripped
@@ -182,6 +192,8 @@ class LLMMonitor(Monitor):
         max_calls: int | None = None,
         window_sec: int | None = None,
     ) -> None:
+        if model not in MODEL_MAP:
+            raise ValueError(f"Unknown model alias {model!r}. Valid: {list(MODEL_MAP.keys())}")
         self.model_alias = model
         self.model_id = MODEL_MAP[model]
         self._client = client  # Allow injection for testing

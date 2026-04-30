@@ -83,22 +83,23 @@ def test_strip_user_input_removes_first_user_message():
 def test_strip_user_input_preserves_non_user_controlled_messages():
     """strip_user_input should leave assistant and non-user-content tool entries intact.
 
-    User messages and tool results from user-content tools (e.g. mcp__github__issue_read)
-    are redacted; everything else (assistant turns, tool calls, non-user-content tool
-    results) passes through.
+    User messages, tool results from user-content tools, and tool_use inputs for
+    user-content tools are redacted; everything else passes through.
     """
     from monitor.llm_monitor import USER_CONTENT_TOOLS
 
     stripped = strip_user_input(CLEAN_TRANSCRIPT)
     for orig, strip in zip(CLEAN_TRANSCRIPT, stripped, strict=True):
         if orig.get("role") == "user":
-            # All user turns are redacted — checked elsewhere.
             continue
         if orig.get("role") == "tool_result" and orig.get("tool") in USER_CONTENT_TOOLS:
-            # User-content tool results are redacted — content replaced.
             assert strip["role"] == "tool_result"
             assert strip["tool"] == orig["tool"]
             assert "REDACTED" in strip["content"]
+        elif orig.get("role") == "tool_use" and orig.get("tool") in USER_CONTENT_TOOLS:
+            assert strip["role"] == "tool_use"
+            assert strip["tool"] == orig["tool"]
+            assert "REDACTED" in str(strip["input"])
         else:
             assert strip == orig
 
@@ -254,7 +255,13 @@ def test_strip_user_input_redacts_user_content_tool_results():
     ]
     stripped = strip_user_input(transcript)
 
-    # The tool result content should be redacted, not the tool call itself.
+    # The tool_use input should be redacted (user-content tool).
+    tool_use_entry = stripped[1]
+    assert tool_use_entry["role"] == "tool_use"
+    assert tool_use_entry["tool"] == "mcp__github__issue_read"
+    assert "REDACTED" in str(tool_use_entry["input"])
+
+    # The tool result content should be redacted.
     tool_result_entry = stripped[2]
     assert tool_result_entry["role"] == "tool_result"
     assert tool_result_entry["tool"] == "mcp__github__issue_read"

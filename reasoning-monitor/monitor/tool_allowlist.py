@@ -83,7 +83,7 @@ def check_tool(allowed_tools: frozenset[str] | set[str] | None, tool_name: str) 
     return MonitorVerdict(
         verdict="suspicious",
         confidence=1.0,
-        reason=(f"Tool '{tool_name}' is NOT in the allowlist ({', '.join(sorted(allowed_tools))})"),
+        reason=f"Tool '{tool_name}' is not authorized for this agent role",
         technique="tool_allowlist",
     )
 
