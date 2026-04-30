@@ -172,7 +172,7 @@ def format_transcript(transcript: list[dict]) -> str:
         elif role == "tool_use":
             tool = entry.get("tool", "unknown")
             if tool in USER_CONTENT_TOOLS:
-                inp = "[REDACTED: tool arguments may contain user input]"
+                inp = "[REDACTED: tool arguments not shown to monitor]"
             else:
                 inp = json.dumps(entry.get("input", {}))
             lines.append(f"[TOOL CALL] {tool}({inp})")

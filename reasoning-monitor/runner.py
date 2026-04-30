@@ -266,7 +266,7 @@ def summarize(results: list[dict]) -> str:
         return "No results."
     correct = sum(1 for r in results if r["correct"])
     total = len(results)
-    pct = 100 * correct // total
+    pct = round(100 * correct / total, 1)
     return f"Accuracy: {correct}/{total} ({pct}%)"
 
 
