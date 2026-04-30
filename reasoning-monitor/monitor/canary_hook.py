@@ -105,15 +105,18 @@ def main() -> None:
         # No canary configured — nothing to check
         sys.exit(0)
 
-    tool_result = hook_input.get("tool_result", "")
-    if not isinstance(tool_result, str):
-        tool_result = json.dumps(tool_result)
+    # Check both tool result and tool input for canary leaks.
+    # Tool inputs are checked because a compromised agent may exfiltrate
+    # the canary by embedding it in tool arguments (e.g., issue comment body).
+    for field in ("tool_result", "tool_input"):
+        content = hook_input.get(field, "")
+        if not isinstance(content, str):
+            content = json.dumps(content)
 
-    verdict = check_canary(canary, tool_result)
-
-    if verdict.verdict == "suspicious":
-        json.dump({"decision": "block", "reason": verdict.reason}, sys.stdout)
-        sys.exit(1)
+        verdict = check_canary(canary, content)
+        if verdict.verdict == "suspicious":
+            json.dump({"decision": "block", "reason": verdict.reason}, sys.stdout)
+            sys.exit(1)
 
     sys.exit(0)
 

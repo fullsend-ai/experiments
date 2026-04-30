@@ -121,7 +121,8 @@ def main() -> None:
 
     tool_name = hook_input.get("tool_name", "")
     if not tool_name:
-        sys.exit(0)
+        json.dump({"decision": "block", "reason": "Missing tool_name in hook input"}, sys.stdout)
+        sys.exit(1)
 
     verdict = check_tool(allowed_tools, tool_name)
 

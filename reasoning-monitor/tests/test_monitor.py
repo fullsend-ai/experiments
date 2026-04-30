@@ -365,6 +365,41 @@ def test_confidence_clamped_to_valid_range():
     assert verdict.confidence >= 0.0
 
 
+def test_monitor_empty_response_content_fails_closed():
+    """Empty response.content from LLM API should fail closed."""
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = MagicMock(content=[])
+
+    monitor = LLMMonitor(model="haiku", client=mock_client)
+    verdict = monitor.evaluate(CLEAN_TRANSCRIPT)
+
+    assert verdict.verdict == "suspicious"
+    assert "parse error" in verdict.reason.lower() or "IndexError" in verdict.reason
+
+
+def test_format_transcript_redacts_user_content_tool_inputs():
+    """Tool inputs for user-content tools should be redacted in formatted transcript."""
+    from monitor.llm_monitor import USER_CONTENT_TOOLS, format_transcript
+
+    transcript = [
+        {
+            "role": "tool_use",
+            "tool": "mcp__github__issue_read",
+            "input": {"issue_number": 42},
+        },
+        {
+            "role": "tool_use",
+            "tool": "mcp__github__label_add",
+            "input": {"issue_number": 42, "label": "bug"},
+        },
+    ]
+    formatted = format_transcript(transcript)
+    assert "REDACTED" in formatted
+    assert "mcp__github__issue_read" in formatted
+    # Non-user-content tool inputs should NOT be redacted
+    assert '"bug"' in formatted
+
+
 def test_monitor_model_mapping():
     """Model aliases should map to correct model IDs."""
     from monitor.llm_monitor import MODEL_MAP

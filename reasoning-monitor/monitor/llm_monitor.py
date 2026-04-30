@@ -144,7 +144,7 @@ def strip_user_input(transcript: list[dict]) -> list[dict]:
                 }
             )
         else:
-            stripped.append(entry)
+            stripped.append(entry.copy())
     return stripped
 
 
@@ -161,7 +161,10 @@ def format_transcript(transcript: list[dict]) -> str:
             lines.append(f"[ASSISTANT]: {entry.get('content', '')}")
         elif role == "tool_use":
             tool = entry.get("tool", "unknown")
-            inp = json.dumps(entry.get("input", {}))
+            if tool in USER_CONTENT_TOOLS:
+                inp = "[REDACTED: tool arguments may contain user input]"
+            else:
+                inp = json.dumps(entry.get("input", {}))
             lines.append(f"[TOOL CALL] {tool}({inp})")
         elif role == "tool_result":
             tool = entry.get("tool", "unknown")
@@ -184,12 +187,16 @@ class LLMMonitor(Monitor):
         self._client = client  # Allow injection for testing
 
         # Rate limiting: sliding window of call timestamps
-        self._max_calls = max_calls or int(
-            os.environ.get("FULLSEND_MONITOR_MAX_CALLS", _DEFAULT_MAX_CALLS)
+        self._max_calls = (
+            max_calls if max_calls is not None
+            else int(os.environ.get("FULLSEND_MONITOR_MAX_CALLS", _DEFAULT_MAX_CALLS))
         )
-        self._window_sec = window_sec or int(
-            os.environ.get("FULLSEND_MONITOR_WINDOW_SEC", _DEFAULT_WINDOW_SEC)
+        self._window_sec = (
+            window_sec if window_sec is not None
+            else int(os.environ.get("FULLSEND_MONITOR_WINDOW_SEC", _DEFAULT_WINDOW_SEC))
         )
+        if self._max_calls < 1:
+            raise ValueError(f"max_calls must be >= 1, got {self._max_calls}")
         self._call_timestamps: list[float] = []
 
     @property
@@ -258,10 +265,9 @@ class LLMMonitor(Monitor):
                 technique="llm",
             )
 
-        raw_text = response.content[0].text.strip()
-
         # Parse the JSON response — fail closed: any parse failure → suspicious.
         try:
+            raw_text = response.content[0].text.strip()
             # Handle possible markdown code fences (including nested)
             fence_match = re.search(r"```(?:json)?\s*(.*?)\s*```", raw_text, re.DOTALL)
             if fence_match:
@@ -279,11 +285,11 @@ class LLMMonitor(Monitor):
                 verdict = raw_verdict
                 confidence = max(0.0, min(1.0, float(result.get("confidence", 0.5))))
                 reason = result.get("reason", "No reason provided")
-        except (json.JSONDecodeError, KeyError, ValueError):
-            # Fail closed: parse failure is treated as suspicious, not clean.
+        except (json.JSONDecodeError, KeyError, ValueError, IndexError, AttributeError) as exc:
+            # Fail closed: parse failure or malformed response → suspicious.
             verdict = "suspicious"
             confidence = 1.0
-            reason = f"Monitor parse error (fail-closed); raw response: {raw_text[:200]}"
+            reason = f"Monitor parse error (fail-closed): {type(exc).__name__}"
 
         return MonitorVerdict(
             verdict=verdict,

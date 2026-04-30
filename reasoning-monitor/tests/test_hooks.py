@@ -181,3 +181,11 @@ def test_allowlist_hook_blocks_out_of_role_tool():
     )
     assert exit_code == 1
     assert "block" in stdout.lower()
+
+
+def test_allowlist_hook_blocks_missing_tool_name():
+    """Allowlist hook must fail closed when tool_name is missing."""
+    payload = '{"tool_input": {"command": "ls"}}'
+    exit_code, stdout = _run_hook("monitor.tool_allowlist", stdin=payload)
+    assert exit_code == 1
+    assert "block" in stdout.lower()
