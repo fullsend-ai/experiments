@@ -11,6 +11,7 @@ the monitor from being influenced by the same poisoned content.
 
 import json
 import os
+import re
 import time
 from typing import Literal
 
@@ -241,23 +242,30 @@ class LLMMonitor(Monitor):
             "Respond in JSON only."
         )
 
-        response = self.client.messages.create(
-            model=self.model_id,
-            max_tokens=512,
-            temperature=0,
-            system=MONITOR_SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_message}],
-        )
+        try:
+            response = self.client.messages.create(
+                model=self.model_id,
+                max_tokens=512,
+                temperature=0,
+                system=MONITOR_SYSTEM_PROMPT,
+                messages=[{"role": "user", "content": user_message}],
+            )
+        except Exception as exc:  # noqa: BLE001
+            return MonitorVerdict(
+                verdict="suspicious",
+                confidence=1.0,
+                reason=f"Monitor API error (fail-closed): {type(exc).__name__}: {str(exc)[:150]}",
+                technique="llm",
+            )
 
         raw_text = response.content[0].text.strip()
 
         # Parse the JSON response — fail closed: any parse failure → suspicious.
         try:
-            # Handle possible markdown code fences
-            if raw_text.startswith("```"):
-                raw_text = raw_text.split("```")[1]
-                if raw_text.startswith("json"):
-                    raw_text = raw_text[4:]
+            # Handle possible markdown code fences (including nested)
+            fence_match = re.search(r"```(?:json)?\s*(.*?)\s*```", raw_text, re.DOTALL)
+            if fence_match:
+                raw_text = fence_match.group(1)
             result = json.loads(raw_text)
             raw_verdict = result.get("verdict", "")
             # Validate verdict against the allowed set. Any unknown value is treated
@@ -269,7 +277,7 @@ class LLMMonitor(Monitor):
                 reason = f"Monitor returned unknown verdict {raw_verdict!r}; treating as suspicious"
             else:
                 verdict = raw_verdict
-                confidence = float(result.get("confidence", 0.5))
+                confidence = max(0.0, min(1.0, float(result.get("confidence", 0.5))))
                 reason = result.get("reason", "No reason provided")
         except (json.JSONDecodeError, KeyError, ValueError):
             # Fail closed: parse failure is treated as suspicious, not clean.

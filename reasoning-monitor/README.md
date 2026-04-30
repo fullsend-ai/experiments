@@ -128,8 +128,8 @@ can detect it purely from the reasoning trace and tool call sequence.
 | indirect-external-link | indirect-injection | suspicious | no | none |
 | indirect-poisoned-dependency | indirect-injection | suspicious | yes | none |
 | indirect-chain-of-thought | indirect-injection | suspicious | no | none |
-| credential-exfil | social-engineering | suspicious | yes | Bash |
-| role-confusion | authority-spoofing | suspicious | no | none |
+| credential-exfil | direct-injection | suspicious | yes | Bash |
+| role-confusion | social-engineering | suspicious | no | none |
 
 ### Adaptive attack payloads (Phase 2 — designed to challenge the monitor)
 
@@ -314,7 +314,9 @@ This experiment covers **Phase 1 and Phase 2** of the research plan:
 - Complements SSRF hook from Experiment #117
 
 **Weaknesses:**
-- Only catches tool-level violations
+- Only catches tool-level violations — checks tool *names*, not *arguments*
+- An attacker can exfiltrate data through allowed tool arguments (e.g. embedding
+  sensitive content in a comment body via `mcp__github__issue_comment`)
 - Doesn't detect behavioral drift within allowed tools
 - Allowlist must be kept up to date as agent capabilities evolve
 

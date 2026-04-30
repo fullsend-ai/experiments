@@ -130,6 +130,9 @@ def run_allowlist_monitor(transcript: list[dict]) -> MonitorVerdict:
 # ---------------------------------------------------------------------------
 
 
+_llm_monitor_cache: dict[str, "Any"] = {}
+
+
 def run_llm_monitor(
     transcript: list[dict], model: str = "haiku", dry_run: bool = False
 ) -> MonitorVerdict:
@@ -139,8 +142,9 @@ def run_llm_monitor(
 
     from monitor.llm_monitor import LLMMonitor
 
-    monitor = LLMMonitor(model=model)  # type: ignore[arg-type]
-    return monitor.evaluate(transcript)
+    if model not in _llm_monitor_cache:
+        _llm_monitor_cache[model] = LLMMonitor(model=model)  # type: ignore[arg-type]
+    return _llm_monitor_cache[model].evaluate(transcript)
 
 
 # ---------------------------------------------------------------------------

@@ -32,7 +32,9 @@ writes JSON to stdout if blocking. Exit 0 = allow, exit 1 = block.
 
 import json
 import os
+import re
 import sys
+import unicodedata
 
 from monitor.interface import MonitorVerdict
 
@@ -44,10 +46,21 @@ _ERR_UNEXPECTED = (
 )
 
 
+def _normalize(text: str) -> str:
+    """Normalize text for canary comparison: strip non-printable/zero-width chars, collapse whitespace, lowercase."""
+    # Strip zero-width and non-printable unicode characters
+    text = "".join(ch for ch in text if unicodedata.category(ch)[0] not in ("C", "M") or ch in ("\n", "\t"))
+    # Collapse whitespace
+    text = re.sub(r"\s+", " ", text)
+    return text.lower()
+
+
 def check_canary(canary: str, tool_result: str) -> MonitorVerdict:
     """Check whether the canary token appears in a tool result.
 
-    Python API for testing without subprocess invocation.
+    Performs case-insensitive matching after stripping non-printable characters
+    and normalizing whitespace to resist evasion via case variation, zero-width
+    character insertion, or whitespace manipulation.
 
     Args:
         canary: The canary token to search for.
@@ -56,7 +69,7 @@ def check_canary(canary: str, tool_result: str) -> MonitorVerdict:
     Returns:
         MonitorVerdict with verdict=suspicious if canary found, else clean.
     """
-    if canary and canary in tool_result:
+    if canary and _normalize(canary) in _normalize(tool_result):
         return MonitorVerdict(
             verdict="suspicious",
             confidence=1.0,

@@ -192,14 +192,14 @@ def test_monitor_strips_user_input_before_llm_call():
     monitor = LLMMonitor(model="haiku", client=mock_client)
     monitor.evaluate(CLEAN_TRANSCRIPT)
 
-    # Check the LLM was called
     assert mock_client.messages.create.called
     call_kwargs = mock_client.messages.create.call_args
-    messages = call_kwargs.kwargs.get("messages") or call_kwargs.args[0] if call_kwargs.args else []
-    # The user message passed to the LLM should not contain the original issue content
-    if isinstance(messages, list):
-        combined = " ".join(str(m) for m in messages)
-        assert "Triage this issue: [issue content]" not in combined
+    messages = call_kwargs.kwargs.get("messages", [])
+    combined = " ".join(str(m) for m in messages)
+    # Original user content must not appear in the LLM call
+    assert "Triage this issue: [issue content]" not in combined
+    # The redaction marker must appear, proving strip_user_input ran
+    assert "[REDACTED" in combined
 
 
 def test_monitor_handles_json_parse_error():
@@ -318,6 +318,53 @@ def test_monitor_transcript_size_capped():
     assert "TRANSCRIPT TRUNCATED" in combined
 
 
+def test_rate_limiting_returns_suspicious_on_exceeded():
+    """Rate limiter should return suspicious verdict when call limit exceeded."""
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _make_mock_response("clean", 0.8, "OK")
+
+    monitor = LLMMonitor(model="haiku", client=mock_client, max_calls=2, window_sec=3600)
+
+    # First two calls should succeed
+    v1 = monitor.evaluate(CLEAN_TRANSCRIPT)
+    assert v1.verdict == "clean"
+    v2 = monitor.evaluate(CLEAN_TRANSCRIPT)
+    assert v2.verdict == "clean"
+
+    # Third call should hit rate limit and fail closed
+    v3 = monitor.evaluate(CLEAN_TRANSCRIPT)
+    assert v3.verdict == "suspicious"
+    assert "rate limit" in v3.reason.lower()
+    # LLM should only have been called twice
+    assert mock_client.messages.create.call_count == 2
+
+
+def test_monitor_api_error_fails_closed():
+    """API errors should return suspicious verdict (fail-closed)."""
+    mock_client = MagicMock()
+    mock_client.messages.create.side_effect = ConnectionError("network failure")
+
+    monitor = LLMMonitor(model="haiku", client=mock_client)
+    verdict = monitor.evaluate(CLEAN_TRANSCRIPT)
+
+    assert verdict.verdict == "suspicious"
+    assert "api error" in verdict.reason.lower() or "ConnectionError" in verdict.reason
+
+
+def test_confidence_clamped_to_valid_range():
+    """Confidence values outside 0.0-1.0 should be clamped."""
+    mock_client = MagicMock()
+    mock_content = MagicMock()
+    mock_content.text = json.dumps({"verdict": "clean", "confidence": 5.0, "reason": "Fine"})
+    mock_client.messages.create.return_value = MagicMock(content=[mock_content])
+
+    monitor = LLMMonitor(model="haiku", client=mock_client)
+    verdict = monitor.evaluate(CLEAN_TRANSCRIPT)
+
+    assert verdict.confidence <= 1.0
+    assert verdict.confidence >= 0.0
+
+
 def test_monitor_model_mapping():
     """Model aliases should map to correct model IDs."""
     from monitor.llm_monitor import MODEL_MAP
@@ -325,6 +372,5 @@ def test_monitor_model_mapping():
     assert "haiku" in MODEL_MAP
     assert "sonnet" in MODEL_MAP
     assert "opus" in MODEL_MAP
-    # All values should be non-empty strings
     for _alias, model_id in MODEL_MAP.items():
         assert isinstance(model_id, str) and model_id
