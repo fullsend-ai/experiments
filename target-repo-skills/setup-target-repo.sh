@@ -38,14 +38,10 @@ fi
 # ── Push source files ──────────────────────────────────────────────
 step "Pushing source files"
 WORK_DIR=$(mktemp -d)
-trap "rm -rf ${WORK_DIR}" EXIT
+trap 'rm -rf "${WORK_DIR}"' EXIT
 
 git -C "${WORK_DIR}" init -b main
 cp -r "${SCRIPT_DIR}/target-repo-files/"* "${WORK_DIR}/"
-mkdir -p "${WORK_DIR}/handlers"
-if [[ -d "${SCRIPT_DIR}/target-repo-files/handlers" ]]; then
-  cp -r "${SCRIPT_DIR}/target-repo-files/handlers/"* "${WORK_DIR}/handlers/"
-fi
 
 git -C "${WORK_DIR}" add -A
 git -C "${WORK_DIR}" commit -m "Initial commit: minimal Go REST API"

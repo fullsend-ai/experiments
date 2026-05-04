@@ -21,8 +21,12 @@ info() { printf "  ${DIM}%s${RESET}\n" "$1"; }
 if [[ ! -f "${STATE_FILE}" ]]; then
   fail "No .experiment-state found. Run ./setup-target-repo.sh first."
 fi
-# shellcheck source=/dev/null
-source "${STATE_FILE}"
+while IFS='=' read -r key value; do
+  case "$key" in
+    TARGET_ORG|TARGET_REPO|FULL_REPO|ISSUE_NUMBER|ISSUE_URL)
+      declare "$key=$value" ;;
+  esac
+done < "${STATE_FILE}"
 info "Repo: ${FULL_REPO}"
 info "Issue: #${ISSUE_NUMBER}"
 
@@ -54,22 +58,23 @@ for var in ANTHROPIC_VERTEX_PROJECT_ID CLOUD_ML_REGION GOOGLE_APPLICATION_CREDEN
 done
 
 # ── Sanitize function ─────────────────────────────────────────────
-# Redact secrets and sensitive values from result files so they can
-# be committed safely. Patterns: tokens, GCP project IDs, credential
-# file paths, service account emails, IP addresses.
 sanitize_file() {
   local file="$1"
   [[ -f "${file}" ]] || return 0
 
-  sed -i \
+  sed \
     -e "s|${GH_TOKEN:-__no_token__}|***|g" \
     -e "s|${ANTHROPIC_VERTEX_PROJECT_ID}|***|g" \
     -e "s|${GOOGLE_APPLICATION_CREDENTIALS}|***|g" \
     -e 's|ghp_[A-Za-z0-9]\{36\}|***|g' \
     -e 's|ghu_[A-Za-z0-9]\{36\}|***|g' \
+    -e 's|ghs_[A-Za-z0-9]\{36\}|***|g' \
+    -e 's|gho_[A-Za-z0-9]\{36\}|***|g' \
+    -e 's|github_pat_[A-Za-z0-9_]\{82\}|***|g' \
     -e 's|ya29\.[A-Za-z0-9_-]\{50,\}|***|g' \
+    -e 's|[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}|***.***.***.***|g' \
     -e 's|[a-zA-Z0-9._%+-]\+@[a-zA-Z0-9.-]\+\.iam\.gserviceaccount\.com|***@***.iam.gserviceaccount.com|g' \
-    "${file}"
+    "${file}" > "${file}.tmp" && mv "${file}.tmp" "${file}"
 }
 
 sanitize_results() {
@@ -93,21 +98,25 @@ run_triage() {
 
   # Clone target repo to a temp dir.
   repo_dir=$(mktemp -d)
+  local run_output_dir
+  run_output_dir=$(mktemp -d)
+  trap 'rm -rf "${repo_dir}" "${run_output_dir}"' RETURN
+
   git clone "git@github.com:${FULL_REPO}.git" "${repo_dir}/repo"
   info "Cloned to ${repo_dir}/repo"
 
-  # Run fullsend triage.
-  local run_output_dir
-  run_output_dir=$(mktemp -d)
-
-  export GITHUB_ISSUE_URL="${ISSUE_URL}"
-  export GH_TOKEN="${GH_TOKEN:-$(gh auth token)}"
-
+  local rc=0
+  GITHUB_ISSUE_URL="${ISSUE_URL}" \
+  GH_TOKEN="${GH_TOKEN:-$(gh auth token)}" \
   fullsend run triage \
     --fullsend-dir "${FULLSEND_DIR}" \
     --target-repo "${repo_dir}/repo" \
     --output-dir "${run_output_dir}" \
-    || true
+    || rc=$?
+
+  if [[ $rc -ne 0 ]]; then
+    info "Warning: fullsend exited with rc=${rc} — collecting partial results"
+  fi
 
   # Collect results.
   mkdir -p "${output_dir}"
@@ -132,11 +141,7 @@ run_triage() {
     info "No transcript found"
   fi
 
-  # Sanitize results to redact secrets before they can be committed.
   sanitize_results "${output_dir}"
-
-  # Clean up temp dirs.
-  rm -rf "${repo_dir}" "${run_output_dir}"
 
   pass "${label} run complete"
 }
