@@ -15,7 +15,9 @@ def config():
 
 
 def _make_task(steps):
-    return TektonTask(name="test-task", file_path=Path("task/test/0.1/test.yaml"), steps=steps)
+    return TektonTask(
+        name="test-task", file_path=Path("task/test/0.1/test.yaml"), steps=steps
+    )
 
 
 def test_no_drift_when_using_task_runner(config):

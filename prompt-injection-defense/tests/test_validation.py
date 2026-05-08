@@ -70,5 +70,6 @@ def test_semantic_injection_detected():
     )
     assert result.detected is True
     assert (
-        "injection_goal" in result.explanation.lower() or "semantic" in result.explanation.lower()
+        "injection_goal" in result.explanation.lower()
+        or "semantic" in result.explanation.lower()
     )

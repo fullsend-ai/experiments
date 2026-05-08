@@ -22,7 +22,9 @@ def test_clean_commit_not_detected(mock_get_client):
 def test_prompt_includes_data_markers(mock_get_client):
     mock_client = MagicMock()
     mock_response = MagicMock()
-    mock_response.content = [MagicMock(text='{"assessment": "clean", "reasoning": "ok"}')]
+    mock_response.content = [
+        MagicMock(text='{"assessment": "clean", "reasoning": "ok"}')
+    ]
     mock_client.messages.create.return_value = mock_response
     mock_get_client.return_value = mock_client
 

@@ -39,10 +39,10 @@ from monitor.interface import MonitorVerdict
 
 # Pre-serialized error responses — guaranteed to be written even if json.dump
 # fails (e.g. stdout encoding issues). Avoids exit(1) with empty stdout.
-_ERR_MALFORMED = '{"decision":"block","reason":"ALLOWLIST_HOOK_ERROR: malformed JSON input"}'
-_ERR_UNEXPECTED = (
-    '{"decision":"block","reason":"ALLOWLIST_HOOK_ERROR: unexpected error reading input"}'
+_ERR_MALFORMED = (
+    '{"decision":"block","reason":"ALLOWLIST_HOOK_ERROR: malformed JSON input"}'
 )
+_ERR_UNEXPECTED = '{"decision":"block","reason":"ALLOWLIST_HOOK_ERROR: unexpected error reading input"}'
 
 # Default triage agent allowlist — only GitHub issue operations
 DEFAULT_TRIAGE_ALLOWLIST: frozenset[str] = frozenset(
@@ -56,7 +56,9 @@ DEFAULT_TRIAGE_ALLOWLIST: frozenset[str] = frozenset(
 )
 
 
-def check_tool(allowed_tools: frozenset[str] | set[str] | None, tool_name: str) -> MonitorVerdict:
+def check_tool(
+    allowed_tools: frozenset[str] | set[str] | None, tool_name: str
+) -> MonitorVerdict:
     """Check whether a tool call is in the allowlist.
 
     Python API for testing without subprocess invocation.
@@ -121,7 +123,10 @@ def main() -> None:
 
     tool_name = hook_input.get("tool_name", "")
     if not tool_name:
-        json.dump({"decision": "block", "reason": "Missing tool_name in hook input"}, sys.stdout)
+        json.dump(
+            {"decision": "block", "reason": "Missing tool_name in hook input"},
+            sys.stdout,
+        )
         sys.exit(1)
 
     verdict = check_tool(allowed_tools, tool_name)

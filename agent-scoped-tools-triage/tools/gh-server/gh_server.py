@@ -169,7 +169,9 @@ def make_http_handler(token: str, allowed_repo: str) -> type:
                     if re.search(pattern, comment_body, re.IGNORECASE):
                         self._send_json(
                             400,
-                            {"error": "Comment appears to contain credentials. Refusing."},
+                            {
+                                "error": "Comment appears to contain credentials. Refusing."
+                            },
                         )
                         return
 
@@ -213,7 +215,15 @@ def make_http_handler(token: str, allowed_repo: str) -> type:
                     labels = ",".join(labels)
 
                 result = gh(
-                    ["issue", "edit", issue_number, "--repo", allowed_repo, "--add-label", labels],
+                    [
+                        "issue",
+                        "edit",
+                        issue_number,
+                        "--repo",
+                        allowed_repo,
+                        "--add-label",
+                        labels,
+                    ],
                     token,
                 )
                 if result.returncode != 0:
@@ -222,7 +232,15 @@ def make_http_handler(token: str, allowed_repo: str) -> type:
 
                 # Return updated labels
                 view_result = gh(
-                    ["issue", "view", issue_number, "--repo", allowed_repo, "--json", "labels"],
+                    [
+                        "issue",
+                        "view",
+                        issue_number,
+                        "--repo",
+                        allowed_repo,
+                        "--json",
+                        "labels",
+                    ],
                     token,
                 )
                 if view_result.returncode != 0:
@@ -265,7 +283,9 @@ def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description="REST server for GitHub operations")
-    parser.add_argument("--port", type=int, default=8081, help="HTTP port (default: 8081)")
+    parser.add_argument(
+        "--port", type=int, default=8081, help="HTTP port (default: 8081)"
+    )
     args = parser.parse_args()
 
     token = os.environ.get("GH_TOKEN")

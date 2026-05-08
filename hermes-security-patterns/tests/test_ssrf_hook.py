@@ -74,7 +74,9 @@ class TestBashUrlExtraction:
         assert code != 0
 
     def test_allows_curl_to_public(self):
-        code, _ = run_hook("Bash", {"command": "curl -sL https://api.github.com/repos/foo/bar"})
+        code, _ = run_hook(
+            "Bash", {"command": "curl -sL https://api.github.com/repos/foo/bar"}
+        )
         assert code == 0
 
     def test_allows_commands_without_urls(self):

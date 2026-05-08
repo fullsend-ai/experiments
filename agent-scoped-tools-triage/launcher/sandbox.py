@@ -90,7 +90,9 @@ def get_ssh_config(sandbox_name: str) -> str:
     return result.stdout
 
 
-def sandbox_scp(ssh_config_path: str, sandbox_name: str, local: str, remote: str) -> None:
+def sandbox_scp(
+    ssh_config_path: str, sandbox_name: str, local: str, remote: str
+) -> None:
     """Copy a file or directory into a sandbox."""
     subprocess.run(
         [  # nosec B607

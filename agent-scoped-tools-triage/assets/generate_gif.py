@@ -31,15 +31,27 @@ COL_ARROW_DATA = (74, 144, 217)
 # Try to load a nice font, fall back to default
 try:
     FONT = ImageFont.truetype("/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf", 13)
-    FONT_BOLD = ImageFont.truetype("/usr/share/fonts/dejavu-sans-fonts/DejaVuSans-Bold.ttf", 13)
-    FONT_SMALL = ImageFont.truetype("/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf", 11)
-    FONT_TITLE = ImageFont.truetype("/usr/share/fonts/dejavu-sans-fonts/DejaVuSans-Bold.ttf", 15)
+    FONT_BOLD = ImageFont.truetype(
+        "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans-Bold.ttf", 13
+    )
+    FONT_SMALL = ImageFont.truetype(
+        "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf", 11
+    )
+    FONT_TITLE = ImageFont.truetype(
+        "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans-Bold.ttf", 15
+    )
 except OSError:
     try:
         FONT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 13)
-        FONT_BOLD = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 13)
-        FONT_SMALL = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 11)
-        FONT_TITLE = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
+        FONT_BOLD = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 13
+        )
+        FONT_SMALL = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 11
+        )
+        FONT_TITLE = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15
+        )
     except OSError:
         FONT = ImageFont.load_default()
         FONT_BOLD = FONT
@@ -103,7 +115,14 @@ LABELS = {
 ARROWS = {
     "launch_gh": ("launcher", "gh_server", "starts", "solid", None, None),
     "launch_runner": ("launcher", "agent_runner", "starts", "solid", None, None),
-    "launch_triage": ("launcher", "agent_runner", "POST /run-agent\n(triage)", "solid", None, None),
+    "launch_triage": (
+        "launcher",
+        "agent_runner",
+        "POST /run-agent\n(triage)",
+        "solid",
+        None,
+        None,
+    ),
     "runner_gateway": (
         "agent_runner",
         "gateway",
@@ -113,21 +132,56 @@ ARROWS = {
         None,
     ),
     "gh_api": ("gh_server", "github_api", "scoped API calls", "solid", None, None),
-    "runner_triage": ("agent_runner", "triage", "creates + runs", "solid", "bottom", "right"),
-    "triage_gh": ("triage", "gh_server", "GET+POST :8081\nread-write", "dashed", "top", "bottom"),
-    "triage_runner": ("triage", "agent_runner", "POST /run-agent", "solid", "top", "left"),
+    "runner_triage": (
+        "agent_runner",
+        "triage",
+        "creates + runs",
+        "solid",
+        "bottom",
+        "right",
+    ),
+    "triage_gh": (
+        "triage",
+        "gh_server",
+        "GET+POST :8081\nread-write",
+        "dashed",
+        "top",
+        "bottom",
+    ),
+    "triage_runner": (
+        "triage",
+        "agent_runner",
+        "POST /run-agent",
+        "solid",
+        "top",
+        "left",
+    ),
     "runner_dup": ("agent_runner", "dup", "creates + runs", "solid", None, None),
     "dup_gh": ("dup", "gh_server", "GET :8081\nread-only", "dashed", None, None),
     "runner_comp": ("agent_runner", "comp", "creates + runs", "solid", None, None),
     "comp_gh": ("comp", "gh_server", "GET :8081\nread-only", "dashed", None, None),
     "comp_web": ("comp", "ext_urls", "HTTPS GET", "solid", None, None),
-    "runner_repro": ("agent_runner", "repro", "creates + runs\n(bugs only)", "solid", None, None),
+    "runner_repro": (
+        "agent_runner",
+        "repro",
+        "creates + runs\n(bugs only)",
+        "solid",
+        None,
+        None,
+    ),
     "repro_gh": ("repro", "gh_server", "GET :8081\nread-only", "dashed", None, None),
     "repro_fs": ("repro", "local_fs", "grep, find, cat", "solid", None, None),
     "dup_return": ("dup", "agent_runner", "JSON findings", "data", None, None),
     "comp_return": ("comp", "agent_runner", "JSON findings", "data", None, None),
     "repro_return": ("repro", "agent_runner", "JSON findings", "data", None, None),
-    "runner_return": ("agent_runner", "triage", "JSON findings", "data", "bottom", "top"),
+    "runner_return": (
+        "agent_runner",
+        "triage",
+        "JSON findings",
+        "data",
+        "bottom",
+        "top",
+    ),
 }
 
 
@@ -370,7 +424,9 @@ def draw_arrow(
             lx = mx - tw // 2
             ly = my - len(lines) * (th + 2) // 2 + i * (th + 2) - 2
             # White background for readability
-            draw.rectangle([lx - 2, ly - 1, lx + tw + 2, ly + th + 1], fill=(255, 255, 255, 220))
+            draw.rectangle(
+                [lx - 2, ly - 1, lx + tw + 2, ly + th + 1], fill=(255, 255, 255, 220)
+            )
             draw.text((lx, ly), line, fill=col, font=FONT_SMALL)
 
 
@@ -450,7 +506,12 @@ def draw_frame(step_index: int) -> Image.Image:
     total = len(STEPS)
     indicator = f"Step {step_index + 1}/{total}"
     bbox = draw.textbbox((0, 0), indicator, font=FONT_SMALL)
-    draw.text((W - (bbox[2] - bbox[0]) - 20, 18), indicator, fill=(150, 150, 150), font=FONT_SMALL)
+    draw.text(
+        (W - (bbox[2] - bbox[0]) - 20, 18),
+        indicator,
+        fill=(150, 150, 150),
+        font=FONT_SMALL,
+    )
 
     # Draw sandboxes first (background)
     for sb_id in visible_sandboxes:

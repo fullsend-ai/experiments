@@ -5,7 +5,13 @@ import yaml
 
 from defenses.interface import Attack
 
-REQUIRED_FIELDS = ("name", "description", "target_defense", "commit_message", "injection_goal")
+REQUIRED_FIELDS = (
+    "name",
+    "description",
+    "target_defense",
+    "commit_message",
+    "injection_goal",
+)
 
 
 def load_attack(path: Path) -> Attack:

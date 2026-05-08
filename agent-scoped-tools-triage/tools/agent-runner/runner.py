@@ -49,7 +49,11 @@ def discover_agents(working_dir: Path) -> dict[str, str | None]:
 def _get_vertex_env() -> dict[str, str]:
     """Collect Vertex AI environment variables from the host, if present."""
     vertex_vars = {}
-    for key in ("CLAUDE_CODE_USE_VERTEX", "ANTHROPIC_VERTEX_PROJECT_ID", "CLOUD_ML_REGION"):
+    for key in (
+        "CLAUDE_CODE_USE_VERTEX",
+        "ANTHROPIC_VERTEX_PROJECT_ID",
+        "CLOUD_ML_REGION",
+    ):
         val = os.environ.get(key)
         if val:
             vertex_vars[key] = val

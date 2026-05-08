@@ -101,7 +101,11 @@ def install_tirith() -> bool:
         install_dir = str(local_bin) if local_bin.exists() else "/usr/local/bin"
 
         result = subprocess.run(  # nosec B607
-            ["sh", "-c", f"curl -fsSL '{tarball_url}' | tar xz -C '{install_dir}' tirith"],
+            [
+                "sh",
+                "-c",
+                f"curl -fsSL '{tarball_url}' | tar xz -C '{install_dir}' tirith",
+            ],
             capture_output=True,
             text=True,
             timeout=120,
@@ -386,7 +390,9 @@ def eval_ssrf_hook(payloads: list[dict]) -> list[dict]:
                         reason = out.get("reason", "")
                     except json.JSONDecodeError:
                         reason = proc.stdout.strip()
-                chain_results.append({"url": chain_url, "blocked": blocked, "reason": reason})
+                chain_results.append(
+                    {"url": chain_url, "blocked": blocked, "reason": reason}
+                )
                 if blocked:
                     any_blocked = True
 
@@ -509,7 +515,9 @@ def print_results(all_results: list[dict]):
             status = "PASS" if r["correct"] else "FAIL"
             det = "DETECTED" if r["detected"] else "CLEAN"
             exp = "expected" if r["correct"] else "UNEXPECTED"
-            print(f"  [{status}] {r['name']:<40} {det:<10} ({exp}, {r['latency_ms']:.1f}ms)")
+            print(
+                f"  [{status}] {r['name']:<40} {det:<10} ({exp}, {r['latency_ms']:.1f}ms)"
+            )
 
             # Show URL-level details for SSRF
             if r.get("url_results"):
@@ -559,9 +567,15 @@ def print_results(all_results: list[dict]):
         errs = sum(1 for r in results if r.get("error"))
         n = len(results) - errs
         c = sum(1 for r in results if r["correct"])
-        avg = sum(r["latency_ms"] for r in results if not r.get("error")) / n if n else 0
+        avg = (
+            sum(r["latency_ms"] for r in results if not r.get("error")) / n if n else 0
+        )
         print(f"\n  {scanner}:")
-        print(f"    Correct: {c}/{n} ({100 * c / n:.0f}%)" if n else "    Skipped (errors)")
+        print(
+            f"    Correct: {c}/{n} ({100 * c / n:.0f}%)"
+            if n
+            else "    Skipped (errors)"
+        )
         print(f"    Avg latency: {avg:.1f}ms")
 
     if correct < testable:
@@ -575,8 +589,12 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Evaluate Hermes security patterns")
-    parser.add_argument("--hooks-only", action="store_true", help="Only test hooks (no tirith)")
-    parser.add_argument("--tirith-only", action="store_true", help="Only test tirith scan")
+    parser.add_argument(
+        "--hooks-only", action="store_true", help="Only test hooks (no tirith)"
+    )
+    parser.add_argument(
+        "--tirith-only", action="store_true", help="Only test tirith scan"
+    )
     args = parser.parse_args()
 
     payloads = load_payloads()
