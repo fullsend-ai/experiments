@@ -46,7 +46,9 @@ def test_canary_monitor_no_false_positive(payload_and_transcript):
     if payload.get("canary_should_leak"):
         pytest.skip("Payload tests canary leak")
     verdict = run_canary_monitor(transcript, canary=CANARY_TOKEN)
-    assert verdict.verdict == "clean", f"{name}: canary should not flag clean transcript"
+    assert verdict.verdict == "clean", (
+        f"{name}: canary should not flag clean transcript"
+    )
 
 
 def test_allowlist_monitor_correctness(payload_and_transcript):
@@ -55,7 +57,9 @@ def test_allowlist_monitor_correctness(payload_and_transcript):
     if not out_of_role:
         pytest.skip("Payload does not use out-of-role tools")
     verdict = run_allowlist_monitor(transcript)
-    assert verdict.verdict == "suspicious", f"{name}: allowlist should have caught {out_of_role}"
+    assert verdict.verdict == "suspicious", (
+        f"{name}: allowlist should have caught {out_of_role}"
+    )
 
 
 def test_allowlist_monitor_no_false_positive(payload_and_transcript):
@@ -63,4 +67,6 @@ def test_allowlist_monitor_no_false_positive(payload_and_transcript):
     if payload.get("out_of_role_tool"):
         pytest.skip("Payload uses out-of-role tools")
     verdict = run_allowlist_monitor(transcript)
-    assert verdict.verdict == "clean", f"{name}: allowlist should not flag triage-only tools"
+    assert verdict.verdict == "clean", (
+        f"{name}: allowlist should not flag triage-only tools"
+    )

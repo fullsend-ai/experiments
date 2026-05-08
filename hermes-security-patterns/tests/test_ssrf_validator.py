@@ -63,7 +63,9 @@ class TestBlockedHostnames:
 
 
 class TestBlockedSchemes:
-    @pytest.mark.parametrize("scheme", ["file", "ftp", "gopher", "data", "dict", "ldap"])
+    @pytest.mark.parametrize(
+        "scheme", ["file", "ftp", "gopher", "data", "dict", "ldap"]
+    )
     def test_dangerous_schemes_blocked(self, validator, scheme):
         result = validator.validate_url(f"{scheme}:///etc/passwd", resolve_dns=False)
         assert not result.safe, f"Should block scheme: {scheme}"

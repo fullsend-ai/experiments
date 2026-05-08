@@ -92,7 +92,9 @@ def make_http_handler(runner: AgentRunner) -> type:
 def main() -> None:
     import argparse
 
-    parser = argparse.ArgumentParser(description="REST server for sandboxed agent execution")
+    parser = argparse.ArgumentParser(
+        description="REST server for sandboxed agent execution"
+    )
     parser.add_argument(
         "--port",
         type=int,
@@ -115,6 +117,11 @@ def main() -> None:
         if not val:
             print(f"Error: {name} not set", file=sys.stderr)
             sys.exit(1)
+
+    assert working_dir is not None
+    assert owner is not None
+    assert repo_name is not None
+    assert issue_number is not None
 
     runner = AgentRunner(
         working_dir=Path(working_dir),

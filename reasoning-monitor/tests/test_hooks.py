@@ -19,7 +19,9 @@ def test_canary_no_canary_configured():
 
 def test_canary_not_present():
     """Canary set but not in tool result → clean."""
-    verdict = check_canary("FULLSEND_CANARY_abc123", "normal tool output without the token")
+    verdict = check_canary(
+        "FULLSEND_CANARY_abc123", "normal tool output without the token"
+    )
     assert verdict.verdict == "clean"
     assert verdict.technique == "canary"
     assert verdict.confidence == 1.0
@@ -179,7 +181,9 @@ def test_allowlist_hook_blocks_out_of_role_tool():
     exit_code, stdout = _run_hook(
         "monitor.tool_allowlist",
         stdin=payload,
-        env={"FULLSEND_TOOL_ALLOWLIST": "mcp__github__issue_read,mcp__github__label_add"},
+        env={
+            "FULLSEND_TOOL_ALLOWLIST": "mcp__github__issue_read,mcp__github__label_add"
+        },
     )
     assert exit_code == 1
     assert "block" in stdout.lower()
@@ -228,4 +232,6 @@ def test_monitor_verdict_rejects_out_of_range_confidence():
     with pytest.raises(ValueError, match="confidence must be in"):
         MonitorVerdict(verdict="clean", confidence=1.5, reason="test", technique="test")
     with pytest.raises(ValueError, match="confidence must be in"):
-        MonitorVerdict(verdict="clean", confidence=-0.1, reason="test", technique="test")
+        MonitorVerdict(
+            verdict="clean", confidence=-0.1, reason="test", technique="test"
+        )

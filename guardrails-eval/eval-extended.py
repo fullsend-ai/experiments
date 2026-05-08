@@ -33,7 +33,9 @@ def scan_payload(scanner, text: str) -> tuple[bool, float, float]:
     return not is_valid, risk_score, elapsed_ms
 
 
-def run_eval(payloads: list[dict], label: str, scanner_full, scanner_sentence, invisible_scanner):
+def run_eval(
+    payloads: list[dict], label: str, scanner_full, scanner_sentence, invisible_scanner
+):
     print(f"\n{'=' * 100}")
     print(f"  {label}")
     print(f"{'=' * 100}")
@@ -55,9 +57,7 @@ def run_eval(payloads: list[dict], label: str, scanner_full, scanner_sentence, i
             _, inv_valid, inv_score = invisible_scanner.scan(text)
             inv_elapsed = (time.perf_counter() - inv_start) * 1000
             inv_det = not inv_valid
-            inv_detail = (
-                f"{'DETECTED' if inv_det else 'CLEAN'} ({inv_score:.2f}, {inv_elapsed:.0f}ms)"
-            )
+            inv_detail = f"{'DETECTED' if inv_det else 'CLEAN'} ({inv_score:.2f}, {inv_elapsed:.0f}ms)"
 
         is_attack = name != "benign"
         results.append(
@@ -130,7 +130,9 @@ def print_summary_table(all_results: list[dict]):
         ds = sum(data["sentence"])
         pct_f = 100 * df / n
         pct_s = 100 * ds / n
-        print(f"  {cat:<25} full: {df}/{n} ({pct_f:.0f}%)   sentence: {ds}/{n} ({pct_s:.0f}%)")
+        print(
+            f"  {cat:<25} full: {df}/{n} ({pct_f:.0f}%)   sentence: {ds}/{n} ({pct_s:.0f}%)"
+        )
 
     # Overall
     attacks = [r for r in all_results if r["is_attack"]]
@@ -148,7 +150,9 @@ def print_summary_table(all_results: list[dict]):
     fp_full = sum(r["det_full"] for r in benign)
     fp_sent = sum(r["det_sentence"] for r in benign)
     nb = len(benign)
-    print(f"\n  False positives (benign):  full: {fp_full}/{nb}   sentence: {fp_sent}/{nb}")
+    print(
+        f"\n  False positives (benign):  full: {fp_full}/{nb}   sentence: {fp_sent}/{nb}"
+    )
 
 
 def main():
@@ -161,8 +165,12 @@ def main():
 
     # Initialize scanners
     print("Initializing scanners...")
-    scanner_full = PromptInjection(threshold=0.92, match_type=MatchType.FULL, use_onnx=True)
-    scanner_sentence = PromptInjection(threshold=0.92, match_type=MatchType.SENTENCE, use_onnx=True)
+    scanner_full = PromptInjection(
+        threshold=0.92, match_type=MatchType.FULL, use_onnx=True
+    )
+    scanner_sentence = PromptInjection(
+        threshold=0.92, match_type=MatchType.SENTENCE, use_onnx=True
+    )
     invisible_scanner = InvisibleText()
 
     # Load payloads
@@ -172,7 +180,11 @@ def main():
 
     # Run evals
     results_orig = run_eval(
-        original, "ORIGINAL PAYLOADS (PR #117)", scanner_full, scanner_sentence, invisible_scanner
+        original,
+        "ORIGINAL PAYLOADS (PR #117)",
+        scanner_full,
+        scanner_sentence,
+        invisible_scanner,
     )
     results_ext = run_eval(
         extended,

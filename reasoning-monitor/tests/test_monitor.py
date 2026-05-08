@@ -16,8 +16,16 @@ CLEAN_TRANSCRIPT = [
         "content": "I'll analyze this issue.",
         "reasoning": "The issue is about a login bug. I should label it as bug and auth.",
     },
-    {"role": "tool_use", "tool": "mcp__github__issue_read", "input": {"issue_number": 42}},
-    {"role": "tool_result", "tool": "mcp__github__issue_read", "content": "Issue #42: Login bug."},
+    {
+        "role": "tool_use",
+        "tool": "mcp__github__issue_read",
+        "input": {"issue_number": 42},
+    },
+    {
+        "role": "tool_result",
+        "tool": "mcp__github__issue_read",
+        "content": "Issue #42: Login bug.",
+    },
     {
         "role": "assistant",
         "content": "Triage complete.",
@@ -57,7 +65,9 @@ def _make_mock_response(verdict: str, confidence: float, reason: str) -> MagicMo
     """Create a mock Anthropic API response."""
     mock_response = MagicMock()
     mock_content = MagicMock()
-    mock_content.text = json.dumps({"verdict": verdict, "confidence": confidence, "reason": reason})
+    mock_content.text = json.dumps(
+        {"verdict": verdict, "confidence": confidence, "reason": reason}
+    )
     mock_response.content = [mock_content]
     return mock_response
 
@@ -223,9 +233,7 @@ def test_monitor_handles_markdown_wrapped_json():
     """LLMMonitor should handle JSON wrapped in markdown code fences."""
     mock_client = MagicMock()
     mock_content = MagicMock()
-    mock_content.text = (
-        '```json\n{"verdict": "suspicious", "confidence": 0.9, "reason": "Attack detected"}\n```'
-    )
+    mock_content.text = '```json\n{"verdict": "suspicious", "confidence": 0.9, "reason": "Attack detected"}\n```'
     mock_client.messages.create.return_value = MagicMock(content=[mock_content])
 
     monitor = LLMMonitor(model="haiku", client=mock_client)
@@ -241,7 +249,11 @@ def test_strip_user_input_redacts_user_content_tool_results():
 
     transcript = [
         {"role": "user", "content": "Triage issue 42"},
-        {"role": "tool_use", "tool": "mcp__github__issue_read", "input": {"issue_number": 42}},
+        {
+            "role": "tool_use",
+            "tool": "mcp__github__issue_read",
+            "input": {"issue_number": 42},
+        },
         {
             "role": "tool_result",
             "tool": "mcp__github__issue_read",
@@ -278,8 +290,16 @@ def test_strip_user_input_preserves_non_user_content_tool_results():
 
     transcript = [
         {"role": "user", "content": "Triage issue 42"},
-        {"role": "tool_use", "tool": "mcp__github__label_add", "input": {"label": "bug"}},
-        {"role": "tool_result", "tool": "mcp__github__label_add", "content": "Label added"},
+        {
+            "role": "tool_use",
+            "tool": "mcp__github__label_add",
+            "input": {"label": "bug"},
+        },
+        {
+            "role": "tool_result",
+            "tool": "mcp__github__label_add",
+            "content": "Label added",
+        },
     ]
     stripped = strip_user_input(transcript)
 
@@ -291,7 +311,9 @@ def test_monitor_unknown_verdict_treated_as_suspicious():
     """Verdict values outside {clean, suspicious} must be treated as suspicious."""
     mock_client = MagicMock()
     mock_content = MagicMock()
-    mock_content.text = '{"verdict": "benign", "confidence": 0.9, "reason": "Looks fine"}'
+    mock_content.text = (
+        '{"verdict": "benign", "confidence": 0.9, "reason": "Looks fine"}'
+    )
     mock_client.messages.create.return_value = MagicMock(content=[mock_content])
 
     monitor = LLMMonitor(model="haiku", client=mock_client)
@@ -312,7 +334,11 @@ def test_monitor_transcript_size_capped():
     # Build a transcript whose formatted text exceeds the limit.
     huge_transcript = [
         {"role": "user", "content": "Triage issue"},
-        {"role": "assistant", "content": "x" * (MAX_TRANSCRIPT_CHARS + 5000), "reasoning": ""},
+        {
+            "role": "assistant",
+            "content": "x" * (MAX_TRANSCRIPT_CHARS + 5000),
+            "reasoning": "",
+        },
     ]
 
     monitor = LLMMonitor(model="haiku", client=mock_client)
@@ -330,7 +356,9 @@ def test_rate_limiting_returns_suspicious_on_exceeded():
     mock_client = MagicMock()
     mock_client.messages.create.return_value = _make_mock_response("clean", 0.8, "OK")
 
-    monitor = LLMMonitor(model="haiku", client=mock_client, max_calls=2, window_sec=3600)
+    monitor = LLMMonitor(
+        model="haiku", client=mock_client, max_calls=2, window_sec=3600
+    )
 
     # First two calls should succeed
     v1 = monitor.evaluate(CLEAN_TRANSCRIPT)
@@ -362,7 +390,9 @@ def test_confidence_clamped_to_valid_range():
     """Confidence values outside 0.0-1.0 should be clamped."""
     mock_client = MagicMock()
     mock_content = MagicMock()
-    mock_content.text = json.dumps({"verdict": "clean", "confidence": 5.0, "reason": "Fine"})
+    mock_content.text = json.dumps(
+        {"verdict": "clean", "confidence": 5.0, "reason": "Fine"}
+    )
     mock_client.messages.create.return_value = MagicMock(content=[mock_content])
 
     monitor = LLMMonitor(model="haiku", client=mock_client)
@@ -386,7 +416,7 @@ def test_monitor_empty_response_content_fails_closed():
 
 def test_format_transcript_redacts_user_content_tool_inputs():
     """Tool inputs for user-content tools should be redacted in formatted transcript."""
-    from monitor.llm_monitor import USER_CONTENT_TOOLS, format_transcript
+    from monitor.llm_monitor import format_transcript
 
     transcript = [
         {
@@ -412,7 +442,7 @@ def test_monitor_rejects_invalid_model():
     import pytest
 
     with pytest.raises(ValueError, match="Unknown model alias"):
-        LLMMonitor(model="gpt-4", client=MagicMock())  # type: ignore[arg-type]
+        LLMMonitor(model="gpt-4", client=MagicMock())  # type: ignore[arg-type]  # ty: ignore[invalid-argument-type]
 
 
 def test_monitor_rejects_zero_window_sec():

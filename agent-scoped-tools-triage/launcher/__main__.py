@@ -13,16 +13,22 @@ def main() -> None:
     # Token source (mutually exclusive)
     token_group = parser.add_mutually_exclusive_group()
     token_group.add_argument("--token", help="GitHub token (for testing)")
-    token_group.add_argument("--pem", help="Path to GitHub App PEM key (for production)")
+    token_group.add_argument(
+        "--pem", help="Path to GitHub App PEM key (for production)"
+    )
 
     # GitHub App auth options (only needed with --pem)
     parser.add_argument("--client-id", help="GitHub App Client ID")
-    parser.add_argument("--installation-id", type=int, help="GitHub App Installation ID")
+    parser.add_argument(
+        "--installation-id", type=int, help="GitHub App Installation ID"
+    )
     parser.add_argument("--repo-id", type=int, help="Repository ID (for scoped token)")
 
     # Required
     parser.add_argument("--repo", required=True, help="Repository in org/repo format")
-    parser.add_argument("--issue", required=True, type=int, help="Issue number to triage")
+    parser.add_argument(
+        "--issue", required=True, type=int, help="Issue number to triage"
+    )
 
     args = parser.parse_args()
 

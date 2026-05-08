@@ -135,7 +135,9 @@ class SSRFValidator:
         # DNS resolution check (fail-closed)
         if resolve_dns:
             try:
-                addrs = socket.getaddrinfo(hostname, parsed.port or 443, proto=socket.IPPROTO_TCP)
+                addrs = socket.getaddrinfo(
+                    hostname, parsed.port or 443, proto=socket.IPPROTO_TCP
+                )
             except socket.gaierror:
                 return SSRFResult(
                     safe=False,
@@ -152,7 +154,9 @@ class SSRFValidator:
                     return ip_result
 
             resolved = str(addrs[0][4][0]) if addrs else None
-            return SSRFResult(safe=True, reason="URL passed all checks", resolved_ip=resolved)
+            return SSRFResult(
+                safe=True, reason="URL passed all checks", resolved_ip=resolved
+            )
 
         return SSRFResult(safe=True, reason="URL passed all checks (DNS not resolved)")
 

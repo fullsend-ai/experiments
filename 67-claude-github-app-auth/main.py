@@ -38,7 +38,10 @@ response = requests.get(
 )
 
 if response.status_code != 200:
-    print(f"Error fetching installations: {response.status_code} {response.text}", file=sys.stderr)
+    print(
+        f"Error fetching installations: {response.status_code} {response.text}",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 installations = response.json()
@@ -53,7 +56,9 @@ for inst in installations:
     installation_id = inst["id"]
     account = inst.get("account", {})
     print(f"Installation ID: {installation_id}")
-    print(f"  Account:     {account.get('login', 'N/A')} ({account.get('type', 'N/A')})")
+    print(
+        f"  Account:     {account.get('login', 'N/A')} ({account.get('type', 'N/A')})"
+    )
     print(f"  Target type: {inst.get('target_type', 'N/A')}")
 
     # Create an installation access token
@@ -69,7 +74,9 @@ for inst in installations:
 
     token_data = token_resp.json()
     install_token = token_data["token"]
-    print(f"  Token:       {install_token[:12]}... (expires {token_data.get('expires_at', 'N/A')})")
+    print(
+        f"  Token:       {install_token[:12]}... (expires {token_data.get('expires_at', 'N/A')})"
+    )
 
     # List repositories accessible to this installation token
     repos_resp = requests.get(

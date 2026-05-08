@@ -54,7 +54,9 @@ _PREFIX_PATTERNS: list[tuple[str, re.Pattern]] = [
     ("aws_access_key", re.compile(r"AKIA[A-Z0-9]{16}")),
     (
         "aws_secret_key",
-        re.compile(r"(?:aws_secret_access_key|AWS_SECRET_ACCESS_KEY)\s*[=:]\s*[A-Za-z0-9/+=]{40}"),
+        re.compile(
+            r"(?:aws_secret_access_key|AWS_SECRET_ACCESS_KEY)\s*[=:]\s*[A-Za-z0-9/+=]{40}"
+        ),
     ),
     # Stripe
     ("stripe_key", re.compile(r"(?:sk|pk|rk)_(?:live|test)_[A-Za-z0-9]{10,}")),

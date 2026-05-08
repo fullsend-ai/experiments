@@ -167,7 +167,12 @@ def test_yara_direct(payloads: list[dict]) -> list[dict]:
     except Exception as e:
         print(f"  Failed to compile YARA rules: {e}")
         return [
-            {"name": p["name"], "detected": False, "detail": "compile error", "latency_ms": 0}
+            {
+                "name": p["name"],
+                "detected": False,
+                "detail": "compile error",
+                "latency_ms": 0,
+            }
             for p in payloads
         ]
 
@@ -256,8 +261,12 @@ def main():
     print("\nDetection rates (attacks only):")
     print(f"  NeMo YARA (sqli/xss/code/template): {dr(results_yara)}/{n}")
     print(f"  Custom YARA (prompt injection patterns): {dr(results_custom_yara)}/{n}")
-    print("\nNote: NeMo's jailbreak heuristics (GPT-2 perplexity) require PyTorch (~2GB)")
-    print("and are designed for GCG-style adversarial suffixes, not social engineering.")
+    print(
+        "\nNote: NeMo's jailbreak heuristics (GPT-2 perplexity) require PyTorch (~2GB)"
+    )
+    print(
+        "and are designed for GCG-style adversarial suffixes, not social engineering."
+    )
     print("They were not tested in this evaluation.")
 
 

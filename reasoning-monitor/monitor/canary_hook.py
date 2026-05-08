@@ -40,7 +40,9 @@ from monitor.interface import MonitorVerdict
 
 # Pre-serialized error responses — guaranteed to be written even if json.dump
 # fails (e.g. stdout encoding issues). Avoids exit(1) with empty stdout.
-_ERR_MALFORMED = '{"decision":"block","reason":"CANARY_HOOK_ERROR: malformed JSON input"}'
+_ERR_MALFORMED = (
+    '{"decision":"block","reason":"CANARY_HOOK_ERROR: malformed JSON input"}'
+)
 _ERR_UNEXPECTED = (
     '{"decision":"block","reason":"CANARY_HOOK_ERROR: unexpected error reading input"}'
 )

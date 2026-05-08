@@ -130,7 +130,10 @@ def strip_user_input(transcript: list[dict]) -> list[dict]:
             # conversations, subsequent user messages may also contain attacker-
             # controlled content (e.g. follow-up injection attempts).
             stripped.append(
-                {"role": "user", "content": "[REDACTED: user input not shown to monitor]"}
+                {
+                    "role": "user",
+                    "content": "[REDACTED: user input not shown to monitor]",
+                }
             )
         elif role == "tool_result" and entry.get("tool") in USER_CONTENT_TOOLS:
             # Redact tool results that contain user-controlled content. Keep the
@@ -197,18 +200,22 @@ class LLMMonitor(Monitor):
         window_sec: int | None = None,
     ) -> None:
         if model not in MODEL_MAP:
-            raise ValueError(f"Unknown model alias {model!r}. Valid: {list(MODEL_MAP.keys())}")
+            raise ValueError(
+                f"Unknown model alias {model!r}. Valid: {list(MODEL_MAP.keys())}"
+            )
         self.model_alias = model
         self.model_id = MODEL_MAP[model]
         self._client = client  # Allow injection for testing
 
         # Rate limiting: sliding window of call timestamps
         self._max_calls = (
-            max_calls if max_calls is not None
+            max_calls
+            if max_calls is not None
             else int(os.environ.get("FULLSEND_MONITOR_MAX_CALLS", _DEFAULT_MAX_CALLS))
         )
         self._window_sec = (
-            window_sec if window_sec is not None
+            window_sec
+            if window_sec is not None
             else int(os.environ.get("FULLSEND_MONITOR_WINDOW_SEC", _DEFAULT_WINDOW_SEC))
         )
         if self._max_calls < 1:
@@ -303,7 +310,13 @@ class LLMMonitor(Monitor):
                 verdict = raw_verdict
                 confidence = max(0.0, min(1.0, float(result.get("confidence", 0.5))))
                 reason = result.get("reason", "No reason provided")
-        except (json.JSONDecodeError, KeyError, ValueError, IndexError, AttributeError) as exc:
+        except (
+            json.JSONDecodeError,
+            KeyError,
+            ValueError,
+            IndexError,
+            AttributeError,
+        ) as exc:
             # Fail closed: parse failure or malformed response → suspicious.
             verdict = "suspicious"
             confidence = 1.0

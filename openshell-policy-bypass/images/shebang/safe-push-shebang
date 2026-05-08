@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """safe-push via shebang — tests if proxy sees python3 or safe-push."""
+
 import os
 import subprocess
 import sys

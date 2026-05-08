@@ -64,7 +64,9 @@ def eval_scanner(scanner, payloads: list[dict], label: str) -> list[dict]:
             }
         )
         status = "DETECTED" if detected else "CLEAN"
-        print(f"  [{label}] {name}: {status} (score={risk_score:.4f}, {elapsed_ms:.0f}ms)")
+        print(
+            f"  [{label}] {name}: {status} (score={risk_score:.4f}, {elapsed_ms:.0f}ms)"
+        )
 
     return results
 
@@ -79,21 +81,27 @@ def main():
 
     # Scanner with default threshold (0.92)
     print("=== LLM Guard PromptInjection (threshold=0.92, match_type=FULL) ===")
-    scanner_default = PromptInjection(threshold=0.92, match_type=MatchType.FULL, use_onnx=True)
+    scanner_default = PromptInjection(
+        threshold=0.92, match_type=MatchType.FULL, use_onnx=True
+    )
     results_default = eval_scanner(scanner_default, payloads, "t=0.92")
 
     print()
 
     # Scanner with permissive threshold (0.5)
     print("=== LLM Guard PromptInjection (threshold=0.5, match_type=FULL) ===")
-    scanner_permissive = PromptInjection(threshold=0.5, match_type=MatchType.FULL, use_onnx=True)
+    scanner_permissive = PromptInjection(
+        threshold=0.5, match_type=MatchType.FULL, use_onnx=True
+    )
     results_permissive = eval_scanner(scanner_permissive, payloads, "t=0.50")
 
     print()
 
     # Scanner with sentence-level matching (splits text into sentences)
     print("=== LLM Guard PromptInjection (threshold=0.92, match_type=SENTENCE) ===")
-    scanner_sentence = PromptInjection(threshold=0.92, match_type=MatchType.SENTENCE, use_onnx=True)
+    scanner_sentence = PromptInjection(
+        threshold=0.92, match_type=MatchType.SENTENCE, use_onnx=True
+    )
     results_sentence = eval_scanner(scanner_sentence, payloads, "sentence")
 
     # Print comparison table
@@ -131,7 +139,11 @@ def main():
     n_attacks = len(attacks_only)
 
     def detection_rate(results, payloads):
-        attacks = [(r, p) for r, p in zip(results, payloads, strict=True) if p["name"] != "benign"]
+        attacks = [
+            (r, p)
+            for r, p in zip(results, payloads, strict=True)
+            if p["name"] != "benign"
+        ]
         detected = sum(1 for r, _ in attacks if r["detected"])
         return detected, len(attacks)
 
@@ -152,7 +164,9 @@ def main():
 
     # False positive check
     benign_results = [
-        r for r, p in zip(results_default, payloads, strict=True) if p["name"] == "benign"
+        r
+        for r, p in zip(results_default, payloads, strict=True)
+        if p["name"] == "benign"
     ]
     if benign_results and benign_results[0]["detected"]:
         print("\nWARNING: False positive on benign payload at threshold 0.92!")

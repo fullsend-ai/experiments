@@ -201,7 +201,9 @@ def main():
         description="Scan AI config files for credential exfiltration patterns"
     )
     parser.add_argument("paths", nargs="+", help="Files or directories to scan")
-    parser.add_argument("--json", action="store_true", dest="json_output", help="JSON output")
+    parser.add_argument(
+        "--json", action="store_true", dest="json_output", help="JSON output"
+    )
     args = parser.parse_args()
 
     all_findings: dict[str, list[dict]] = {}
@@ -254,7 +256,9 @@ def main():
                 for f in findings
                 if f["severity"] == "critical"
             )
-            print(f"\n{total} finding(s) in {len(all_findings)} file(s) ({critical} critical)")
+            print(
+                f"\n{total} finding(s) in {len(all_findings)} file(s) ({critical} critical)"
+            )
 
     if all_findings:
         sys.exit(1)

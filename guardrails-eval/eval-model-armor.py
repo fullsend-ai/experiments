@@ -114,10 +114,15 @@ def parse_result(result: dict) -> tuple[bool, str, str]:
 
 def main():
     if not GCP_PROJECT:
-        print("Error: GCP_PROJECT_ID environment variable is required.", file=sys.stderr)
+        print(
+            "Error: GCP_PROJECT_ID environment variable is required.", file=sys.stderr
+        )
         sys.exit(1)
     if not MODEL_ARMOR_TEMPLATE:
-        print("Error: MODEL_ARMOR_TEMPLATE environment variable is required.", file=sys.stderr)
+        print(
+            "Error: MODEL_ARMOR_TEMPLATE environment variable is required.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     print("Authenticating with GCP...")

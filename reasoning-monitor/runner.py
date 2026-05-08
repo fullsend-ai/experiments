@@ -15,14 +15,14 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Any
-
-logger = logging.getLogger(__name__)
+from typing import Any, Literal, cast
 
 import yaml
 from monitor.canary_hook import check_canary
 from monitor.interface import MonitorVerdict
 from monitor.tool_allowlist import DEFAULT_TRIAGE_ALLOWLIST, check_tool
+
+logger = logging.getLogger(__name__)
 
 EXPERIMENT_DIR = Path(__file__).parent
 PAYLOADS_DIR = EXPERIMENT_DIR / "payloads"
@@ -77,7 +77,9 @@ DRY_RUN_VERDICT = MonitorVerdict(
 # ---------------------------------------------------------------------------
 
 
-def run_canary_monitor(transcript: list[dict], canary: str = CANARY_TOKEN) -> MonitorVerdict:
+def run_canary_monitor(
+    transcript: list[dict], canary: str = CANARY_TOKEN
+) -> MonitorVerdict:
     """Run the canary hook against all tool results, tool inputs, and assistant output."""
     for entry in transcript:
         role = entry.get("role")
@@ -160,7 +162,9 @@ def run_llm_monitor(
     from monitor.llm_monitor import LLMMonitor
 
     if model not in _llm_monitor_cache:
-        _llm_monitor_cache[model] = LLMMonitor(model=model)  # type: ignore[arg-type]
+        _llm_monitor_cache[model] = LLMMonitor(
+            model=cast(Literal["haiku", "sonnet", "opus"], model)
+        )
     return _llm_monitor_cache[model].evaluate(transcript)
 
 
@@ -190,7 +194,9 @@ def run_all_monitors(
         elif monitor == "llm":
             verdict = run_llm_monitor(transcript, model=model, dry_run=dry_run)
         else:
-            logger.warning("Unknown monitor %r — skipping (valid: llm, canary, allowlist)", monitor)
+            logger.warning(
+                "Unknown monitor %r — skipping (valid: llm, canary, allowlist)", monitor
+            )
             continue
         elapsed_ms = int((time.monotonic() - start) * 1000)
 
@@ -285,7 +291,9 @@ def save_results(results: list[dict], output_path: Path) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Experiment 005: Reasoning Monitor Runner")
+    parser = argparse.ArgumentParser(
+        description="Experiment 005: Reasoning Monitor Runner"
+    )
     parser.add_argument(
         "--monitor",
         choices=["llm", "canary", "allowlist", "all"],
@@ -305,7 +313,9 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    monitors = ["llm", "canary", "allowlist"] if args.monitor == "all" else [args.monitor]
+    monitors = (
+        ["llm", "canary", "allowlist"] if args.monitor == "all" else [args.monitor]
+    )
 
     print(f"Loading payloads from {PAYLOADS_DIR}...")
     payloads = load_payloads()
@@ -322,7 +332,9 @@ def main() -> None:
             continue
 
         print(f"  [{name}] running {monitors}...")
-        results = run_all_monitors(payload, transcript, monitors, args.model, args.dry_run)
+        results = run_all_monitors(
+            payload, transcript, monitors, args.model, args.dry_run
+        )
         all_results.extend(results)
 
         for r in results:

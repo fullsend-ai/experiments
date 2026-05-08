@@ -38,9 +38,13 @@ def run_matrix(attacks: list[Attack]) -> dict[tuple[str, str], list[DefenseResul
             key = (attack.name, defense_name)
             cell_results = []
             for run in range(RUNS_PER_CELL):
-                print(f"  [{run + 1}/{RUNS_PER_CELL}] {attack.name} x {defense_name}...")
+                print(
+                    f"  [{run + 1}/{RUNS_PER_CELL}] {attack.name} x {defense_name}..."
+                )
                 result = defense_fn(
-                    attack.commit_message, attack.injection_goal, attack.expected_assessment
+                    attack.commit_message,
+                    attack.injection_goal,
+                    attack.expected_assessment,
                 )
                 cell_results.append(result)
             results[key] = cell_results
@@ -94,7 +98,9 @@ def main():
     project_dir = Path(__file__).parent
     attacks = load_all_attacks(project_dir / "attacks")
     print(f"Loaded {len(attacks)} attacks")
-    print(f"Running {len(attacks)} attacks x {len(DEFENSES)} defenses x {RUNS_PER_CELL} runs")
+    print(
+        f"Running {len(attacks)} attacks x {len(DEFENSES)} defenses x {RUNS_PER_CELL} runs"
+    )
     print()
 
     results = run_matrix(attacks)
