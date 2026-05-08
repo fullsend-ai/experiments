@@ -35,8 +35,7 @@ repos:
     rev: "1.9.4"
     hooks:
       - id: bandit
-        args: ["-r", "hack/", "--skip", "B101,B404,B603"]
-        pass_filenames: false
+        args: ["--skip", "B101,B404,B603"]
 
   - repo: https://github.com/zricethezav/gitleaks
     rev: v8.30.0
