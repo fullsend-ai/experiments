@@ -33,7 +33,7 @@ docker info
 ## Install OpenShell
 
 ```bash
-curl -LsSf https://raw.githubusercontent.com/NVIDIA/OpenShell/v0.0.30/install.sh | sh
+curl -LsSf https://raw.githubusercontent.com/NVIDIA/OpenShell/main/install.sh | OPENSHELL_VERSION=v0.0.36 sh
 openshell --version
 ```
 
