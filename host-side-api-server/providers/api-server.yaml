@@ -1,0 +1,4 @@
+name: api-server
+type: generic
+credentials:
+  API_TOKEN: ${API_TOKEN}
