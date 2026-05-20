@@ -1,0 +1,21 @@
+agent: agents/test-agent.md
+model: opus
+policy: policies/rendered-full-access.yaml
+
+providers:
+  - api-server
+
+skills:
+  - skills/baked-instructions-builder
+  - skills/baked-instructions-provisioner
+
+host_files:
+  - src: ${EXPERIMENT_ENV_FILE}
+    dest: /tmp/workspace/.env.d/api-servers.env
+  - src: env/gcp-vertex.env
+    dest: /tmp/workspace/.env.d/gcp-vertex.env
+    expand: true
+  - src: ${GOOGLE_APPLICATION_CREDENTIALS}
+    dest: /tmp/workspace/.gcp-credentials.json
+
+timeout_minutes: 10
