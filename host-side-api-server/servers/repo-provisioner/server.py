@@ -26,6 +26,7 @@ bearer_token: str = ""
 config: dict = {}
 sandbox_name: str = ""
 # In-memory store of provisioning operations keyed by id.
+# NOTE: grows without bound — acceptable for short-lived experiment runs
 operations: dict = {}
 operations_lock = threading.Lock()
 
@@ -149,6 +150,14 @@ def scan_repo(repo_dir: str) -> list[dict]:
 # Provisioning logic
 # ---------------------------------------------------------------------------
 
+_CREDENTIAL_RE = re.compile(r"://[^@]+@")
+
+
+def _scrub_credentials(msg: str) -> str:
+    """Remove embedded credentials (e.g. x-access-token:...) from URLs in error messages."""
+    return _CREDENTIAL_RE.sub("://***@", msg)
+
+
 def clone_repo(repo: str, ref: str, dest: str) -> None:
     """Clone a GitHub repo into dest, checking out ref."""
     github_token = config.get("github_token", "")
@@ -231,17 +240,18 @@ def provision(repo: str, ref: str, dest: str = "", sandbox: str = "") -> dict:
             return result
 
     except subprocess.CalledProcessError as exc:
+        error_msg = _scrub_credentials(exc.stderr or str(exc))
         result = {
             "id": op_id,
             "status": "failed",
             "repo": repo,
             "ref": ref,
-            "error": exc.stderr or str(exc),
+            "error": error_msg,
             "findings": [],
         }
         with operations_lock:
             operations[op_id] = result
-        log(f"Failed to provision {repo}: {exc}")
+        log(f"Failed to provision {repo}: {_scrub_credentials(str(exc))}")
         return result
     except Exception as exc:
         result = {
@@ -249,12 +259,12 @@ def provision(repo: str, ref: str, dest: str = "", sandbox: str = "") -> dict:
             "status": "failed",
             "repo": repo,
             "ref": ref,
-            "error": str(exc),
+            "error": _scrub_credentials(str(exc)),
             "findings": [],
         }
         with operations_lock:
             operations[op_id] = result
-        log(f"Failed to provision {repo}: {exc}")
+        log(f"Failed to provision {repo}: {_scrub_credentials(str(exc))}")
         return result
 
 
@@ -278,6 +288,7 @@ class RepoProvisionerHandler(BaseHTTPRequestHandler):
             self._json_response(401, {"error": "missing authorization header"})
             return False
         parts = auth.split(" ", 1)
+        # NOTE: production code should use hmac.compare_digest for timing-safe comparison
         if len(parts) != 2 or parts[0] != "Bearer" or parts[1] != bearer_token:
             self._json_response(401, {"error": "invalid token"})
             return False
@@ -293,10 +304,19 @@ class RepoProvisionerHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(payload)
 
+    _MAX_BODY_SIZE = 1 << 20  # 1 MB
+
     def _read_json_body(self) -> dict | None:
-        length = int(self.headers.get("Content-Length", 0))
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except (ValueError, TypeError):
+            self._json_response(400, {"error": "invalid Content-Length"})
+            return None
         if length == 0:
             self._json_response(400, {"error": "empty request body"})
+            return None
+        if length > self._MAX_BODY_SIZE:
+            self._json_response(413, {"error": "request body too large"})
             return None
         try:
             return json.loads(self.rfile.read(length))
@@ -572,8 +592,8 @@ class RepoProvisionerHandler(BaseHTTPRequestHandler):
 # Server lifecycle
 # ---------------------------------------------------------------------------
 
-def run_server(port: int) -> None:
-    server = HTTPServer(("", port), RepoProvisionerHandler)
+def run_server(port: int, bind_address: str = "127.0.0.1") -> None:
+    server = HTTPServer((bind_address, port), RepoProvisionerHandler)
     log(f"Starting repo provisioner server on port {port}")
 
     # Graceful shutdown on SIGTERM / SIGINT
@@ -595,6 +615,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Repo provisioner server")
     parser.add_argument("--port", type=int, default=9091, help="Port to listen on")
+    parser.add_argument("--bind-address", default="127.0.0.1", help="Address to bind to")
     parser.add_argument("--token", required=True, help="Bearer token for authentication")
     parser.add_argument("--sandbox", default="", help="OpenShell sandbox name for uploading repos")
     parser.add_argument("--config", default="", help="Path to optional config JSON file")
@@ -608,7 +629,7 @@ def main():
             config = json.load(f)
         log(f"Loaded config from {args.config}")
 
-    run_server(args.port)
+    run_server(args.port, args.bind_address)
 
 
 if __name__ == "__main__":

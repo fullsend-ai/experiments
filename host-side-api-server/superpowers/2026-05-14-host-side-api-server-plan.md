@@ -893,7 +893,7 @@ type RunningServer struct {
 }
 
 func resolveHostIP() (string, error) {
-	cmd := exec.Command("getent", "hosts", "host.docker.internal")
+	cmd := exec.Command("getent", "hosts", "host.openshell.internal")
 	out, err := cmd.Output()
 	if err == nil {
 		parts := strings.Fields(string(out))
@@ -1234,7 +1234,7 @@ network_policies:
   builder:
     name: container-builder
     endpoints:
-      - host: host.docker.internal
+      - host: host.openshell.internal
         port: 9090
         protocol: rest
         enforcement: enforce
@@ -1264,7 +1264,7 @@ network_policies:
   provisioner:
     name: repo-provisioner
     endpoints:
-      - host: host.docker.internal
+      - host: host.openshell.internal
         port: 9091
         protocol: rest
         enforcement: enforce
@@ -1314,7 +1314,7 @@ network_policies:
   builder:
     name: container-builder-restricted
     endpoints:
-      - host: host.docker.internal
+      - host: host.openshell.internal
         port: 9090
         protocol: rest
         enforcement: enforce
@@ -1338,7 +1338,7 @@ network_policies:
   provisioner:
     name: repo-provisioner-restricted
     endpoints:
-      - host: host.docker.internal
+      - host: host.openshell.internal
         port: 9091
         protocol: rest
         enforcement: enforce

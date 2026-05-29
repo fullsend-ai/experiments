@@ -63,7 +63,7 @@ cleanup() {
     echo "=== Cleaning up ==="
     [[ -n "$BUILDER_PID" ]] && kill "$BUILDER_PID" 2>/dev/null && wait "$BUILDER_PID" 2>/dev/null && echo "Stopped builder (pid $BUILDER_PID)"
     [[ -n "$PROVISIONER_PID" ]] && kill "$PROVISIONER_PID" 2>/dev/null && wait "$PROVISIONER_PID" 2>/dev/null && echo "Stopped provisioner (pid $PROVISIONER_PID)"
-    openshell provider delete api-server 2>/dev/null && echo "Deleted provider api-server"
+    openshell provider delete api-server 2>/dev/null && echo "Deleted provider api-server" || true
     rm -f "$ENV_FILE"
     rm -f policies/rendered-full-access.yaml policies/rendered-restricted.yaml
     echo "Cleanup done."
@@ -74,7 +74,12 @@ trap cleanup EXIT
 # Clean up stale state from previous runs
 # ---------------------------------------------------------------------------
 
-openshell provider delete api-server 2>/dev/null
+# Delete stale sandboxes that might hold the provider
+for sb in $(openshell sandbox list 2>/dev/null | grep "agent-${HARNESS_NAME}" | awk '{print $1}'); do
+    openshell sandbox delete "$sb" 2>/dev/null || true
+done
+sleep 1
+openshell provider delete api-server 2>/dev/null || true
 
 # ---------------------------------------------------------------------------
 # Generate token and export for provider creation
@@ -85,10 +90,32 @@ API_TOKEN="$(uuidgen)"
 
 echo "=== Host-Side API Server Experiment ==="
 echo "Harness: $HARNESS_NAME"
-echo "Token:   $API_TOKEN"
 
 # ---------------------------------------------------------------------------
-# Start API servers
+# Resolve host IP (needed before starting servers for bind address)
+# ---------------------------------------------------------------------------
+
+HOST_IP=""
+if out=$(getent hosts host.openshell.internal 2>/dev/null); then
+    HOST_IP=$(echo "$out" | awk '{print $1}')
+    echo "Host IP (via host.openshell.internal): $HOST_IP"
+fi
+
+if [[ -z "$HOST_IP" ]]; then
+    HOST_IP=$(podman network inspect podman 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin)[0]['subnets'][0]['gateway'])" 2>/dev/null)
+    if [[ -n "$HOST_IP" ]]; then
+        echo "Host IP (via podman bridge gateway): $HOST_IP"
+    fi
+fi
+
+if [[ -z "$HOST_IP" ]]; then
+    echo "ERROR: Could not resolve host IP"
+    exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Start API servers (bound to all interfaces — rootless Podman can't bind to
+# the bridge gateway IP since it lives inside the container namespace)
 # ---------------------------------------------------------------------------
 
 # Kill any leftover servers on our ports
@@ -102,11 +129,11 @@ done
 
 echo ""
 echo "Starting builder server on port 9090..."
-./bin/builder-server --port 9090 --token "$API_TOKEN" &
+./bin/builder-server --port 9090 --token "$API_TOKEN" --bind-address "0.0.0.0" &
 BUILDER_PID=$!
 
 echo "Starting provisioner server on port 9091..."
-python3 ./servers/repo-provisioner/server.py --port 9091 --token "$API_TOKEN" &
+python3 ./servers/repo-provisioner/server.py --port 9091 --token "$API_TOKEN" --bind-address "0.0.0.0" &
 PROVISIONER_PID=$!
 
 # Wait for health checks, verifying our child processes are still alive
@@ -118,7 +145,7 @@ for port in 9090 9091; do
             echo "ERROR: Server on port $port (pid ${PORT_PID[$port]}) died on startup"
             exit 1
         fi
-        if curl -sf "http://localhost:${port}/healthz" >/dev/null 2>&1; then
+        if curl -sf "http://127.0.0.1:${port}/healthz" >/dev/null 2>&1; then
             echo "  Port $port ready"
             break
         fi
@@ -129,26 +156,6 @@ for port in 9090 9091; do
         sleep 0.5
     done
 done
-
-# ---------------------------------------------------------------------------
-# Resolve host IP
-# ---------------------------------------------------------------------------
-
-HOST_IP=""
-if out=$(getent hosts host.openshell.internal 2>/dev/null); then
-    HOST_IP=$(echo "$out" | awk '{print $1}')
-    echo "Host IP (via host.openshell.internal): $HOST_IP"
-fi
-
-if [[ -z "$HOST_IP" ]]; then
-    HOST_IP=$(ip route show default | awk '/via/ {print $3}')
-    echo "Host IP (via default gateway): $HOST_IP"
-fi
-
-if [[ -z "$HOST_IP" ]]; then
-    echo "ERROR: Could not resolve host IP"
-    exit 1
-fi
 
 # ---------------------------------------------------------------------------
 # Render policies

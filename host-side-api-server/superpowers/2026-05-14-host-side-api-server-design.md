@@ -55,7 +55,7 @@ Four components:
 The agent inside the sandbox reaches host-side servers through the OpenShell
 L7 proxy at `10.200.0.1:3128`. The proxy enforces method+path restrictions
 per the sandbox's network policy. The host IP is resolved from
-`host.docker.internal` at runtime and added to the policy via `allowed_ips`
+`host.openshell.internal` at runtime and added to the policy via `allowed_ips`
 to bypass OpenShell's default RFC 1918 SSRF protection (pattern established
 in the `agent-scoped-tools-triage` experiment).
 
@@ -220,7 +220,7 @@ Write the most restrictive L7 network policy that still allows the agent to
 use both API servers. Building on patterns from the `agent-scoped-tools-triage`
 and `openshell-policy-bypass` experiments:
 
-- Allow only the specific host IP (resolved from `host.docker.internal`) with
+- Allow only the specific host IP (resolved from `host.openshell.internal`) with
   `allowed_ips: {{HOST_IP}}/32`
 - Restrict to the two server ports (9090, 9091)
 - Restrict HTTP methods and paths per endpoint

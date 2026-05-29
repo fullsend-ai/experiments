@@ -65,6 +65,7 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		// NOTE: production code should use crypto/subtle.ConstantTimeCompare
 		if parts[1] != bearerToken {
 			http.Error(w, `{"error":"invalid token"}`, http.StatusUnauthorized)
 			return
@@ -92,15 +93,24 @@ func jsonResponse(w http.ResponseWriter, resp interface{}) {
 	json.NewEncoder(w).Encode(resp)
 }
 
+func jsonError(w http.ResponseWriter, msg string, code int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(map[string]string{"error": msg})
+}
+
+const maxRequestBodySize = 1 << 20 // 1 MB
+
 func buildHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
 		return
 	}
 
+	r.Body = http.MaxBytesReader(w, r.Body, maxRequestBodySize)
 	var req BuildRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error":"invalid JSON: %s"}`, err), http.StatusBadRequest)
+		jsonError(w, fmt.Sprintf("invalid JSON: %s", err), http.StatusBadRequest)
 		return
 	}
 
@@ -214,9 +224,10 @@ func pushHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	r.Body = http.MaxBytesReader(w, r.Body, maxRequestBodySize)
 	var req PushRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error":"invalid JSON: %s"}`, err), http.StatusBadRequest)
+		jsonError(w, fmt.Sprintf("invalid JSON: %s", err), http.StatusBadRequest)
 		return
 	}
 
@@ -262,7 +273,7 @@ func imagesHandler(w http.ResponseWriter, r *http.Request) {
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error":"%s","stderr":"%s"}`, err, stderr.String()), http.StatusInternalServerError)
+		jsonError(w, fmt.Sprintf("%s: %s", err, stderr.String()), http.StatusInternalServerError)
 		return
 	}
 
@@ -488,6 +499,7 @@ func toolsHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	port := flag.Int("port", 9090, "Port to listen on")
+	bindAddress := flag.String("bind-address", "127.0.0.1", "Address to bind to")
 	token := flag.String("token", "", "Bearer token for authentication (required)")
 	sandbox := flag.String("sandbox", "", "OpenShell sandbox name for uploading build artifacts")
 	flag.Parse()
@@ -504,11 +516,13 @@ func main() {
 	mux.HandleFunc("/build", authMiddleware(buildHandler))
 	mux.HandleFunc("/push", authMiddleware(pushHandler))
 	mux.HandleFunc("/images", authMiddleware(imagesHandler))
+	// Intentionally unauthenticated — agents discover the API schema via these
+	// endpoints. Production servers should add rate limiting / DoS protection.
 	mux.HandleFunc("/openapi.json", openapiHandler)
 	mux.HandleFunc("/tools.json", toolsHandler)
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", *port),
+		Addr:    fmt.Sprintf("%s:%d", *bindAddress, *port),
 		Handler: mux,
 	}
 
