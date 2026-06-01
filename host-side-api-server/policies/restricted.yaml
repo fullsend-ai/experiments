@@ -1,0 +1,58 @@
+version: 1
+
+# Restricted policy: build-only and provision-only.
+# No /push, no /images, no discoverability endpoints.
+# Tests agent handling of 403s from the L7 proxy.
+
+filesystem_policy:
+  include_workdir: true
+  read_only: [/usr, /lib, /proc, /dev/urandom, /app, /etc, /var/log]
+  read_write: [/sandbox, /tmp, /dev/null]
+landlock:
+  compatibility: best_effort
+process:
+  run_as_user: sandbox
+  run_as_group: sandbox
+
+network_policies:
+  vertex_ai:
+    name: vertex-ai
+    endpoints:
+      - host: "*.googleapis.com"
+        port: 443
+    binaries:
+      - path: "**/claude"
+      - path: "**/node"
+  builder:
+    name: container-builder-restricted
+    endpoints:
+      - host: host.openshell.internal
+        port: 9090
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow:
+              method: POST
+              path: /build
+        allowed_ips:
+          - "{{HOST_IP}}/32"
+    binaries:
+      - path: "**/curl"
+  provisioner:
+    name: repo-provisioner-restricted
+    endpoints:
+      - host: host.openshell.internal
+        port: 9091
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow:
+              method: POST
+              path: /repo/provision
+          - allow:
+              method: GET
+              path: /repo/status/*
+        allowed_ips:
+          - "{{HOST_IP}}/32"
+    binaries:
+      - path: "**/curl"

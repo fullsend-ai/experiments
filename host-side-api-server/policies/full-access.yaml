@@ -1,0 +1,78 @@
+version: 1
+
+# Baseline policy: all API server endpoints allowed.
+# Both builder (:9090) and provisioner (:9091) reachable from sandbox.
+#
+# /healthz is omitted — the orchestrator checks health from the host
+# side before the sandbox exists. The agent doesn't need it.
+
+filesystem_policy:
+  include_workdir: true
+  read_only: [/usr, /lib, /proc, /dev/urandom, /app, /etc, /var/log]
+  read_write: [/sandbox, /tmp, /dev/null]
+landlock:
+  compatibility: best_effort
+process:
+  run_as_user: sandbox
+  run_as_group: sandbox
+
+network_policies:
+  vertex_ai:
+    name: vertex-ai
+    endpoints:
+      - host: "*.googleapis.com"
+        port: 443
+    binaries:
+      - path: "**/claude"
+      - path: "**/node"
+  builder:
+    name: container-builder
+    endpoints:
+      - host: host.openshell.internal
+        port: 9090
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow:
+              method: POST
+              path: /build
+          - allow:
+              method: POST
+              path: /push
+          - allow:
+              method: GET
+              path: /images
+          - allow:
+              method: GET
+              path: /openapi.json
+          - allow:
+              method: GET
+              path: /tools.json
+        allowed_ips:
+          - "{{HOST_IP}}/32"
+    binaries:
+      - path: "**/curl"
+  provisioner:
+    name: repo-provisioner
+    endpoints:
+      - host: host.openshell.internal
+        port: 9091
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow:
+              method: POST
+              path: /repo/provision
+          - allow:
+              method: GET
+              path: /repo/status/*
+          - allow:
+              method: GET
+              path: /openapi.json
+          - allow:
+              method: GET
+              path: /tools.json
+        allowed_ips:
+          - "{{HOST_IP}}/32"
+    binaries:
+      - path: "**/curl"
