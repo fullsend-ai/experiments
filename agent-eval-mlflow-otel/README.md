@@ -43,6 +43,8 @@ MLflow 3.x was chosen because it natively accepts OTLP traces, has a built-in Pr
 
 ## Architecture
 
+![Architecture](diagrams/architecture.png)
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    DATA CAPTURE (OTLP)                          │
