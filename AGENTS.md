@@ -29,7 +29,9 @@ topics:
 
 **Topics:** Optional list of tags for categorization (e.g., `security`, `reliability`, `tooling`).
 
-**Creating a new experiment:** Copy `0000-experiment-template/README.md`, assign the next available number, and fill in the sections. Always check existing numbers first (`ls -d [0-9]*`) to avoid collisions.
+**Creating a new experiment:** Copy `0000-experiment-template/README.md`, assign the next available number, and fill in the sections. Always check existing numbers first (`ls -d [0-9]*`) to avoid collisions. After creating the experiment, add it to the index table in the root `README.md`.
+
+**README index:** The root `README.md` contains a table listing every experiment with its number, name, and status. Keep this table in sync — add a row when creating an experiment, update the status when it changes, and remove the row if the experiment is deleted.
 
 ### Linting
 
@@ -39,6 +41,7 @@ Pre-commit hooks enforce experiment conventions. Always stage your changes befor
 |------|-------------------|
 | `lint-experiment-numbers` | Filenames match `^[0-9]{4}-`, no duplicate numbers, no leading zeros in titles |
 | `lint-experiment-frontmatter` | Required fields (`title`, `status`), valid status values, `topics` is a list |
+| `lint-experiment-index` | README.md index table lists every experiment on disk and vice versa |
 
 Run all hooks manually: `pre-commit run --all-files`
 

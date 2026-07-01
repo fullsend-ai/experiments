@@ -99,5 +99,5 @@ This experiment requires an agent autonomy period to have elapsed first. It can'
 
 ## Relationship to other experiments
 
-- **[Experiment 002](adr46-claude-scanner/README.md)** tests automated enforcement of architectural invariants. This experiment tests whether the humans responsible for architectural judgment can still exercise it without agent support.
+- **[Experiment 002](0002-claude-scanner/README.md)** tests automated enforcement of architectural invariants. This experiment tests whether the humans responsible for architectural judgment can still exercise it without agent support.
 - A complementary experiment could measure review quality specifically (can humans still evaluate agent-produced code?) — this experiment is broader, testing whether humans can still write, review, debug, and ship.

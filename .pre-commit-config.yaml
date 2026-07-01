@@ -46,6 +46,13 @@ repos:
         files: ^[0-9]{4}-
         pass_filenames: false
 
+      - id: lint-experiment-index
+        name: lint experiment index
+        entry: ./hack/lint-experiment-index
+        language: script
+        files: (^[0-9]{4}-|^README\.md$)
+        pass_filenames: false
+
   - repo: https://github.com/PyCQA/bandit
     rev: "1.9.4"
     hooks:

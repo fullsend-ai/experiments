@@ -11,7 +11,7 @@ topics:
 
 This experiment addresses: https://github.com/fullsend-ai/fullsend/issues/101
 
-Counterpart to [experiment 67](../67-claude-github-app-auth/) which demonstrates the wrapper/pure-I/O approach. This experiment demonstrates an alternative using established patterns from [Claude Code](https://code.claude.com/docs/en/skills) and [OpenCode](https://opencode.ai/docs/skills/): **skills define capabilities, agents execute them with scoped tools, and a top-level agent orchestrates the flow.**
+Counterpart to [experiment 67](../0022-claude-github-app-auth/) which demonstrates the wrapper/pure-I/O approach. This experiment demonstrates an alternative using established patterns from [Claude Code](https://code.claude.com/docs/en/skills) and [OpenCode](https://opencode.ai/docs/skills/): **skills define capabilities, agents execute them with scoped tools, and a top-level agent orchestrates the flow.**
 
 ### What this experiment covers
 

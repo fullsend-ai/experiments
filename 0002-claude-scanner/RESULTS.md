@@ -16,9 +16,9 @@ An LLM can read an ADR, understand its architectural intent, evaluate a code art
 
 ## Method
 
-1. Wrote a hand-crafted [expected analysis](../../experiments/adr46-claude-scanner/expected/modelcar-oci-ta.md) as a human benchmark — our own reading of what violates the ADR and what to do about each case
+1. Wrote a hand-crafted [expected analysis](expected/modelcar-oci-ta.md) as a human benchmark — our own reading of what violates the ADR and what to do about each case
 2. Built a shell script that combines the ADR text and task YAML into a prompt and passes it to `claude -p`
-3. Ran the scanner and captured [claude's output](../../experiments/adr46-claude-scanner/results/modelcar-oci-ta.md)
+3. Ran the scanner and captured [claude's output](results/modelcar-oci-ta.md)
 4. Evaluated against the expected analysis using a four-point rubric
 
 ## Results
