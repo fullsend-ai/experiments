@@ -1,0 +1,114 @@
+#!/bin/bash
+
+# lint-experiment-numbers - Check experiment naming and numbering conventions
+#
+# Validates:
+# - Experiment directories/files match ^[0-9]{4}- pattern
+# - No duplicate experiment numbers
+# - No leading zeros in titles or H1 headings
+#
+# Adapted from fullsend-ai/fullsend hack/lint-adr-numbers
+
+set -euo pipefail
+
+error() { echo "ERROR: $1" >&2; }
+success() { echo "OK: $1"; }
+info() { echo "INFO: $1"; }
+warning() { echo "WARNING: $1"; }
+
+# Find experiment entries (directories and standalone .md files) at the repo root
+experiments=()
+
+while IFS= read -r -d '' entry; do
+    experiments+=("$entry")
+done < <(find . -maxdepth 1 \( -type d -o -type f -name "*.md" \) \
+    -regex '.*/[0-9].*' \
+    ! -name "0000-experiment-template" \
+    ! -path "./0000-experiment-template" \
+    -print0 | sort -z)
+
+if [[ ${#experiments[@]} -eq 0 ]]; then
+    warning "No experiment entries found"
+    exit 0
+fi
+
+info "Found ${#experiments[@]} experiment entries to check"
+
+echo "Checking experiment naming pattern..."
+echo "======================================"
+
+numbers=()
+has_errors=0
+
+for entry in "${experiments[@]}"; do
+    name=$(basename "$entry")
+    if [[ $name =~ ^([0-9]{4})- ]]; then
+        numbers+=("${BASH_REMATCH[1]}")
+    else
+        error "Entry does not match expected pattern (NNNN-description): $name"
+        has_errors=1
+    fi
+done
+
+echo ""
+echo "Checking for duplicate experiment numbers..."
+echo "======================================"
+
+if [[ ${#numbers[@]} -gt 0 ]]; then
+    duplicates=$(printf '%s\n' "${numbers[@]}" | sort | uniq -d)
+    if [[ -n "$duplicates" ]]; then
+        for dup in $duplicates; do
+            error "Duplicate experiment number $dup found"
+        done
+        has_errors=1
+    fi
+fi
+
+echo ""
+echo "Checking for leading zeros in titles..."
+echo "======================================"
+
+for entry in "${experiments[@]}"; do
+    name=$(basename "$entry")
+    if [[ ! $name =~ ^([0-9]{4})- ]]; then
+        continue
+    fi
+
+    file_number=${BASH_REMATCH[1]}
+    expected_number=$((10#$file_number))
+
+    # Find the markdown file to check
+    md_file=""
+    if [[ -f "$entry" && "$entry" == *.md ]]; then
+        md_file="$entry"
+    elif [[ -d "$entry" && -f "$entry/README.md" ]]; then
+        md_file="$entry/README.md"
+    elif [[ -d "$entry" && -f "$entry/EXPERIMENT.md" ]]; then
+        md_file="$entry/EXPERIMENT.md"
+    fi
+
+    if [[ -z "$md_file" ]]; then
+        continue
+    fi
+
+    title_line=$(grep '^title:' "$md_file" 2>/dev/null || true)
+    if [[ $title_line =~ ^title:\ *\"0[0-9]+\. ]]; then
+        error "$name: title has leading zeros (found: $title_line). Use \"$expected_number. ...\" instead."
+        has_errors=1
+    fi
+
+    heading_line=$(grep '^# 0[0-9]\+\. ' "$md_file" 2>/dev/null || true)
+    if [[ -n "$heading_line" ]]; then
+        error "$name: H1 heading has leading zeros (found: $heading_line). Use \"# $expected_number. ...\" instead."
+        has_errors=1
+    fi
+done
+
+echo "======================================"
+if [[ $has_errors -ne 0 ]]; then
+    error "Experiment numbering issues found. See errors above."
+    exit 1
+else
+    success "All ${#experiments[@]} experiment entries have valid numbers and naming"
+    exit 0
+fi
