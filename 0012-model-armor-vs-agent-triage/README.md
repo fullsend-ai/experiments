@@ -16,7 +16,7 @@ Google Cloud Model Armor, deployed as a pre-scan layer before an AI agent proces
 
 The fullsend SDLC pipeline uses Google Cloud Model Armor to scan every agent input (issue bodies, PR descriptions, review comments) before the AI agent processes it. This experiment tests whether that pre-scan layer adds meaningful protection beyond what the AI agent provides on its own.
 
-Previous experiment (`prompt-injection-defense/`) found that Claude Sonnet 4.6 is inherently resilient to prompt injection in a **read-only review task** (no tools, no secrets). This experiment changes the threat model: the agent has access to **environment secrets** and **shell tools**, making a successful injection far more dangerous — the attacker's goal is secret exfiltration, not just bypassing a classifier.
+Previous experiment (`0015-prompt-injection-defense/`) found that Claude Sonnet 4.6 is inherently resilient to prompt injection in a **read-only review task** (no tools, no secrets). This experiment changes the threat model: the agent has access to **environment secrets** and **shell tools**, making a successful injection far more dangerous — the attacker's goal is secret exfiltration, not just bypassing a classifier.
 
 ## Setup
 

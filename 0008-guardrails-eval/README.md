@@ -8,7 +8,7 @@ topics:
 
 # Experiment: Pluggable Guardrails Evaluation
 
-Evaluates prompt injection scanning tools as pre-LLM guardrails for fullsend's autonomous SDLC pipeline. Extends the [Model Armor experiment](../model-armor-vs-agent-triage/) (PR #117) with additional attack payloads and alternative scanning backends.
+Evaluates prompt injection scanning tools as pre-LLM guardrails for fullsend's autonomous SDLC pipeline. Extends the [Model Armor experiment](../0012-model-armor-vs-agent-triage/) (PR #117) with additional attack payloads and alternative scanning backends.
 
 Related: [Story 6 (#129)](https://github.com/fullsend-ai/fullsend/issues/129) — Prompt injection defense
 
@@ -18,7 +18,7 @@ LLM Guard's DeBERTa-v3 classifier with sentence-level matching detects prompt in
 
 ## Background
 
-PR #117 found that Model Armor detected only 1/4 injection payloads (25%) at maximum sensitivity. The [prompt-injection-defense](../prompt-injection-defense/) experiment found that Claude Sonnet 4.6 is inherently resilient, but the DeBERTa v1 classifier "adds no value" beyond what the model catches.
+PR #117 found that Model Armor detected only 1/4 injection payloads (25%) at maximum sensitivity. The [prompt-injection-defense](../0015-prompt-injection-defense/) experiment found that Claude Sonnet 4.6 is inherently resilient, but the DeBERTa v1 classifier "adds no value" beyond what the model catches.
 
 This experiment tests whether:
 1. LLM Guard's v2 classifier with sentence-level matching improves detection
@@ -27,7 +27,7 @@ This experiment tests whether:
 
 ## Attack Payloads
 
-### Original (from `../prompt-injection-defense/attacks/`)
+### Original (from `../0015-prompt-injection-defense/attacks/`)
 
 | Payload | Technique |
 |---------|-----------|

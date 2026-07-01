@@ -137,7 +137,7 @@ The tradeoff is real: without repo-specific context (no AGENTS.md, no CLAUDE.md,
 
 ### Production execution as evaluation
 
-The meta-loop offers an alternative to the golden-set evaluation approach explored in [Experiment 004](../promptfoo-eval/README.md). Instead of curated test cases with expected outputs, the signal comes from running the agent against real tasks and feeding the results back. The two approaches are complementary:
+The meta-loop offers an alternative to the golden-set evaluation approach explored in [Experiment 004](../0016-promptfoo-eval/README.md). Instead of curated test cases with expected outputs, the signal comes from running the agent against real tasks and feeding the results back. The two approaches are complementary:
 
 - **Golden-set (promptfoo):** catches prompt regressions, verifies format compliance, runs in seconds. Tests prompts, not agents.
 - **Meta-loop:** catches integration-level bugs that only manifest in production, verifies end-to-end behavior, takes minutes to hours. Tests the full agent system.
@@ -150,6 +150,6 @@ The meta-loop improves the engine using an LLM, but who improves the meta-loop? 
 
 ## Relationship to other experiments
 
-- **[Experiment 001](../adr46-scanner/README.md)** and **[Experiment 002](../adr46-claude-scanner/README.md)** test detecting architectural drift — a concern that the meta-loop's engine doesn't address (it fixes bugs, not architectural violations).
-- **[Experiment 003](../003-agent-outage-fire-drill.md)** tests whether humans maintain capability when agents are removed. The meta-loop experiment is the other side: what happens when you push agents further toward full autonomy, including self-repair?
-- **[Experiment 004](../promptfoo-eval/README.md)** tests prompt-level evaluation with promptfoo. The meta-loop provides a complementary evaluation approach at the integration level.
+- **[Experiment 001](../0003-scanner/README.md)** and **[Experiment 002](../0002-claude-scanner/README.md)** test detecting architectural drift — a concern that the meta-loop's engine doesn't address (it fixes bugs, not architectural violations).
+- **[Experiment 003](../0001-agent-outage-fire-drill.md)** tests whether humans maintain capability when agents are removed. The meta-loop experiment is the other side: what happens when you push agents further toward full autonomy, including self-repair?
+- **[Experiment 004](../0016-promptfoo-eval/README.md)** tests prompt-level evaluation with promptfoo. The meta-loop provides a complementary evaluation approach at the integration level.

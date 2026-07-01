@@ -26,4 +26,4 @@ Parses Tekton task YAML files, extracts step images, and flags any that don't ma
 
 ## Limitations
 
-This scanner uses deterministic string matching. It validates that mechanical drift detection works, but doesn't generalize to ADRs that express design intent rather than concrete image requirements. See [Experiment 002](../adr46-claude-scanner/) for the LLM-based approach.
+This scanner uses deterministic string matching. It validates that mechanical drift detection works, but doesn't generalize to ADRs that express design intent rather than concrete image requirements. See [Experiment 002](../0002-claude-scanner/) for the LLM-based approach.

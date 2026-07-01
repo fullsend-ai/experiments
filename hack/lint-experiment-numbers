@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 # lint-experiment-numbers - Check experiment naming and numbering conventions
 #
@@ -9,8 +10,6 @@
 #
 # Adapted from fullsend-ai/fullsend hack/lint-adr-numbers
 
-set -euo pipefail
-
 error() { echo "ERROR: $1" >&2; }
 success() { echo "OK: $1"; }
 info() { echo "INFO: $1"; }
@@ -19,13 +18,13 @@ warning() { echo "WARNING: $1"; }
 # Find experiment entries (directories and standalone .md files) at the repo root
 experiments=()
 
-while IFS= read -r -d '' entry; do
+while IFS= read -r entry; do
     experiments+=("$entry")
 done < <(find . -maxdepth 1 \( -type d -o -type f -name "*.md" \) \
     -regex '.*/[0-9].*' \
     ! -name "0000-experiment-template" \
     ! -path "./0000-experiment-template" \
-    -print0 | sort -z)
+    | sort)
 
 if [[ ${#experiments[@]} -eq 0 ]]; then
     warning "No experiment entries found"
@@ -92,12 +91,12 @@ for entry in "${experiments[@]}"; do
     fi
 
     title_line=$(grep '^title:' "$md_file" 2>/dev/null || true)
-    if [[ $title_line =~ ^title:\ *\"0[0-9]+\. ]]; then
+    if [[ $title_line =~ ^title:\ *[\"\']?0[0-9]+\. ]]; then
         error "$name: title has leading zeros (found: $title_line). Use \"$expected_number. ...\" instead."
         has_errors=1
     fi
 
-    heading_line=$(grep '^# 0[0-9]\+\. ' "$md_file" 2>/dev/null || true)
+    heading_line=$(grep -E '^# 0[0-9]+\. ' "$md_file" 2>/dev/null || true)
     if [[ -n "$heading_line" ]]; then
         error "$name: H1 heading has leading zeros (found: $heading_line). Use \"# $expected_number. ...\" instead."
         has_errors=1

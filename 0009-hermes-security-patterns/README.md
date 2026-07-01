@@ -238,7 +238,7 @@ uv run python -m pytest tests/ -v
 
 ### Tirith vs LLM Guard Coverage Cross-Reference
 
-Cross-referencing all 12 attack payloads from the [guardrails-eval experiment](../guardrails-eval/) against Tirith's detection capabilities:
+Cross-referencing all 12 attack payloads from the [guardrails-eval experiment](../0008-guardrails-eval/) against Tirith's detection capabilities:
 
 | Payload | Technique | LLM Guard (sentence) | Tirith | Notes |
 |---------|-----------|---------------------|--------|-------|
