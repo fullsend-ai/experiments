@@ -6,7 +6,7 @@ topics:
   - sandbox
 ---
 
-# OpenShell Binary Policy Bypass Experiment
+# 13. OpenShell policy bypass
 
 This experiment tests whether OpenShell's binary-level network policy
 restrictions can be bypassed by an agent. It answers two questions:

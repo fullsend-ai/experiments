@@ -6,7 +6,7 @@ topics:
   - tooling
 ---
 
-# Experiment: Hermes-Inspired Security Patterns for Fullsend
+# 9. Hermes-inspired security patterns
 
 Evaluates security patterns from [Hermes Agent](https://github.com/NousResearch/hermes-agent) for integration into fullsend's autonomous SDLC pipeline. Tests two integration strategies: static file scanning via [Tirith](https://github.com/sheeki03/tirith) CLI and runtime SSRF protection via a Claude Code PreToolUse hook.
 

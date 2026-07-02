@@ -6,7 +6,7 @@ topics:
   - evaluation
 ---
 
-# Experiment 005: Reasoning Monitor Agent for Prompt Injection Detection
+# 17. Reasoning monitor agent for prompt injection detection
 
 **Status:** Implementation complete, results pending
 **Issue:** [fullsend #174](https://github.com/konflux-ci/fullsend/issues/174)

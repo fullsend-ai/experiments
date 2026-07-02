@@ -7,7 +7,7 @@ topics:
   - evaluation
 ---
 
-# Experiment 006: Zero-Config Autonomous Bug Fix Engine with Self-Improving Meta-Loop
+# 4. Zero-config autonomous bug fix engine with self-improving meta-loop
 
 **Date:** 2026-03-29
 **Status:** Complete

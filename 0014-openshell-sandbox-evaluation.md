@@ -6,7 +6,7 @@ topics:
   - evaluation
 ---
 
-# Experiment: OpenShell Sandbox Evaluation
+# 14. OpenShell sandbox evaluation
 
 **Date:** 2026-03-27
 **Status:** Complete

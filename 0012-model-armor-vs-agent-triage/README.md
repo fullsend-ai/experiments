@@ -6,7 +6,7 @@ topics:
   - evaluation
 ---
 
-# Experiment: Model Armor vs AI Agent Triage — Prompt Injection
+# 12. Model Armor vs AI agent triage
 
 ## Hypothesis
 

@@ -6,7 +6,7 @@ topics:
   - security
 ---
 
-# PoC FullSend #67
+# 22. Claude GitHub App auth
 
 This experiment folder addresses: https://github.com/konflux-ci/fullsend/issues/67
 

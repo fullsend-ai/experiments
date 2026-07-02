@@ -6,7 +6,7 @@ topics:
   - tooling
 ---
 
-# ADR 0022 Tool Scoping Experiment
+# 21. Tool scoping
 
 Evidence for
 [ADR 0022](https://github.com/fullsend-ai/fullsend-adr-tools/blob/main/docs/ADRs/0022-allowed-and-disallowed-tools-for-agents.md).

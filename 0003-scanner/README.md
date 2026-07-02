@@ -6,7 +6,7 @@ topics:
   - tooling
 ---
 
-# Experiment 001: ADR-0046 Drift Scanner
+# 3. ADR-0046 drift scanner
 
 A Python CLI tool that detects Tekton task steps drifting from [ADR-0046](https://github.com/konflux-ci/architecture/blob/main/ADR/0046-common-task-runner-image.md) (common task runner image) by comparing step images against a config-driven allowlist.
 

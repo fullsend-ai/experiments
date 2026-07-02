@@ -6,7 +6,7 @@ topics:
   - evaluation
 ---
 
-# Experiment: Pluggable Guardrails Evaluation
+# 8. Guardrails evaluation
 
 Evaluates prompt injection scanning tools as pre-LLM guardrails for fullsend's autonomous SDLC pipeline. Extends the [Model Armor experiment](../0012-model-armor-vs-agent-triage/) (PR #117) with additional attack payloads and alternative scanning backends.
 
