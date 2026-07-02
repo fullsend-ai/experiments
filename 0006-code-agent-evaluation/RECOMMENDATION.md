@@ -1,7 +1,7 @@
 # Code Agent Recommendation — Best Configuration for PR #189
 
 **Date:** April 14, 2026 (updated after Round 4)
-**Based on:** [EXPERIMENT.md](EXPERIMENT.md) — 490+ trials across 20 scenarios, 8 variants, 4 rounds
+**Based on:** [README.md](README.md) — 490+ trials across 20 scenarios, 8 variants, 4 rounds
 **Target:** [PR #189: Add code agent definition and skill](https://github.com/fullsend-ai/fullsend/pull/189)
 **Review feedback:** [ralphbean's preliminary review](https://github.com/fullsend-ai/fullsend/pull/189#issuecomment-1)
 
@@ -36,7 +36,7 @@ further redesign is needed.
 
 
 For detailed scores by round and scenario, see
-[EXPERIMENT.md sections 5–8](EXPERIMENT.md#5-round-1-results-all-variants).
+[README.md sections 5–8](README.md#5-round-1-results-all-variants).
 
 ---
 
@@ -44,7 +44,7 @@ For detailed scores by round and scenario, see
 
 All priority-1 changes from the initial recommendation have been implemented
 in the V8 hybrid variant, validated with 66 trials
-([Round 4](EXPERIMENT.md#8-round-4-results-v8-hybrid-validation)), and
+([Round 4](README.md#8-round-4-results-v8-hybrid-validation)), and
 committed as [`d70dcff`](https://github.com/fullsend-ai/fullsend/commit/d70dcff).
 
 
@@ -110,7 +110,7 @@ structured variants)
 
 ## Cross-references
 
-- **Full experiment:** [EXPERIMENT.md](EXPERIMENT.md)
+- **Full experiment:** [README.md](README.md)
 - **V8 variant (PR #189 latest):** [variants/V8-hybrid/](variants/V8-hybrid/)
 - **All variants (V1–V7):** [variants/VARIANTS.md](variants/VARIANTS.md) — links to browse any variant
 - **PR #189:** [Add code agent definition and skill](https://github.com/fullsend-ai/fullsend/pull/189)
