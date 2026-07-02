@@ -9,6 +9,7 @@ Checks:
 - Experiment files have required frontmatter fields (title, status)
 - Status is a valid value (Active, Concluded, Abandoned, Merged)
 - topics is a list if present
+- H1 heading matches frontmatter title exactly
 
 Adapted from fullsend-ai/fullsend hack/lint-adr-frontmatter
 """
@@ -61,6 +62,16 @@ def find_experiment_md(entry_path):
     return None
 
 
+def extract_h1(filepath):
+    """Extract the first H1 heading from a markdown file."""
+    with open(filepath, encoding="utf-8") as f:
+        for line in f:
+            m = re.match(r"^#\s+(.+)$", line.rstrip())
+            if m:
+                return m.group(1)
+    return None
+
+
 def validate_experiment(filepath):
     """Validate an experiment file's frontmatter. Returns list of error strings."""
     errors = []
@@ -88,6 +99,17 @@ def validate_experiment(filepath):
                 rel_path, type(fm["topics"]).__name__
             )
         )
+
+    if "title" in fm:
+        h1 = extract_h1(filepath)
+        if h1 is None:
+            errors.append(f"{rel_path}: missing H1 heading")
+        elif h1 != fm["title"]:
+            errors.append(
+                "{}: H1 heading does not match frontmatter title\n"
+                "       title: {}\n"
+                "       H1:    {}".format(rel_path, fm["title"], h1)
+            )
 
     return errors
 

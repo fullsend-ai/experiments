@@ -6,7 +6,7 @@ topics:
   - security
 ---
 
-# Code Agent Evaluation Experiment
+# 6. Code agent evaluation
 
 **Date:** April 11–14, 2026
 **Author:** Adam Scerra
