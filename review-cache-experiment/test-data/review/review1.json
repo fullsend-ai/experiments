@@ -1,0 +1,61 @@
+{
+  "action": "request-changes",
+  "body": "Initial review of kaexporter PR",
+  "head_sha": "a1b2c3d4e5f6",
+  "findings": [
+    {
+      "severity": "medium",
+      "category": "race-condition",
+      "file": "exporters/kaexporter/collector.go",
+      "line": 221,
+      "description": "Non-bootstrapped namespace goroutines create independent contexts via context.WithTimeout(context.Background(), ...). These are not cancelled on parent context cancellation (e.g. SIGTERM), delaying graceful shutdown by up to 600s.",
+      "remediation": "Derive per-namespace contexts from the parent context: context.WithTimeout(ctx, ...) instead of context.WithTimeout(context.Background(), ...).",
+      "actionable": true
+    },
+    {
+      "severity": "medium",
+      "category": "race-condition",
+      "file": "exporters/kaexporter/collector.go",
+      "line": 89,
+      "description": "coldStart field is read outside e.mu lock in runCollection. Multiple goroutines could observe stale values.",
+      "remediation": "Protect coldStart reads with e.mu.RLock() or use atomic.Bool.",
+      "actionable": true
+    },
+    {
+      "severity": "medium",
+      "category": "error-handling-gap",
+      "file": "exporters/kaexporter/release.go",
+      "line": 211,
+      "description": "retryCount30d.Reset() runs unconditionally in updateGauges. When collectMetrics returns (nil, nil) for 0 namespaces, retry count gauges are wiped despite the rolling store retaining valid data.",
+      "remediation": "Guard retryCount30d.Reset() inside the releaseIdx != nil check.",
+      "actionable": true
+    },
+    {
+      "severity": "high",
+      "category": "logic-error",
+      "file": "exporters/kaexporter/rolling_store.go",
+      "line": 126,
+      "description": "ComputeWaitMean uses Count (all observations) as denominator but WaitSumSeconds only accumulates for observations with valid wait times. This inflates the denominator and deflates the reported mean wait time.",
+      "remediation": "Use SuccessCount as the denominator in ComputeWaitMean, and only accumulate WaitSumSeconds for successful observations.",
+      "actionable": true
+    },
+    {
+      "severity": "medium",
+      "category": "off-by-one",
+      "file": "exporters/kaexporter/rolling_store.go",
+      "line": 101,
+      "description": "The cutoff comparison in Compute* methods uses <= while RecordObservation rejects dayOffset >= 30. Both boundaries consistently exclude day-30, creating a 29-day window instead of the documented 30-day SLO window.",
+      "remediation": "Change dayOffset >= 30 to dayOffset > 30 to include the 30th day.",
+      "actionable": true
+    },
+    {
+      "severity": "low",
+      "category": "metric-label-injection",
+      "file": "exporters/kaexporter/rolling_store.go",
+      "line": 88,
+      "description": "Metric label values from tenant-controlled Kubernetes labels could create cardinality pressure. Existing mitigations are substantial but a cardinality cap on unique label set combinations would add defense-in-depth.",
+      "remediation": "Add a cardinality cap on unique label set combinations per metric.",
+      "actionable": false
+    }
+  ]
+}

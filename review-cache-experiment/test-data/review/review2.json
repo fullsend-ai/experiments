@@ -1,0 +1,52 @@
+{
+  "action": "request-changes",
+  "body": "Re-review after developer pushed fixes for WaitSumSeconds, retryCount30d, and context.Background()",
+  "head_sha": "f6e5d4c3b2a1",
+  "findings": [
+    {
+      "severity": "medium",
+      "category": "race-condition",
+      "file": "exporters/kaexporter/collector.go",
+      "line": 327,
+      "description": "Gap-fill goroutines inherit the parent collection cycle's deadline context. If main collection consumed most of the timeout budget, gap-fill fails silently and permanently consumes retry attempts (max 5 per namespace).",
+      "remediation": "Use a fresh context derived from context.Background() for gap-fill operations.",
+      "actionable": true
+    },
+    {
+      "severity": "medium",
+      "category": "race-condition",
+      "file": "exporters/kaexporter/collector.go",
+      "line": 89,
+      "description": "coldStart field is read outside e.mu lock in runCollection. Multiple goroutines could observe stale values.",
+      "remediation": "Protect coldStart reads with e.mu.RLock() or use atomic.Bool.",
+      "actionable": true
+    },
+    {
+      "severity": "medium",
+      "category": "off-by-one",
+      "file": "exporters/kaexporter/rolling_store.go",
+      "line": 101,
+      "description": "The cutoff comparison in Compute* methods uses <= while RecordObservation rejects dayOffset >= 30. Both boundaries consistently exclude day-30, creating a 29-day window instead of the documented 30-day SLO window.",
+      "remediation": "Change dayOffset >= 30 to dayOffset > 30 to include the 30th day.",
+      "actionable": true
+    },
+    {
+      "severity": "low",
+      "category": "metric-label-injection",
+      "file": "exporters/kaexporter/rolling_store.go",
+      "line": 88,
+      "description": "Metric label values from tenant-controlled Kubernetes labels could create cardinality pressure. Existing mitigations are substantial but a cardinality cap on unique label set combinations would add defense-in-depth.",
+      "remediation": "Add a cardinality cap on unique label set combinations per metric.",
+      "actionable": false
+    },
+    {
+      "severity": "low",
+      "category": "race-condition",
+      "file": "exporters/kaexporter/collector.go",
+      "line": 122,
+      "description": "scrapeDurationGauge.Set() is called outside e.mu.Unlock(), creating a potential data race on the gauge value.",
+      "remediation": "Move scrapeDurationGauge.Set() inside the locked section.",
+      "actionable": true
+    }
+  ]
+}
