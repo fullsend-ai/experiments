@@ -40,7 +40,7 @@ Pre-commit hooks enforce experiment conventions. Always stage your changes befor
 | Hook | What it validates |
 |------|-------------------|
 | `lint-experiment-numbers` | Filenames match `^[0-9]{4}-`, no duplicate numbers, no leading zeros in titles |
-| `lint-experiment-frontmatter` | Required fields (`title`, `status`), valid status values, `topics` is a list |
+| `lint-experiment-frontmatter` | Required fields (`title`, `status`), valid status values, `topics` is a list, H1 heading matches frontmatter `title` |
 | `lint-experiment-index` | README.md index table lists every experiment on disk and vice versa |
 
 Run all hooks manually: `pre-commit run --all-files`

@@ -6,7 +6,7 @@ topics:
   - tooling
 ---
 
-# Experiment 004: Promptfoo for Agent Evaluation in CI
+# 16. Promptfoo for agent evaluation in CI
 
 **Date:** 2026-03-20
 **Status:** Complete

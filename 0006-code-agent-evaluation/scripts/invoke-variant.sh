@@ -134,7 +134,7 @@ case "${VARIANT}" in
 
   V4)
     # V4: CLAUDE.md only — infrastructure exists but V4 was excluded from
-    # scored results (started then stopped; see EXPERIMENT.md section 2)
+    # scored results (started then stopped; see README.md section 2)
     VARIANT_DIR="${EXPERIMENT_ROOT}/variants/V4-claudemd-only"
 
     # Copy CLAUDE.md to repo root

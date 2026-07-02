@@ -1,4 +1,12 @@
-# Review Cache - Publication Policy Architecture
+---
+title: "23. Review cache publication policy"
+status: Concluded
+topics:
+  - review
+  - deduplication
+---
+
+# 23. Review cache publication policy
 
 ## Problem
 
@@ -204,7 +212,7 @@ Total integration: ~40 lines of bash
 ## File Structure
 
 ```
-review-cache-experiment/
+0023-review-cache/
 ├── scripts/                         # Production code (post-scripts only)
 │   ├── store.py                     # Layer 1: SQLite storage
 │   ├── save.py                      # Layer 2: Deduplication

@@ -6,7 +6,7 @@ topics:
   - security
 ---
 
-# Code Agent Evaluation Experiment
+# 6. Code agent evaluation
 
 **Date:** April 11–14, 2026
 **Author:** Adam Scerra
@@ -853,7 +853,7 @@ V8 (hybrid — proposed in PR #189):
 
 ```
 experiments/code-agent-evaluation/
-├── EXPERIMENT.md                    # This document
+├── README.md                        # This document
 ├── RECOMMENDATION.md                # Action summary for PR #189
 ├── variants/
 │   ├── VARIANTS.md                  # Index of all variants with git refs

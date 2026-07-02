@@ -6,7 +6,7 @@ topics:
   - sandbox
 ---
 
-# Runner Hello World Experiment
+# 18. Runner hello world
 
 A minimal end-to-end test of the `fullsend run` CLI. It provisions an OpenShell sandbox from a pre-built container image, runs a Claude Code agent inside it, extracts output, and validates the result with a retry loop.
 

@@ -6,7 +6,7 @@ topics:
   - tooling
 ---
 
-# Experiment: GitHub Actions Agent Runtime MVP
+# 7. GitHub Actions agent runtime MVP
 
 ## Hypothesis
 

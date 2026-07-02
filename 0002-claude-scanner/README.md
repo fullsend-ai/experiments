@@ -6,7 +6,7 @@ topics:
   - tooling
 ---
 
-# Experiment 002: Claude-based ADR Drift Scanner
+# 2. Claude-based ADR drift scanner
 
 A shell script that uses `claude` CLI to analyze Tekton tasks for ADR compliance. No hardcoded rules, no config files — all intelligence comes from claude's comprehension of the ADR text.
 

@@ -6,7 +6,7 @@ topics:
   - tooling
 ---
 
-# Experiment: Host-Side API Server for Sandboxed Agents
+# 10. Host-side API server for sandboxed agents
 
 Tracking issue: [fullsend-ai/experiments#25](https://github.com/fullsend-ai/experiments/issues/25)
 

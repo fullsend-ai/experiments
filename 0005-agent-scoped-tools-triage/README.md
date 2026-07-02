@@ -7,7 +7,7 @@ topics:
   - skills
 ---
 
-# PoC FullSend — Triage Agents with scoped tools and sandbox
+# 5. Agent scoped tools triage
 
 This experiment addresses: https://github.com/fullsend-ai/fullsend/issues/101
 

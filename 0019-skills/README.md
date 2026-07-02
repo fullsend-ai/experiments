@@ -5,6 +5,6 @@ topics:
   - skills
 ---
 
-# Experiment: Skills
+# 19. Skills
 
 Experiments with skill authoring and consumption patterns.

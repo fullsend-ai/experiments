@@ -6,7 +6,7 @@ topics:
   - tooling
 ---
 
-# Experiment: Integration Service Design Doc Drift Analysis
+# 11. Integration Service design doc drift analysis
 
 **Date:** 2026-03-20
 

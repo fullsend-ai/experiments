@@ -6,7 +6,7 @@ topics:
   - incident-response
 ---
 
-# Experiment 003: Agent Outage Fire Drill
+# 1. Agent outage fire drill
 
 **Date:** 2026-03-16
 **Status:** Proposed

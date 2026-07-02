@@ -18,7 +18,8 @@ import json
 import sys
 import tempfile
 from pathlib import Path
-from scripts.store import ReviewMemoryStore, Finding
+
+from scripts.store import Finding, ReviewMemoryStore
 
 PASS = 0
 FAIL = 0
@@ -41,15 +42,17 @@ def load_review_json(path: str) -> list[Finding]:
 
     findings = []
     for fd in data["findings"]:
-        findings.append(Finding(
-            file_path=fd["file"],
-            function_name="",
-            category=fd["category"],
-            severity=fd["severity"],
-            description=fd["description"],
-            remediation=fd.get("remediation", ""),
-            line_number=fd.get("line", 0),
-        ))
+        findings.append(
+            Finding(
+                file_path=fd["file"],
+                function_name="",
+                category=fd["category"],
+                severity=fd["severity"],
+                description=fd["description"],
+                remediation=fd.get("remediation", ""),
+                line_number=fd.get("line", 0),
+            )
+        )
     return findings
 
 
@@ -107,7 +110,7 @@ def test_kaexporter_three_round_review():
 
         # ── ROUND 2: After fixes, bot re-reports + rephrases ──────────
 
-        print(f"\n ROUND 2: After developer fixes (commit f6e5d4)")
+        print("\n ROUND 2: After developer fixes (commit f6e5d4)")
         print("-" * 70)
         print("Developer fixed: WaitSumSeconds denominator, retryCount30d Reset,")
         print("                 context.Background() (with AfterFunc pattern)")
@@ -145,24 +148,38 @@ def test_kaexporter_three_round_review():
             # The rephrased context.Background (line 327, bucket 320) is NEW
             # because the bot changed the line number to a different bucket
             check("R2 new count", len(result["new"]), 2)
-            check("R2 new contains rephrased context.Background",
-                  "race-condition" in new_cats, True)
-            check("R2 new contains scrapeDurationGauge FP",
-                  "race-condition" in new_cats, True)
+            check(
+                "R2 new contains rephrased context.Background",
+                "race-condition" in new_cats,
+                True,
+            )
+            check(
+                "R2 new contains scrapeDurationGauge FP",
+                "race-condition" in new_cats,
+                True,
+            )
 
             # coldStart, off-by-one, metric-label-injection: still_present
             check("R2 still_present count", len(result["still_present"]), 3)
-            check("R2 still_present has metric-label-injection",
-                  "metric-label-injection" in still_cats, True)
-            check("R2 still_present has off-by-one",
-                  "off-by-one" in still_cats, True)
+            check(
+                "R2 still_present has metric-label-injection",
+                "metric-label-injection" in still_cats,
+                True,
+            )
+            check("R2 still_present has off-by-one", "off-by-one" in still_cats, True)
 
             # Fixed: original context.Background (line 221), retryCount30d, WaitSumSeconds
             check("R2 resolved count", len(result["resolved"]), 3)
-            check("R2 resolved has logic-error (WaitSumSeconds)",
-                  "logic-error" in resolved_cats, True)
-            check("R2 resolved has error-handling-gap (retryCount30d)",
-                  "error-handling-gap" in resolved_cats, True)
+            check(
+                "R2 resolved has logic-error (WaitSumSeconds)",
+                "logic-error" in resolved_cats,
+                True,
+            )
+            check(
+                "R2 resolved has error-handling-gap (retryCount30d)",
+                "error-handling-gap" in resolved_cats,
+                True,
+            )
 
             for status_group in ["new", "still_present", "resolved"]:
                 for f in result[status_group]:
@@ -171,54 +188,68 @@ def test_kaexporter_three_round_review():
             # Verify first_seen preserved for coldStart
             all_findings = store.get_pr_findings(pr_number)
             coldstart = next(
-                (f for f in all_findings
-                 if f.category == "race-condition" and f.line_number == 89),
-                None
+                (
+                    f
+                    for f in all_findings
+                    if f.category == "race-condition" and f.line_number == 89
+                ),
+                None,
             )
             if coldstart:
-                check("R2 coldStart first_seen preserved",
-                      coldstart.first_seen_sha, sha1)
+                check(
+                    "R2 coldStart first_seen preserved", coldstart.first_seen_sha, sha1
+                )
 
             # Human dismisses coldStart and off-by-one
             print("\n  Developer dismisses false positives:")
 
             coldstart_key = coldstart.semantic_key if coldstart else ""
             store.dismiss_finding(
-                coldstart_key, pr_number,
+                coldstart_key,
+                pr_number,
                 "Single-goroutine invariant: only runCollection goroutine "
                 "reads coldStart, no concurrent access possible",
-                "senior-engineer"
+                "senior-engineer",
             )
-            print(f"    Dismissed coldStart: '{store.get_dismissal_reason(coldstart_key, pr_number)[:60]}...'")
+            print(
+                f"    Dismissed coldStart: '{store.get_dismissal_reason(coldstart_key, pr_number)[:60]}...'"
+            )
 
             offbyone = next(
                 (f for f in all_findings if f.category == "off-by-one"), None
             )
             if offbyone:
                 store.dismiss_finding(
-                    offbyone.semantic_key, pr_number,
+                    offbyone.semantic_key,
+                    pr_number,
                     "dayOffset 0-29 inclusive = 30 calendar days. "
                     "Buckets[29-30] would be index -1 (panic). Correct as-is.",
-                    "senior-engineer"
+                    "senior-engineer",
                 )
-                print(f"    Dismissed off-by-one: '{store.get_dismissal_reason(offbyone.semantic_key, pr_number)[:60]}...'")
+                print(
+                    f"    Dismissed off-by-one: '{store.get_dismissal_reason(offbyone.semantic_key, pr_number)[:60]}...'"
+                )
 
             # Also dismiss metric-label-injection
             mli = next(
-                (f for f in all_findings if f.category == "metric-label-injection"), None
+                (f for f in all_findings if f.category == "metric-label-injection"),
+                None,
             )
             if mli:
                 store.dismiss_finding(
-                    mli.semantic_key, pr_number,
+                    mli.semantic_key,
+                    pr_number,
                     "Existing mitigations sufficient: capped fetch limits, "
                     "30-day expiry, fixed label dimensions. Enforce at scrape config level.",
-                    "senior-engineer"
+                    "senior-engineer",
                 )
-                print(f"    Dismissed metric-label-injection: '{store.get_dismissal_reason(mli.semantic_key, pr_number)[:60]}...'")
+                print(
+                    f"    Dismissed metric-label-injection: '{store.get_dismissal_reason(mli.semantic_key, pr_number)[:60]}...'"
+                )
 
         # ── ROUND 3: Dismissed issues STILL return ────────────────────
 
-        print(f"\n ROUND 3: Bot re-reviews AGAIN (commit 9a8b7c)")
+        print("\n ROUND 3: Bot re-reviews AGAIN (commit 9a8b7c)")
         print("-" * 70)
         print("Despite dismissals, bot re-reports coldStart and metric-label-injection")
         print("Bot adds: collectMetrics nil-error (genuinely new)\n")
@@ -245,8 +276,11 @@ def test_kaexporter_three_round_review():
 
             # collectMetrics nil-error (line 298, bucket 290): genuinely new
             check("R3 new count", len(result["new"]), 1)
-            check("R3 new is collectMetrics error-handling-gap",
-                  result["new"][0].category if result["new"] else "", "error-handling-gap")
+            check(
+                "R3 new is collectMetrics error-handling-gap",
+                result["new"][0].category if result["new"] else "",
+                "error-handling-gap",
+            )
 
             # coldStart + metric-label-injection: still_present (despite dismissal)
             check("R3 still_present count", len(result["still_present"]), 2)
@@ -262,31 +296,42 @@ def test_kaexporter_three_round_review():
 
             # Verify dismissal reasons survive across rounds
             coldstart_r3 = next(
-                (f for f in result["still_present"]
-                 if f.category == "race-condition"),
-                None
+                (f for f in result["still_present"] if f.category == "race-condition"),
+                None,
             )
             if coldstart_r3:
-                reason = store.get_dismissal_reason(coldstart_r3.semantic_key, pr_number)
-                check("R3 coldStart dismissal reason preserved",
-                      reason is not None, True)
-                print(f"\n  Dismissal reason still available for coldStart:")
+                reason = store.get_dismissal_reason(
+                    coldstart_r3.semantic_key, pr_number
+                )
+                check(
+                    "R3 coldStart dismissal reason preserved", reason is not None, True
+                )
+                print("\n  Dismissal reason still available for coldStart:")
                 print(f"    '{reason[:70]}...'")
 
             mli_r3 = next(
-                (f for f in result["still_present"]
-                 if f.category == "metric-label-injection"),
-                None
+                (
+                    f
+                    for f in result["still_present"]
+                    if f.category == "metric-label-injection"
+                ),
+                None,
             )
             if mli_r3:
                 reason = store.get_dismissal_reason(mli_r3.semantic_key, pr_number)
-                check("R3 metric-label-injection dismissal preserved",
-                      reason is not None, True)
+                check(
+                    "R3 metric-label-injection dismissal preserved",
+                    reason is not None,
+                    True,
+                )
 
             # Verify first_seen_sha tracks all the way back to round 1
             if coldstart_r3:
-                check("R3 coldStart first_seen still points to R1",
-                      coldstart_r3.first_seen_sha, sha1)
+                check(
+                    "R3 coldStart first_seen still points to R1",
+                    coldstart_r3.first_seen_sha,
+                    sha1,
+                )
 
             for status_group in ["new", "still_present", "resolved"]:
                 for f in result[status_group]:
@@ -348,7 +393,7 @@ def test_semantic_key_stability():
         line_number=89,
         pr_number=456,
         first_seen_sha="abc",
-        last_seen_sha="abc"
+        last_seen_sha="abc",
     )
 
     f2 = Finding(
@@ -360,14 +405,17 @@ def test_semantic_key_stability():
         line_number=85,
         pr_number=456,
         first_seen_sha="abc",
-        last_seen_sha="def"
+        last_seen_sha="def",
     )
 
     print(f"  Finding 1: line {f1.line_number} -> key: {f1.semantic_key}")
     print(f"  Finding 2: line {f2.line_number} -> key: {f2.semantic_key}")
 
-    check("Same key for lines 89 and 85 (both bucket 80)",
-          f1.semantic_key, f2.semantic_key)
+    check(
+        "Same key for lines 89 and 85 (both bucket 80)",
+        f1.semantic_key,
+        f2.semantic_key,
+    )
 
     # Different bucket = different key (known limitation)
     f3 = Finding(
@@ -379,7 +427,7 @@ def test_semantic_key_stability():
         line_number=221,
         pr_number=456,
         first_seen_sha="abc",
-        last_seen_sha="abc"
+        last_seen_sha="abc",
     )
 
     f4 = Finding(
@@ -391,14 +439,17 @@ def test_semantic_key_stability():
         line_number=327,
         pr_number=456,
         first_seen_sha="def",
-        last_seen_sha="def"
+        last_seen_sha="def",
     )
 
     print(f"\n  Finding 3: line {f3.line_number} -> key: {f3.semantic_key}")
     print(f"  Finding 4: line {f4.line_number} -> key: {f4.semantic_key}")
 
-    check("Different key for lines 221 vs 327 (bucket 220 vs 320)",
-          f3.semantic_key != f4.semantic_key, True)
+    check(
+        "Different key for lines 221 vs 327 (bucket 220 vs 320)",
+        f3.semantic_key != f4.semantic_key,
+        True,
+    )
 
     print("\n  Note: The rephrased context.Background finding at line 327")
     print("  gets a different key. This is a known limitation of bucket-based")

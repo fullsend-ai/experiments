@@ -6,7 +6,7 @@ topics:
   - evaluation
 ---
 
-# Experiment 002: Prompt Injection Defense-in-Depth
+# 15. Prompt injection defense-in-depth
 
 ## Hypothesis
 

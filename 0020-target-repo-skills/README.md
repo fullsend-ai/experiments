@@ -6,7 +6,7 @@ topics:
   - tooling
 ---
 
-# Experiment: Target Repository Skills in Triage
+# 20. Target repository skills in triage
 
 ## Hypothesis
 
