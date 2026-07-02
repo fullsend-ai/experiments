@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# lint-experiment-index - Verify README.md index table is in sync with experiments on disk
+#
+# Checks:
+# - Every experiment on disk has a row in the README index table
+# - Every row in the README index table corresponds to an experiment on disk
+# - Experiment numbers in the table match the directory/file numbers
+
+error() { echo "ERROR: $1" >&2; }
+success() { echo "OK: $1"; }
+info() { echo "INFO: $1"; }
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+README="$REPO_ROOT/README.md"
+
+if [[ ! -f "$README" ]]; then
+    error "README.md not found at repo root"
+    exit 1
+fi
+
+# Collect experiments on disk (excluding 0000-template)
+disk_numbers=()
+while IFS= read -r entry; do
+    name=$(basename "$entry")
+    if [[ $name =~ ^([0-9]{4})- ]]; then
+        disk_numbers+=("${BASH_REMATCH[1]}")
+    fi
+done < <(find "$REPO_ROOT" -maxdepth 1 \( -type d -o -type f -name "*.md" \) \
+    -regex '.*/[0-9].*' \
+    ! -name "0000-experiment-template" \
+    ! -path "*/0000-experiment-template" \
+    | sort)
+
+# Collect experiment numbers from README index table
+# Table rows match: | NNNN | ...
+index_numbers=()
+while IFS= read -r line; do
+    if [[ $line =~ ^\|[[:space:]]*([0-9]{4})[[:space:]]*\| ]]; then
+        index_numbers+=("${BASH_REMATCH[1]}")
+    fi
+done < "$README"
+
+info "Experiments on disk: ${#disk_numbers[@]}"
+info "Entries in README index: ${#index_numbers[@]}"
+
+has_errors=0
+
+# Check: every disk experiment is in the index
+for num in "${disk_numbers[@]}"; do
+    found=0
+    for idx_num in "${index_numbers[@]}"; do
+        if [[ "$num" == "$idx_num" ]]; then
+            found=1
+            break
+        fi
+    done
+    if [[ $found -eq 0 ]]; then
+        error "Experiment $num exists on disk but is missing from README.md index table"
+        has_errors=1
+    fi
+done
+
+# Check: every index entry exists on disk
+for num in "${index_numbers[@]}"; do
+    found=0
+    for disk_num in "${disk_numbers[@]}"; do
+        if [[ "$num" == "$disk_num" ]]; then
+            found=1
+            break
+        fi
+    done
+    if [[ $found -eq 0 ]]; then
+        error "README.md index lists experiment $num but it does not exist on disk"
+        has_errors=1
+    fi
+done
+
+if [[ $has_errors -ne 0 ]]; then
+    error "README.md index is out of sync. Update the table in README.md."
+    exit 1
+else
+    success "README.md index is in sync (${#disk_numbers[@]} experiments)"
+    exit 0
+fi
