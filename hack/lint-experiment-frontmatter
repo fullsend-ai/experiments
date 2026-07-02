@@ -55,7 +55,7 @@ def find_experiment_md(entry_path):
     """Find the markdown file for an experiment entry."""
     if os.path.isfile(entry_path) and entry_path.endswith(".md"):
         return entry_path
-    for candidate in ["README.md", "EXPERIMENT.md"]:
+    for candidate in ["README.md"]:
         path = os.path.join(entry_path, candidate)
         if os.path.isfile(path):
             return path
@@ -63,10 +63,19 @@ def find_experiment_md(entry_path):
 
 
 def extract_h1(filepath):
-    """Extract the first H1 heading from a markdown file."""
+    """Extract the first H1 heading from a markdown file, skipping frontmatter."""
+    in_frontmatter = False
     with open(filepath, encoding="utf-8") as f:
-        for line in f:
-            m = re.match(r"^#\s+(.+)$", line.rstrip())
+        for i, line in enumerate(f):
+            stripped = line.rstrip()
+            if i == 0 and stripped == "---":
+                in_frontmatter = True
+                continue
+            if in_frontmatter:
+                if stripped == "---":
+                    in_frontmatter = False
+                continue
+            m = re.match(r"^#\s+(.+)$", stripped)
             if m:
                 return m.group(1)
     return None

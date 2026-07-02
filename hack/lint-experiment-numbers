@@ -82,8 +82,6 @@ for entry in "${experiments[@]}"; do
         md_file="$entry"
     elif [[ -d "$entry" && -f "$entry/README.md" ]]; then
         md_file="$entry/README.md"
-    elif [[ -d "$entry" && -f "$entry/EXPERIMENT.md" ]]; then
-        md_file="$entry/EXPERIMENT.md"
     fi
 
     if [[ -z "$md_file" ]]; then
