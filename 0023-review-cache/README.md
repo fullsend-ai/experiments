@@ -1,4 +1,12 @@
-# Review Cache - Publication Policy Architecture
+---
+title: "23. Review cache publication policy"
+status: Concluded
+topics:
+  - review
+  - deduplication
+---
+
+# 23. Review cache publication policy
 
 ## Problem
 
