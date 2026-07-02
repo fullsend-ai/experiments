@@ -5,18 +5,18 @@ Core SQLite storage for review findings.
 Used by save.py, load.py, and other scripts.
 """
 
-import sqlite3
 import hashlib
 import re
-from dataclasses import dataclass, asdict
-from typing import List, Optional
+import sqlite3
+from dataclasses import dataclass
 from datetime import datetime
-import json
+from typing import List, Optional
 
 
 @dataclass
 class Finding:
     """A single review finding with lifecycle tracking."""
+
     # Identity
     file_path: str
     function_name: str
@@ -75,7 +75,7 @@ class Finding:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Finding':
+    def from_dict(cls, data: dict) -> "Finding":
         """Create Finding from dictionary."""
         return cls(
             file_path=data.get("file", ""),
@@ -181,14 +181,15 @@ class ReviewMemoryStore:
         # Check if exists
         existing = self.conn.execute(
             "SELECT first_seen_sha, created_at FROM findings WHERE semantic_key = ?",
-            (finding.semantic_key,)
+            (finding.semantic_key,),
         ).fetchone()
 
         now = datetime.now().isoformat()
 
         if existing:
             # Update: preserve first_seen and created_at
-            self.conn.execute("""
+            self.conn.execute(
+                """
                 UPDATE findings
                 SET last_seen_sha = ?,
                     status = ?,
@@ -199,69 +200,79 @@ class ReviewMemoryStore:
                     code_hash = ?,
                     updated_at = ?
                 WHERE semantic_key = ?
-            """, (
-                finding.last_seen_sha,
-                finding.status,
-                finding.line_number,
-                sanitize_text(finding.description, max_length=1000),
-                sanitize_text(finding.remediation, max_length=1000),
-                finding.code_snippet,
-                finding.code_hash,
-                now,
-                finding.semantic_key
-            ))
+            """,
+                (
+                    finding.last_seen_sha,
+                    finding.status,
+                    finding.line_number,
+                    sanitize_text(finding.description, max_length=1000),
+                    sanitize_text(finding.remediation, max_length=1000),
+                    finding.code_snippet,
+                    finding.code_hash,
+                    now,
+                    finding.semantic_key,
+                ),
+            )
         else:
             # Insert new finding
-            self.conn.execute("""
+            self.conn.execute(
+                """
                 INSERT INTO findings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                finding.semantic_key,
-                finding.pr_number,
-                finding.file_path,
-                finding.function_name,
-                finding.line_number,
-                finding.category,
-                finding.severity,
-                sanitize_text(finding.description, max_length=1000),
-                sanitize_text(finding.remediation, max_length=1000),
-                finding.code_snippet,
-                finding.code_hash,
-                finding.status,
-                finding.first_seen_sha,
-                finding.last_seen_sha,
-                now,  # created_at
-                now   # updated_at
-            ))
+            """,
+                (
+                    finding.semantic_key,
+                    finding.pr_number,
+                    finding.file_path,
+                    finding.function_name,
+                    finding.line_number,
+                    finding.category,
+                    finding.severity,
+                    sanitize_text(finding.description, max_length=1000),
+                    sanitize_text(finding.remediation, max_length=1000),
+                    finding.code_snippet,
+                    finding.code_hash,
+                    finding.status,
+                    finding.first_seen_sha,
+                    finding.last_seen_sha,
+                    now,  # created_at
+                    now,  # updated_at
+                ),
+            )
 
         self.conn.commit()
 
     def get_pr_findings(self, pr_number: int) -> List[Finding]:
         """Get all findings for a PR."""
-        cursor = self.conn.execute("""
+        cursor = self.conn.execute(
+            """
             SELECT * FROM findings WHERE pr_number = ? ORDER BY severity DESC, file_path, line_number
-        """, (pr_number,))
+        """,
+            (pr_number,),
+        )
 
         findings = []
         for row in cursor.fetchall():
             finding = Finding(
-                file_path=row['file_path'],
-                function_name=row['function_name'],
-                category=row['category'],
-                severity=row['severity'],
-                description=row['description'],
-                remediation=row['remediation'] or "",
-                code_snippet=row['code_snippet'] or "",
-                line_number=row['line_number'] or 0,
-                pr_number=row['pr_number'],
-                first_seen_sha=row['first_seen_sha'],
-                last_seen_sha=row['last_seen_sha'],
-                status=row['status']
+                file_path=row["file_path"],
+                function_name=row["function_name"],
+                category=row["category"],
+                severity=row["severity"],
+                description=row["description"],
+                remediation=row["remediation"] or "",
+                code_snippet=row["code_snippet"] or "",
+                line_number=row["line_number"] or 0,
+                pr_number=row["pr_number"],
+                first_seen_sha=row["first_seen_sha"],
+                last_seen_sha=row["last_seen_sha"],
+                status=row["status"],
             )
             findings.append(finding)
 
         return findings
 
-    def dismiss_finding(self, semantic_key: str, pr_number: int, reason: str, approved_by: str = "human"):
+    def dismiss_finding(
+        self, semantic_key: str, pr_number: int, reason: str, approved_by: str = "human"
+    ):
         """
         Dismiss a finding with sanitized reasoning.
 
@@ -269,26 +280,32 @@ class ReviewMemoryStore:
         """
         sanitized_reason = sanitize_text(reason, max_length=500)
 
-        self.conn.execute("""
+        self.conn.execute(
+            """
             INSERT OR REPLACE INTO intentional_exceptions VALUES (?, ?, ?, ?, ?)
-        """, (
-            semantic_key,
-            pr_number,
-            sanitized_reason,
-            approved_by,
-            datetime.now().isoformat()
-        ))
+        """,
+            (
+                semantic_key,
+                pr_number,
+                sanitized_reason,
+                approved_by,
+                datetime.now().isoformat(),
+            ),
+        )
         self.conn.commit()
 
     def get_dismissal_reason(self, semantic_key: str, pr_number: int) -> Optional[str]:
         """Get dismissal reason for a finding (PR-scoped)."""
-        cursor = self.conn.execute("""
+        cursor = self.conn.execute(
+            """
             SELECT dismissal_reason FROM intentional_exceptions
             WHERE semantic_key = ? AND pr_number = ?
-        """, (semantic_key, pr_number))
+        """,
+            (semantic_key, pr_number),
+        )
 
         row = cursor.fetchone()
-        return row['dismissal_reason'] if row else None
+        return row["dismissal_reason"] if row else None
 
     def deduplicate_findings(self, new_findings: List[Finding], pr_number: int) -> dict:
         """
@@ -301,7 +318,7 @@ class ReviewMemoryStore:
                 'resolved': [...]
             }
         """
-        result = {'new': [], 'still_present': [], 'resolved': []}
+        result = {"new": [], "still_present": [], "resolved": []}
 
         # Get prior findings
         prior_findings = self.get_pr_findings(pr_number)
@@ -317,19 +334,19 @@ class ReviewMemoryStore:
                 # Same finding from before
                 finding.status = "still_present"
                 finding.first_seen_sha = prior_map[key].first_seen_sha
-                result['still_present'].append(finding)
+                result["still_present"].append(finding)
                 seen_keys.add(key)
             else:
                 # New finding
                 finding.status = "new"
-                result['new'].append(finding)
+                result["new"].append(finding)
                 seen_keys.add(key)
 
         # Check for resolved findings
         for key, prior_finding in prior_map.items():
             if key not in seen_keys:
                 prior_finding.status = "resolved"
-                result['resolved'].append(prior_finding)
+                result["resolved"].append(prior_finding)
 
         return result
 
@@ -360,7 +377,7 @@ if __name__ == "__main__":
             line_number=42,
             pr_number=123,
             first_seen_sha="abc123",
-            last_seen_sha="abc123"
+            last_seen_sha="abc123",
         )
 
         store.save_finding(f)

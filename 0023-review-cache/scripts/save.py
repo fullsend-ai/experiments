@@ -10,10 +10,11 @@ Usage:
 
 import argparse
 import json
-import sys
 import subprocess
+import sys
 from pathlib import Path
-from store import ReviewMemoryStore, Finding
+
+from store import Finding, ReviewMemoryStore
 
 
 def extract_enrichment(file_path: str, line: int) -> tuple[str, str]:
@@ -32,10 +33,7 @@ def extract_enrichment(file_path: str, line: int) -> tuple[str, str]:
         extract_function_name "{file_path}" {line}
         """
         result = subprocess.run(
-            ["bash", "-c", bash_cmd],
-            capture_output=True,
-            text=True,
-            check=True
+            ["bash", "-c", bash_cmd], capture_output=True, text=True, check=True
         )
         function_name = result.stdout.strip() or "package"
 
@@ -44,21 +42,25 @@ def extract_enrichment(file_path: str, line: int) -> tuple[str, str]:
         extract_code_snippet "{file_path}" {line}
         """
         result = subprocess.run(
-            ["bash", "-c", bash_cmd],
-            capture_output=True,
-            text=True,
-            check=True
+            ["bash", "-c", bash_cmd], capture_output=True, text=True, check=True
         )
         code_snippet = result.stdout.strip()
 
         return function_name, code_snippet
 
     except subprocess.CalledProcessError as e:
-        print(f"Warning: Failed to extract for {file_path}:{line}: {e}", file=sys.stderr)
+        print(
+            f"Warning: Failed to extract for {file_path}:{line}: {e}", file=sys.stderr
+        )
         return "package", ""
 
 
-def save_findings(findings_file: str, pr_number: int, head_sha: str, db_path: str = ".fullsend/review-memory.db"):
+def save_findings(
+    findings_file: str,
+    pr_number: int,
+    head_sha: str,
+    db_path: str = ".fullsend/review-memory.db",
+):
     """
     Save findings to SQLite, enriching with function names and code snippets.
 
@@ -69,10 +71,10 @@ def save_findings(findings_file: str, pr_number: int, head_sha: str, db_path: st
         db_path: Database path
     """
     # Read findings
-    with open(findings_file, 'r') as f:
+    with open(findings_file, "r") as f:
         data = json.load(f)
 
-    findings_data = data.get('findings', [])
+    findings_data = data.get("findings", [])
 
     if not findings_data:
         print("No findings to save")
@@ -83,8 +85,8 @@ def save_findings(findings_file: str, pr_number: int, head_sha: str, db_path: st
 
     for f_data in findings_data:
         # Extract enrichment
-        file_path = f_data.get('file', '')
-        line = f_data.get('line', 0)
+        file_path = f_data.get("file", "")
+        line = f_data.get("line", 0)
 
         function_name, code_snippet = extract_enrichment(file_path, line)
 
@@ -92,16 +94,16 @@ def save_findings(findings_file: str, pr_number: int, head_sha: str, db_path: st
         finding = Finding(
             file_path=file_path,
             function_name=function_name,
-            category=f_data.get('category', 'unknown'),
-            severity=f_data.get('severity', 'low'),
-            description=f_data.get('description', ''),
-            remediation=f_data.get('remediation', ''),
+            category=f_data.get("category", "unknown"),
+            severity=f_data.get("severity", "low"),
+            description=f_data.get("description", ""),
+            remediation=f_data.get("remediation", ""),
             code_snippet=code_snippet,
             line_number=line,
             pr_number=pr_number,
             first_seen_sha=head_sha,
             last_seen_sha=head_sha,
-            status="new"
+            status="new",
         )
 
         enriched_findings.append(finding)
@@ -113,7 +115,7 @@ def save_findings(findings_file: str, pr_number: int, head_sha: str, db_path: st
 
         # Save all findings
         saved_count = 0
-        for status_group in ['new', 'still_present', 'resolved']:
+        for status_group in ["new", "still_present", "resolved"]:
             for finding in result[status_group]:
                 store.save_finding(finding)
                 saved_count += 1
@@ -126,10 +128,12 @@ def save_findings(findings_file: str, pr_number: int, head_sha: str, db_path: st
 
 def main():
     parser = argparse.ArgumentParser(description="Save review findings to cache")
-    parser.add_argument('--findings', required=True, help="Path to agent-result.json")
-    parser.add_argument('--pr', type=int, required=True, help="PR number")
-    parser.add_argument('--sha', required=True, help="Current HEAD SHA")
-    parser.add_argument('--db', default=".fullsend/review-memory.db", help="Database path")
+    parser.add_argument("--findings", required=True, help="Path to agent-result.json")
+    parser.add_argument("--pr", type=int, required=True, help="PR number")
+    parser.add_argument("--sha", required=True, help="Current HEAD SHA")
+    parser.add_argument(
+        "--db", default=".fullsend/review-memory.db", help="Database path"
+    )
 
     args = parser.parse_args()
 
