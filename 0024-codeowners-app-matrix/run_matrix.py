@@ -147,13 +147,23 @@ def check_merge_status(token: str, pr_number: int) -> dict:
 
 def main():
     read_app_id = os.environ.get("READ_BOT_APP_ID")
-    read_pem = os.environ.get("READ_BOT_PEM", "./read-bot.pem")
+    read_pem = os.environ.get("READ_BOT_PEM")
     write_app_id = os.environ.get("WRITE_BOT_APP_ID")
-    write_pem = os.environ.get("WRITE_BOT_PEM", "./write-bot.pem")
+    write_pem = os.environ.get("WRITE_BOT_PEM")
 
-    if not read_app_id or not write_app_id:
+    missing = [
+        name
+        for name, val in [
+            ("READ_BOT_APP_ID", read_app_id),
+            ("READ_BOT_PEM", read_pem),
+            ("WRITE_BOT_APP_ID", write_app_id),
+            ("WRITE_BOT_PEM", write_pem),
+        ]
+        if not val
+    ]
+    if missing:
         print(
-            "ERROR: READ_BOT_APP_ID and WRITE_BOT_APP_ID must be set", file=sys.stderr
+            f"ERROR: required env vars not set: {', '.join(missing)}", file=sys.stderr
         )
         sys.exit(1)
 
@@ -161,12 +171,12 @@ def main():
     print("Authenticating read-bot...")
     read_jwt = make_jwt(read_app_id, read_pem)
     read_token = get_installation_token(read_jwt)
-    print(f"  read-bot token: {read_token[:12]}...")
+    print("  read-bot authenticated")
 
     print("Authenticating write-bot...")
     write_jwt = make_jwt(write_app_id, write_pem)
     write_token = get_installation_token(write_jwt)
-    print(f"  write-bot token: {write_token[:12]}...")
+    print("  write-bot authenticated")
 
     tokens = {"read": read_token, "write": write_token}
 
