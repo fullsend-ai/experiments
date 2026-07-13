@@ -126,12 +126,13 @@ class ThresholdResult:
     upper_bound: float
     target_rate: float
     n: int
+    confidence: float = 0.95
 
     def __str__(self) -> str:  # pragma: no cover - display only
         verdict = "PASS" if self.passed else "FAIL"
         return (
             f"{verdict}: {self.observed_rate:.1%} observed over {self.n} trials "
-            f"(95% CI [{self.lower_bound:.1%}, {self.upper_bound:.1%}], "
+            f"({self.confidence:.0%} CI [{self.lower_bound:.1%}, {self.upper_bound:.1%}], "
             f"target {self.target_rate:.1%})"
         )
 
@@ -161,6 +162,7 @@ def threshold_test(
         upper_bound=upper,
         target_rate=target_rate,
         n=n,
+        confidence=confidence,
     )
 
 
@@ -186,6 +188,8 @@ def bootstrap_ci(
         raise ValueError("need at least 2 samples to bootstrap")
     if iterations < 1:
         raise ValueError(f"iterations must be positive, got {iterations!r}")
+    if not 0.0 < confidence < 1.0:
+        raise ValueError(f"confidence must be in (0, 1), got {confidence!r}")
 
     rng = random.Random(seed)
     n = len(samples)
@@ -211,12 +215,13 @@ class ComparisonResult:
     upper_bound: float
     n_a: int
     n_b: int
+    confidence: float = 0.95
 
     def __str__(self) -> str:  # pragma: no cover - display only
         verdict = "SIGNIFICANT" if self.significant else "NOT SIGNIFICANT"
         return (
             f"{verdict}: difference {self.difference:+.3f} "
-            f"(95% CI [{self.lower_bound:+.3f}, {self.upper_bound:+.3f}], "
+            f"({self.confidence:.0%} CI [{self.lower_bound:+.3f}, {self.upper_bound:+.3f}], "
             f"n={self.n_a} vs {self.n_b})"
         )
 
@@ -245,6 +250,10 @@ def compare_means(
     """
     if len(a) < 2 or len(b) < 2:
         raise ValueError("need at least 2 samples per arm")
+    if iterations < 1:
+        raise ValueError(f"iterations must be positive, got {iterations!r}")
+    if not 0.0 < confidence < 1.0:
+        raise ValueError(f"confidence must be in (0, 1), got {confidence!r}")
 
     rng = random.Random(seed)
     n_a, n_b = len(a), len(b)
@@ -267,6 +276,7 @@ def compare_means(
         upper_bound=upper,
         n_a=n_a,
         n_b=n_b,
+        confidence=confidence,
     )
 
 

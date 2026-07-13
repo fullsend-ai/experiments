@@ -45,8 +45,15 @@ def extract_counts(data: Any) -> tuple[int, int]:
     elif isinstance(data, dict) and isinstance(data.get("stats"), dict):
         stats = data["stats"]
     if stats is not None and "successes" in stats:
-        successes = int(stats["successes"])
-        failures = int(stats.get("failures", 0))
+        successes = stats["successes"]
+        failures = stats.get("failures", 0)
+        # Fail closed: this is a CI gate, so reject malformed types rather than
+        # coercing them (int("...") or truthiness could silently pass a bad run).
+        # `type(...) is int` also excludes bool, which is an int subclass.
+        if type(successes) is not int or type(failures) is not int:
+            raise ValueError("stats 'successes'/'failures' must be integers")
+        if successes < 0 or failures < 0:
+            raise ValueError("stats counts must be non-negative")
         total = successes + failures
         if total <= 0:
             raise ValueError("stats block reports zero trials")
@@ -64,21 +71,24 @@ def extract_counts(data: Any) -> tuple[int, int]:
             raise ValueError("results array is empty")
         successes = 0
         for row in rows:
-            if isinstance(row, dict):
-                if "success" in row:
-                    successes += 1 if row["success"] else 0
-                elif "pass" in row:
-                    successes += 1 if row["pass"] else 0
-                else:
-                    raise ValueError("result row has no 'success'/'pass' field")
-            else:
+            if not isinstance(row, dict):
                 raise ValueError("result row is not an object")
+            if "success" in row:
+                value = row["success"]
+            elif "pass" in row:
+                value = row["pass"]
+            else:
+                raise ValueError("result row has no 'success'/'pass' field")
+            # Fail closed: the string "false" is truthy, so require a real bool.
+            if type(value) is not bool:
+                raise ValueError("result row 'success'/'pass' must be a boolean")
+            successes += 1 if value else 0
         return successes, total
 
     raise ValueError("could not find a stats block or results array in the input")
 
 
-def build_parser() -> argparse.ArgumentParser:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("results", help="path to a promptfoo results JSON file")
     parser.add_argument(
@@ -89,11 +99,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--confidence", type=float, default=0.95,
         help="confidence level for the interval (default 0.95)",
     )
-    return parser
-
-
-def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    args = parser.parse_args(argv)
 
     try:
         with open(args.results, encoding="utf-8") as fh:

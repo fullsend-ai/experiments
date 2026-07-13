@@ -109,6 +109,9 @@ class TestBootstrapCI(unittest.TestCase):
             s.bootstrap_ci([1.0])
         with self.assertRaises(ValueError):
             s.bootstrap_ci([1.0, 2.0], iterations=0)
+        for bad in (0.0, 1.0, 1.5):
+            with self.assertRaises(ValueError):
+                s.bootstrap_ci([1.0, 2.0], confidence=bad)
 
 
 class TestCompareMeans(unittest.TestCase):
@@ -132,6 +135,16 @@ class TestCompareMeans(unittest.TestCase):
     def test_validation(self):
         with self.assertRaises(ValueError):
             s.compare_means([1.0], [1.0, 2.0])
+        with self.assertRaises(ValueError):
+            s.compare_means([1.0, 2.0], [3.0, 4.0], iterations=0)
+        with self.assertRaises(ValueError):
+            s.compare_means([1.0, 2.0], [3.0, 4.0], confidence=1.5)
+
+    def test_confidence_is_reported(self):
+        # The result carries the confidence it was computed at (not hardcoded).
+        res = s.compare_means([1.0, 2.0, 3.0], [1.0, 2.0, 3.0], confidence=0.90, seed=1)
+        self.assertEqual(res.confidence, 0.90)
+        self.assertIn("90% CI", str(res))
 
 
 class TestMinTrials(unittest.TestCase):
@@ -169,6 +182,12 @@ class TestThresholdTest(unittest.TestCase):
         res = s.threshold_test(190, 200, 0.90)
         self.assertTrue(res.passed)
 
+    def test_label_reflects_confidence(self):
+        # The printed CI label must match the confidence used, not hardcode 95%.
+        res = s.threshold_test(19, 20, 0.90, confidence=0.80)
+        self.assertEqual(res.confidence, 0.80)
+        self.assertIn("80% CI", str(res))
+
 
 class TestThresholdCheckCLI(unittest.TestCase):
     def test_parses_promptfoo_json_manual_match(self):
@@ -200,6 +219,15 @@ class TestThresholdCheckCLI(unittest.TestCase):
     def test_empty_results_raises(self):
         with self.assertRaises(ValueError):
             tc.extract_counts({"results": {"results": []}})
+
+    def test_string_success_rejected(self):
+        # "false" is truthy in Python; a CI gate must not count it as a pass.
+        with self.assertRaises(ValueError):
+            tc.extract_counts({"results": {"results": [{"success": "false"}]}})
+
+    def test_non_int_stats_rejected(self):
+        with self.assertRaises(ValueError):
+            tc.extract_counts({"results": {"stats": {"successes": "19", "failures": 1}}})
 
 
 if __name__ == "__main__":
