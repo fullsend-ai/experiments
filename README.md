@@ -29,7 +29,7 @@ Experiments for the fullsend platform — each tests a hypothesis about autonomo
 | 0021 | [Tool scoping](0021-tool-scoping/) | Concluded |
 | 0022 | [Claude GitHub App auth](0022-claude-github-app-auth/) | Concluded |
 | 0023 | [Review cache publication policy](0023-review-cache/) | Concluded |
-| 0024 | [CODEOWNERS + GitHub App approval matrix](0024-codeowners-app-matrix/) | Active |
+| 0024 | [CODEOWNERS + GitHub App approval matrix](0024-codeowners-app-matrix/) | Concluded |
 
 ## Conventions
 
