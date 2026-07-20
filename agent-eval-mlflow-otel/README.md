@@ -109,8 +109,11 @@ MLflow 3.x was chosen because it natively accepts OTLP traces, has a built-in Pr
 2. **Harness YAML as single source of truth** — Each agent's eval configuration (scorers, gates, baselines) lives in its harness YAML alongside the agent config. `harness.py` resolves scorer names to Python functions at runtime.
 
 3. **Hybrid scoring** — Mechanical scorers are instant and free (pure Python checks on trace attributes). LLM judges run Claude Opus via Vertex AI for semantic quality evaluation. Both feed into the same MLflow Feedback system.
+   Prefer keeping mechanical scorers on objective trace properties (cost, duration, tool counts, schema validation). Assessments that depend on LLM-generated fields (e.g. the agent's self-reported confidence) compound non-determinism if they feed baselines and regression detection — those belong in the LLM-judge tier.
 
 4. **Fixture-based PR gates** — When a prompt changes, the CI triggers a real agent run against a known test issue, then scores the resulting trace. This is an n=1 smoke test, not statistical significance — production monitoring provides the longer-term signal.
+
+5. **Gate scales match scorer output** — LLM judge scorers normalize rubric scores to 0–1 (`score / 5.0`). Harness gates such as `min_quality_score` must use that same 0–1 scale (e.g. `0.6` for a "3/5" bar), not the raw 1–5 rubric.
 
 ## Results
 
@@ -150,6 +153,8 @@ Scorers receive `mlflow.entities.Trace` objects and return `Feedback` with value
 | reasoning_coherence | 0.71 | 0.40 | 1.0 |
 | explore_context_quality | 0.72 | 0.40 | 1.0 |
 
+`cost_within_budget` currently uses a fixed hard ceiling (e.g. $2.00 for explore). That validates "under budget" but does not surface cost trends — $1.90 and $0.04 both score 1.0. A follow-on improvement is deviation from a reference baseline mean (continuous signal) rather than a binary cap. See also [methodology notes](#methodology-notes-from-review).
+
 ### Hypothesis 3: PR Gate — VALIDATED
 
 The eval-gate workflow successfully:
@@ -169,7 +174,10 @@ Daily monitoring workflow:
 - Compares against golden baseline means (10% regression threshold)
 - Sends Slack alert with per-agent, per-scorer breakdown
 
-**Caveat:** Golden baselines require manual curation. `create_golden.py` selects diverse traces and scores them, but the quality of the baseline depends on the quality of the traces available. Small n (< 10 traces) makes the baseline noisy.
+**Caveats:**
+
+- Golden baselines require manual curation. `create_golden.py` selects diverse traces and scores them, but the quality of the baseline depends on the quality of the traces available. Small n (< 10 traces) makes the baseline noisy.
+- Production-trace means mix heterogeneous work items and environments. A score drop can mean agent regression — or harder inputs, infra outages, interlaced human activity, or poorly described issues. Production means remain useful for observability and trend analysis, but **evaluation baselines should prefer fixed, controlled fixture inputs** (this experiment already has `fixtures/input.yaml` and `fixtures/rubric.yaml`) so agent quality is isolated from environmental variance.
 
 ### Hypothesis 5: Prompt Versioning — VALIDATED
 
@@ -209,6 +217,18 @@ The Compare tab allows side-by-side diff of any two prompt versions.
 - **LLM judge reproducibility** — Same trace scored twice can produce different scores (±0.5 typical). Averaging multiple judge runs would improve reliability but increases cost.
 - **No inline regression on PR** — The PR gate tests the new prompt against a fixture, not against recent production traces. A prompt could pass the fixture but regress on real-world variety.
 - **Cost** — LLM judges at ~$0.02/scorer/trace means scoring 100 traces with 8 judges costs ~$16. Acceptable for daily monitoring, expensive for bulk historical analysis.
+
+### Methodology notes (from review)
+
+These are PoC caveats called out in review — not blockers for this experiment, but worth carrying into any production follow-on:
+
+1. **`cost_within_budget` is a binary ceiling, not a trend signal.** Prefer scoring deviation from a known baseline mean (e.g. % above/below reference) so cost regressions are continuous rather than pass/fail against a generous cap.
+
+2. **`confidence_coherence` sits on LLM-generated self-reported confidence.** That puts non-deterministic data under "mechanical" scoring. If those Feedbacks feed golden baselines and regression detection, non-determinism compounds across layers. Keep mechanical scorers on objective span attributes; move confidence assessment to the LLM-judge tier (alongside criteria like `refine_confidence_honesty`).
+
+3. **Gate thresholds must use the same scale as scorer Feedback.** Example harness previously had `min_quality_score: 3.0` (1–5 rubric) while judges emit 0–1 (`score / 5.0`). The example now uses `0.6` on the 0–1 scale.
+
+4. **Golden baselines for evaluation should be fixture-driven.** Averaging curated production traces is fine for monitoring, but controlled fixture runs are the right reference for pass/fail regression checks.
 
 ### MLflow features not used
 
