@@ -1,0 +1,24 @@
+{"id": "1.1", "cat": "overlap", "op": "read", "path": "/sandbox/workspace/target-repo/README.md", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "1.2", "cat": "overlap", "op": "listdir", "path": "/sandbox/workspace/target-repo/", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "1.3", "cat": "overlap", "op": "write", "path": "/sandbox/workspace/target-repo/README.md", "expect": "EACCES", "actual": "ok", "pass": false, "detail": ""}
+{"id": "1.4", "cat": "overlap", "op": "create", "path": "/sandbox/workspace/target-repo/new-file.txt", "expect": "EACCES", "actual": "ok", "pass": false, "detail": ""}
+{"id": "1.5", "cat": "overlap", "op": "mkdir", "path": "/sandbox/workspace/target-repo/newdir/", "expect": "EACCES", "actual": "ok", "pass": false, "detail": ""}
+{"id": "1.6", "cat": "overlap", "op": "write", "path": "/sandbox/workspace/other-project/file.txt", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "1.7", "cat": "overlap", "op": "write", "path": "/sandbox/workspace/file.txt", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "2.1", "cat": "rw", "op": "write+read", "path": "/sandbox/test-rw", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "2.2", "cat": "rw", "op": "write+read", "path": "/tmp/test-rw", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "2.3", "cat": "rw", "op": "write", "path": "/dev/null", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "2.4", "cat": "rw", "op": "mkdir", "path": "/sandbox/newdir/", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "3.1", "cat": "ro", "op": "read", "path": "/usr/bin/ls", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "3.2", "cat": "ro", "op": "write", "path": "/usr/test-write", "expect": "EACCES", "actual": "EACCES", "pass": true, "detail": "[Errno 13] Permission denied: '/usr/test-write'"}
+{"id": "3.3", "cat": "ro", "op": "read", "path": "/etc/hostname", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "3.4", "cat": "ro", "op": "write", "path": "/etc/test-write", "expect": "EACCES", "actual": "EACCES", "pass": true, "detail": "[Errno 13] Permission denied: '/etc/test-write'"}
+{"id": "3.5", "cat": "ro", "op": "read", "path": "/proc/self/status", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "3.6", "cat": "ro", "op": "read", "path": "/dev/urandom", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "4.1", "cat": "deny", "op": "read", "path": "/home/", "expect": "EACCES", "actual": "EACCES", "pass": true, "detail": "[Errno 13] Permission denied: '/home'"}
+{"id": "4.2", "cat": "deny", "op": "read", "path": "/root/", "expect": "EACCES", "actual": "EACCES", "pass": true, "detail": "[Errno 13] Permission denied: '/root'"}
+{"id": "4.3", "cat": "deny", "op": "read", "path": "/opt/", "expect": "EACCES", "actual": "EACCES", "pass": true, "detail": "[Errno 13] Permission denied: '/opt'"}
+{"id": "4.4", "cat": "deny", "op": "write", "path": "/opt/test-write", "expect": "EACCES", "actual": "EACCES", "pass": true, "detail": "[Errno 13] Permission denied: '/opt/test-write'"}
+{"id": "5.1", "cat": "edge", "op": "symlink_write", "path": "/tmp/link-to-etc-passwd", "expect": "EACCES", "actual": "EACCES", "pass": true, "detail": "[Errno 13] Permission denied: '/tmp/link-to-etc-passwd'"}
+{"id": "5.2", "cat": "edge", "op": "traversal_write", "path": "/sandbox/workspace/target-repo/../other/file", "expect": "ok", "actual": "ok", "pass": true, "detail": ""}
+{"id": "5.3", "cat": "edge", "op": "delete", "path": "/sandbox/workspace/target-repo/README.md", "expect": "EACCES", "actual": "ok", "pass": false, "detail": ""}
