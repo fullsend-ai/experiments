@@ -4,21 +4,18 @@
 # This file configures fullsend for per-repo installation mode.
 # See ADR 0033 for details.
 version: "1"
-runtime: claude
 roles:
-    - fullsend
     - triage
     - coder
     - review
+    - fix
     - retro
     - prioritize
-agents:
-    - source: https://raw.githubusercontent.com/redhat-community-ai-tools/qualityflow-fullsend/b26c947e95e6325284c5542d466a2a016f6aa312/harness/qualityflow.yaml#sha256=473d44a73c465b318fa3cd8dfee2c55b4a5dc7439f994607eb774825c43c17c2
 allowed_remote_resources:
-    - https://raw.githubusercontent.com/redhat-community-ai-tools/qualityflow-fullsend/
+    - https://raw.githubusercontent.com/fullsend-ai/fullsend/
+    - https://raw.githubusercontent.com/fullsend-ai/agents/
 create_issues:
     allow_targets:
-        orgs:
-            - fullsend-ai
         repos:
+            - fullsend-ai/experiments
             - fullsend-ai/fullsend
