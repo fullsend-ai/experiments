@@ -8,13 +8,14 @@ topics:
 
 # 28. Code agent on feature-scale epics, graded without reference solutions
 
-Date: 2026-09-26 (first results; experiment continues)
+Date: 2026-09-26 (first results); 2026-10-15 (rerun with the review step as
+deployed and sandboxed tests; experiment continues)
 Authors: Bill Murdock, with Claude Code
 Tracks Jira AISDLC-5. Builds on [0006](../0006-code-agent-evaluation/) (the
 first code-agent evaluation, 20 synthetic bug-fix scenarios) and
 [0026](../0026-eval-statistical-significance/) (how many trials a comparison
 needs). The runnable eval lives in `fullsend-ai/agents` under
-`eval/dev/code-rhai/` (proposed in a pull request from this work; see Related).
+`eval/local/code-rhai/` (proposed in a pull request from this work; see Related).
 
 ## Hypothesis
 
@@ -57,11 +58,35 @@ criteria. A decline is scored separately on whether its stated reason holds
 up against the task and the repository. Every artifact is kept so a different
 judge can re-score later without re-running agents.
 
-**Two arms, same pipeline.** Arm 1 is the code agent exactly as the fleet
-runs it (Claude Code runtime, Opus 4.6, effort high). Arm 2 swaps only the
-model and runtime (pi runtime, GPT-6 Luna, effort high). The review step is
-the production review agent in both arms, so it is a constant. The judge is
+**Two arms, same pipeline.** In the September and early-October runs, arm 1
+was the code agent as the fleet then ran it (Claude Code runtime, Opus 4.6,
+effort high) and arm 2 swapped only the model and runtime (pi runtime, GPT-6
+Luna, effort high). In the October 14/15 rerun the arms are GLM 5.3 at effort
+high on pi, served by Red Hat's EnMaaS gateway, and Opus 5 on Claude Code,
+the closest stand-in for the Opus 5.5 the fleet moved to on October 2 that a
+developer's Vertex project can serve. The review step is fullsend's review
+agent, held constant across arms (see "The review step" below). The judge is
 the same model for both arms.
+
+**The review step.** The review agent is a parent plus nine persona
+sub-agents, and what it runs on is decided by the fullsend configuration the
+eval runs under, not by the eval. In the September and early-October runs it
+ran in its Claude Code form: an Opus 4.6 parent dispatching Claude sub-agents
+(Opus 4.6 and Sonnet 4.6). That is the review harness's default, what a
+repository with no review entry in its own fullsend config gets; the agents
+repository's own deployed review was by then already on the pi runtime with a
+GPT-6.1 Sol parent and GPT and Gemini personas. On October 6 it moved to a
+Sonnet 5.5 parent, an Opus 5.5 challenger, GPT-6.1 Sol for correctness and
+security and Gemini 3.8 Flash for docs and style, and that is the
+configuration the rerun uses, with one deviation: the Claude aliases are
+pinned to Sonnet 5 and Opus 5, because the Vertex project the runs use does
+not serve the 5.5 generation. Each run's `review-metrics.json` records the
+models that actually answered, per persona.
+
+**Repository tests run in a sandbox.** From the rerun on, the repository's
+own test command runs on the PR head inside a throwaway OpenShell sandbox
+built from the coder's image, with only the package registries reachable,
+rather than on the host that runs the eval. Earlier runs ran it on the host.
 
 ## Results
 
@@ -183,6 +208,46 @@ judge keeps the full repository snapshot at the PR head, so it can check
 claims against code and the project's own rules; any outside fact it must
 verify now has to be on the card.
 
+### 2026-10-14/15: GLM 5.3 vs Opus 5, review as deployed, sandboxed tests, two judges
+
+Both arms ran overnight on the same five cards, back to back, with the review
+step configured as the agents repository configures it (above) and the repo
+tests in the sandbox. Judge: Opus 5, confined, one sample per case, then GLM
+5.3 (codex runner via EnMaaS) over the same artifacts.
+
+| Case | GLM 5.3 high (pi) | Opus 5 high (Claude Code) |
+|---|---|---|
+| 001 | PR, 80 turns, 23 min, +603, tests pass, quality 4 / 4 | PR, 99 turns, 18 min, +961/-1, tests pass, quality 4 / 3 |
+| 002 | PR, 100 turns, 20 min, +332/-1106, tests pass, quality 3 / 3 | PR, 74 turns, 13 min, +355/-1028, tests pass, quality 3 / 4 |
+| 003 | PR, 58 turns, 14 min, +508/-102, checks pass, quality 3 / 3 | PR, 57 turns, 13 min, +491/-95, checks pass, quality 4 / 4 |
+| 004 | PR, 64 turns, 13 min, +180, tests pass, quality 4 / 3 | PR, 44 turns, 7 min, +177, tests pass, quality 4 / 3 |
+| 005 | PR, 309 turns, 82 min, +24541 in 90 files, tests pass, quality 3 / 3 | PR, 153 turns, 20 min, +2234 in 44 files, tests pass, quality 3 / 3 |
+
+Quality is "Opus 5 judge / GLM judge". Means: GLM arm 3.40 / 3.20, Opus 5
+arm 3.60 / 3.40. The two judges agree exactly on six of the ten PRs and are
+one point apart on the rest, and both rank the arms the same way. Every PR
+passed the repository's own tests in the sandbox, and the review ran with the
+full persona set on all ten PRs: one Opus 5 challenger call, three or four
+Sonnet 5 persona calls, two GPT-6.1 Sol calls and two or three Gemini calls
+each.
+
+Wall clock: the GLM arm took 5 h 5 min for the five cases, the Opus 5 arm
+3 h 25 min, each including review and judging. On the coder alone Opus 5 was
+about twice as fast overall, and the gap is almost entirely case 005, where
+GLM spent 82 minutes writing a 24,500-line scaffold across 90 files and Opus
+20 minutes on 2,200 lines across 44; on the other four cases the coders were
+within seven minutes of each other. Spend: the GLM arm $37 (coder free on
+EnMaaS; reviews $27, judging $10), the Opus 5 arm $74 (coders $42, reviews
+$24, judging $8); the GLM judge was free. The review step with the deployed
+persona set costs $3 to $10 per case on PRs of this size.
+
+Against the earlier Opus 4.6 arm (mean 3.0 from the confined judge) both arms
+score higher, but the comparison is not clean: the review evidence and the
+test environment both changed between the runs, and one run per cell cannot
+separate model from noise. Within the rerun, where everything else is held
+constant, the two arms are close: under the Opus 5 judge the free coder ties
+on four of five cases and is one point lower on the fifth.
+
 ### Observations
 
 - **Reproducible refusals, on both sides.** Luna declined RHAI-517 in every
@@ -220,25 +285,46 @@ verify now has to be on the card.
   turns produced a bigger scaffold that does not install, where Luna's 172
   turns passed the repo's tests. The sample is far too small to conclude
   anything; it sets the stake for the question.
-- **One repo convention decided every test failure.** Both Claude models,
-  on different days, added a workspace package to the odh-dashboard monorepo
-  without regenerating `package-lock.json`, so `npm ci` refused to install.
-  Luna did not. Repository-specific conventions of this kind are where
-  "agent readiness" of a repo shows up in the numbers.
+- **One repo convention decided every early test failure.** In the
+  September and October 6 runs both Claude models, on different days, added a
+  workspace package to the odh-dashboard monorepo without regenerating
+  `package-lock.json`, so `npm ci` refused to install. Luna did not. In the
+  rerun both GLM 5.3 and Opus 5 got the lockfile right and all five PRs
+  installed and passed. Repository-specific conventions of this kind are
+  where "agent readiness" of a repo shows up in the numbers.
+- **The review's sub-agents must be checked, not assumed.** Before the rerun
+  the eval forced the review step onto a fixed model, and on a machine whose
+  Vertex project lacked the models the persona files name, the persona
+  sub-agents failed silently with zero tokens while the parent reviewed
+  alone. That happened in a sister eval on this pipeline, not in the runs
+  reported here, but it is why every run now records the models each
+  persona actually answered on, and why the rerun's review is described
+  above in terms of what ran rather than what was configured.
 - **Reported costs can be wrong.** The pi runtime priced GPT-6 Luna at a
   Claude-tier rate, about 50 times its published price. Costs above were
   recomputed from token counts.
 - **The review step is expensive relative to the coder** on these cases ($4
-  to $6 per review against $2 to $4.50 per Opus implementation). Whether the
-  judge needs it is an open question worth a controlled test.
+  to $6 per review in the early runs, $3 to $10 with the deployed persona
+  set in the rerun, against $2 to $4.50 per Opus 4.6 implementation and $4
+  to $19 per Opus 5 one). Whether the judge needs it is an open question
+  worth a controlled test.
+- **GLM 5.3 through EnMaaS is a usable arm.** Free to run, within 0.2 of
+  Opus 5 under both judges, and all five PRs installed and passed tests. Its
+  cost is time on the largest case, where it produced ten times the code.
 
 ## Limitations
 
 One sample per case, one run per arm, five cases, one sample per judge.
 Runs were made from a laptop against a personal cloud budget; nothing here
 is a fleet measurement yet. Two of the five cases are from the same
-repository. The baseline is the agents repository's harness default of late
-August 2026, not the fleet's current deployed configuration. All judge
+repository. The September and October 6 baseline is the agents repository's
+harness default of late August 2026 (Opus 4.6); the rerun's Opus 5 arm
+stands in for the Opus 5.5 the fleet deploys since October 2, and the rerun's
+review pins the Claude aliases one generation back for the same reason, so
+neither arm is the deployed agent exactly. The review evidence differs
+between the early runs (Claude Code form, Opus 4.6 parent) and the rerun (pi
+persona ensemble, cross-vendor), and the repository tests moved from the host
+to a sandbox, so scores across the two periods are not directly comparable. All judge
 verdicts before the confined re-judge were produced by a judge that could
 reach live GitHub; they are kept for the agreement comparison, but only the
 confined column is treated as a measurement. Every verdict so far also saw
@@ -252,8 +338,12 @@ re-run without the notes.
 Open. The pipeline works end to end on real epics without reference
 solutions, and it already measures something the synthetic benchmark in 0006
 could not: how an agent behaves when the repository's own rules push back.
-The quality signal is consistent across four judges and survives confining
-the judge to its inputs; what it lacks is sample size.
+The quality signal is consistent across four judges, survives confining the
+judge to its inputs, and in the rerun holds up under a second, free judge
+that agrees with the first on six of ten PRs and is never more than a point
+away. With the review step configured as deployed and the tests sandboxed,
+a free GLM 5.3 arm lands within 0.2 of an Opus 5 arm on these five cases;
+what the measurement still lacks is sample size.
 
 Next: repeated judge samples per 0026 on the stored artifacts; a second case
 set built from 0006's twenty scenarios, which also brings in the safety
@@ -266,7 +356,13 @@ from epic-code-gen).
 
 ## Related
 
-- fullsend-ai/agents#1622: `eval/dev/code-rhai/` (pipeline, scripts, cards).
+- fullsend-ai/agents#1622: `eval/local/code-rhai/` (pipeline, scripts, cards),
+  including the sandboxed regression check and the review-step configuration
+  described above.
+- A separate experiment (forthcoming) covers the production-PR dataset built on
+  the same pipeline: real fullsend PRs judged at first push and final state,
+  the agent on the same issues, an effort-level sweep on GLM, and the Opus
+  comparison on those cases.
 - opendatahub-io/agent-eval-harness#239 and #240: the judge-confinement
   finding and its fix.
 - fullsend-ai/fullsend#7748, a hardening note filed from this work.
