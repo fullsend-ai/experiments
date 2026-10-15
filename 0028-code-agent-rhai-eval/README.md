@@ -88,127 +88,9 @@ own test command runs on the PR head inside a throwaway OpenShell sandbox
 built from the coder's image, with only the package registries reachable,
 rather than on the host that runs the eval. Earlier runs ran it on the host.
 
-## Results
+## Current results
 
-### First look, 2026-09-25/26: Sonnet 4.6 vs Luna, five cases, different judges
-
-A pipeline shake-down rather than a result: the Sonnet arm was judged by
-Opus 5 and the Luna arm by GPT-6 Sol, so the arms are not comparable, and
-the host slept for most of the night. Kept because it produced the Luna
-refusal (below) and the first PR-quality scores.
-
-| Case | Sonnet 4.6 | Luna |
-|---|---|---|
-| 001 | PR, tests pass, quality 4/5 | declined (repo AGENTS.md), decline 4/5 |
-| 002 | PR, tests pass (19 tests deleted), quality 3/5 | declined (unspecified sunset date), decline 4/5 |
-| 003 | PR, checks pass, quality 3/5 | PR, checks pass, quality 3/5 |
-| 004 | PR, tests pass, quality 3/5 | PR, tests pass, quality 3/5 |
-| 005 | PR, tests fail (lockfile not regenerated), quality 2/5 | did not finish (infrastructure) |
-
-### 2026-09-26 and 2026-10-06: Opus 4.6 (fleet as-is) vs Luna, five cases, one judge
-
-Cases 001, 003, 004 on 09-26 and 002, 005 on 10-06, same configuration and
-the same agent checkout throughout. Judge: GPT-6 Sol on the codex runner, one
-sample per case. Reviewer: the production review agent on Claude Code, Opus
-4.6 orchestrator, sub-agents on their configured tiers. "Fleet as-is" means
-the agents repository's harness defaults; the fleet's own deployed
-configuration has since moved to newer models, so this baseline is dated.
-
-| Case | Opus 4.6 | Luna |
-|---|---|---|
-| 001 | PR, 95 turns, tests pass, 12 review findings, quality 3/5 | declined (same reason as before), 13 turns, decline 3/5 |
-| 002 | PR, 62 turns, tests pass (21 test functions removed, 11 added), 22 findings, quality 3/5 | declined, 9 turns, decline 3/5 |
-| 003 | PR, 54 turns, checks pass, 7 findings, quality 3/5 | PR, 53 turns, checks pass, 6 findings, quality 3/5 |
-| 004 | PR, 76 turns, tests pass, 5 findings, quality 3/5 | PR, 29 turns, tests pass, 6 findings, quality 3/5 |
-| 005 | PR, 248 turns, tests fail (lockfile not regenerated), 16 findings, quality 1/5 | PR, 172 turns, tests pass, 16 findings, quality 3/5 |
-
-Totals under this judge: Opus 4.6 five PRs, quality 3, 3, 3, 3, 1 (mean
-2.6), repo tests pass on 4 of 5; Luna three PRs at 3, 3, 3 (mean 3.0) with
-tests passing on all three, plus two declines at 3. Cost at published rates:
-Opus coder $29 for five cases; Luna coder about $0.50; the eight production
-reviews $4 to $11 each ($55 total; the two largest PRs each drew a review
-over $10); judging about $1 per verdict.
-
-The reference verdicts for this experiment are not Sol's but the confined
-Opus 5 judge's (last column of the table in the next section): Opus 4.6 PRs
-3, 3, 3, 4, 2 (mean 3.0); Luna PRs 4, 4, 3 (mean 3.67) and declines 4, 4.
-Same ranking, slightly wider gap.
-
-### Four judges on the same ten artifacts, then a confined re-judge
-
-The stored artifacts were re-scored without re-running any agent, one sample
-each: Opus 5 on the first six (Vertex, 10-06), Opus 5.5 on all ten (10-07,
-via a gateway on the harness side), Sonnet 5 on all ten (Vertex, 10-07), and
-finally Opus 5 again on all ten with the judge confined to its inputs and a
-revised decline prompt (both explained below). The last column is the
-reference set.
-
-| Artifact | GPT-6 Sol | Opus 5 | Opus 5.5 | Sonnet 5 | Opus 5, confined |
-|---|---|---|---|---|---|
-| Opus 4.6, 001 PR | 3 | 3 | 3 | 3 | 3 |
-| Opus 4.6, 002 PR | 3 | - | 3 | 3 | 3 |
-| Opus 4.6, 003 PR | 3 | 3 | 3 | 3 | 3 |
-| Opus 4.6, 004 PR | 3 | 3 | 4 | 4 | 4 |
-| Opus 4.6, 005 PR | 1 | - | 1 | 2 | 2 |
-| Luna, 001 decline | 3 | 2 | 2 | 4 | 4* |
-| Luna, 002 decline | 3 | - | 2 | 4 | 4* |
-| Luna, 003 PR | 3 | 3 | 4 | 4 | 4 |
-| Luna, 004 PR | 3 | 4 | 4 | 4 | 4 |
-| Luna, 005 PR | 3 | - | 4 | 3 | 3 |
-
-\* under the revised decline prompt; the first four columns use the original.
-
-**PRs.** Every judge is within one point of every other on every PR. The
-disagreements lean one way: the stronger judges rate Luna's PRs higher
-(Luna mean 3.67 to 4.0 against 2.8 to 3.0 for Opus 4.6) and never disagree
-by more than a point. Judge choice changes the gap between arms, not the
-ranking of individual artifacts. Sonnet 5 matches Opus 5.5 exactly on six
-of eight PRs and is a viable cheaper judge for `pr_quality`.
-
-**Declines, and the prompt.** The two Luna declines produced the only
-two-point split of the exercise: Opus 5 and 5.5 gave 2, docking for the
-proposal or plan the repository's rule itself asks for; Sonnet 5 gave 4,
-reading the question as "was the stated reason legitimate" and stopping
-there. That is a disagreement about what the question is, not about the
-facts, so the prompt was rewritten to ask only two things: are the
-decline's claims accurate, and is the verified reason a real blocker the
-agent could not resolve (repository rules that forbid proceeding count).
-What the agent did after stopping, the message's polish, and what another
-agent would have done are declared out of scope. Under the new wording Opus
-5 and Sonnet 5 agreed exactly on both declines (4 and 4 on 001; 3 and 3 on
-002, before confinement). The two-point split was the prompt's ambiguity,
-not the models.
-
-**The judge was not confined.** While checking the Sonnet 5 verdicts, one
-rationale quoted the title of the upstream repository's issue #1 and the
-diff of an upstream pull request, neither of which was in the staged inputs.
-The judge had run `gh issue view` and read GitHub. Probing the Claude Code
-CLI showed why: a permissions allow list only pre-approves the listed tools,
-and in headless mode the unlisted ones (Bash, WebFetch, WebSearch, Agent)
-stay callable with no prompt. The harness built the judge's permissions
-from the allow list alone, although its runner already knew how to pass a
-deny list. So every Claude Code judge verdict in this experiment before the
-last column could have consulted live GitHub, including the human PRs the
-cards deliberately withhold; one visibly did, and the others cannot be
-checked because judge transcripts are not kept. The issue lookup was also
-wrong in context: Luna's "issue #1" was the private fixture issue, so the
-judge penalised a mismatch it had created by looking in the wrong place.
-
-Fix: a default deny list for Claude Code judges (Bash, WebFetch, WebSearch,
-Agent), filed and proposed upstream (opendatahub-io/agent-eval-harness#239,
-#240) and set explicitly in the eval. Re-judging all ten artifacts with Opus
-5 under the deny list and the new decline prompt (about $15) flipped no
-conclusion: PR scores within one point of every earlier judge, arm means
-3.0 and 3.67, declines 4 and 4. One instructive shift: the 002 decline had
-scored 3 from an unconfined Opus 5 an hour earlier under the same prompt,
-because that judge fetched the upstream PR diff and could call Luna's claim
-about it false; the confined judge, limited to the snapshot, could only call
-it unsupported. Confinement changes what a judge can know, by design. The
-judge keeps the full repository snapshot at the PR head, so it can check
-claims against code and the project's own rules; any outside fact it must
-verify now has to be on the card.
-
-### 2026-10-14/15: GLM 5.3 vs Opus 5, review as deployed, sandboxed tests, two judges
+### GLM 5.3 vs Opus 5 with the review as deployed and sandboxed tests (2026-10-14/15)
 
 Both arms ran overnight on the same five cards, back to back, with the review
 step configured as the agents repository configures it (above) and the repo
@@ -248,24 +130,65 @@ separate model from noise. Within the rerun, where everything else is held
 constant, the two arms are close: under the Opus 5 judge the free coder ties
 on four of five cases and is one point lower on the fifth.
 
+### What the judge comparisons established
+
+These findings come from re-scoring the artifacts of the earlier runs (the
+runs themselves are superseded; their scores are in the appendix). The
+findings about the judges stand, and the rerun above adds a fifth judge, GLM
+5.3, to the comparison.
+
+**PRs.** Every judge is within one point of every other on every PR. The
+disagreements lean one way: the stronger judges rate Luna's PRs higher
+(Luna mean 3.67 to 4.0 against 2.8 to 3.0 for Opus 4.6) and never disagree
+by more than a point. Judge choice changes the gap between arms, not the
+ranking of individual artifacts. Sonnet 5 matches Opus 5.5 exactly on six
+of eight PRs and is a viable cheaper judge for `pr_quality`.
+
+**Declines, and the prompt.** The two Luna declines produced the only
+two-point split of the exercise: Opus 5 and 5.5 gave 2, docking for the
+proposal or plan the repository's rule itself asks for; Sonnet 5 gave 4,
+reading the question as "was the stated reason legitimate" and stopping
+there. That is a disagreement about what the question is, not about the
+facts, so the prompt was rewritten to ask only two things: are the
+decline's claims accurate, and is the verified reason a real blocker the
+agent could not resolve (repository rules that forbid proceeding count).
+What the agent did after stopping, the message's polish, and what another
+agent would have done are declared out of scope. Under the new wording Opus
+5 and Sonnet 5 agreed exactly on both declines (4 and 4 on 001; 3 and 3 on
+002, before confinement). The two-point split was the prompt's ambiguity,
+not the models.
+
+**The judge was not confined.** While checking the Sonnet 5 verdicts, one
+rationale quoted the title of the upstream repository's issue #1 and the
+diff of an upstream pull request, neither of which was in the staged inputs.
+The judge had run `gh issue view` and read GitHub. Probing the Claude Code
+CLI showed why: a permissions allow list only pre-approves the listed tools,
+and in headless mode the unlisted ones (Bash, WebFetch, WebSearch, Agent)
+stay callable with no prompt. The harness built the judge's permissions
+from the allow list alone, although its runner already knew how to pass a
+deny list. So every Claude Code judge verdict in this experiment before the
+confined re-judge could have consulted live GitHub, including the human PRs the
+cards deliberately withhold; one visibly did, and the others cannot be
+checked because judge transcripts are not kept. The issue lookup was also
+wrong in context: Luna's "issue #1" was the private fixture issue, so the
+judge penalised a mismatch it had created by looking in the wrong place.
+
+Fix: a default deny list for Claude Code judges (Bash, WebFetch, WebSearch,
+Agent), filed and proposed upstream (opendatahub-io/agent-eval-harness#239,
+#240) and set explicitly in the eval. Re-judging all ten artifacts with Opus
+5 under the deny list and the new decline prompt (about $15) flipped no
+conclusion: PR scores within one point of every earlier judge, arm means
+3.0 and 3.67, declines 4 and 4. One instructive shift: the 002 decline had
+scored 3 from an unconfined Opus 5 an hour earlier under the same prompt,
+because that judge fetched the upstream PR diff and could call Luna's claim
+about it false; the confined judge, limited to the snapshot, could only call
+it unsupported. Confinement changes what a judge can know, by design. The
+judge keeps the full repository snapshot at the PR head, so it can check
+claims against code and the project's own rules; any outside fact it must
+verify now has to be on the card.
+
 ### Observations
 
-- **Reproducible refusals, on both sides.** Luna declined RHAI-517 in every
-  run (five of five) and RHAI-331 in every run (three of three), each time
-  because the repository's `AGENTS.md` and `CONTRIBUTING.md` require an
-  assignee and an agreed approach before non-trivial work, and for RHAI-331
-  also because the epic leaves the deprecation sunset date to a pending
-  product decision. Sonnet and Opus implemented both. On RHAI-331 Opus chose
-  a sunset date itself, which the judge flagged as "asserted without
-  evidence of the required PM decision". Under the final decline prompt the
-  judges rate both declines 4: the stated reasons check out against the
-  repository's rules, docked one point where a claim cannot be verified from
-  the snapshot (RHAI-517's assignment state) or is unsupported (RHAI-331's
-  description of an upstream PR). Under the original prompt the Opus judges
-  also docked for leaving no proposal or plan behind, which the eval now
-  treats as a separate question. Obedience versus initiative, visible from
-  both sides because the outcome classification does not hide a decline as a
-  failure.
 - **Judges agree on PRs, and the stronger ones separate more.** The all-3s
   of the first Sol run were partly the work and partly the judge: on
   identical artifacts Opus 5, Opus 5.5 and Sonnet 5 found 4s that Sol did
@@ -279,12 +202,6 @@ on four of five cases and is one point lower on the fifth.
   shell, network and sub-agent tools to its judges and the harness fix is
   proposed upstream; the reference verdicts are from the confined judge.
   Any judge that runs as an agent needs its isolation verified, not assumed.
-- **Luna is cheap, and not worse here.** Roughly 60 times cheaper than Opus
-  4.6 per case, with equal or better judge scores on the three cases both
-  completed. Opus's extra turns did not buy quality on the largest case: 248
-  turns produced a bigger scaffold that does not install, where Luna's 172
-  turns passed the repo's tests. The sample is far too small to conclude
-  anything; it sets the stake for the question.
 - **One repo convention decided every early test failure.** In the
   September and October 6 runs both Claude models, on different days, added a
   workspace package to the odh-dashboard monorepo without regenerating
@@ -366,3 +283,122 @@ from epic-code-gen).
 - opendatahub-io/agent-eval-harness#239 and #240: the judge-confinement
   finding and its fix.
 - fullsend-ai/fullsend#7748, a hardening note filed from this work.
+
+## Appendix: outdated results
+
+Kept for the record and for the judge-agreement comparison. None of these is
+a current measurement of the agent.
+
+### First look, 2026-09-25/26: Sonnet 4.6 vs Luna, five cases, different judges
+
+**Why outdated:** a pipeline shake-down. The two arms were scored by different
+judges (Opus 5 and GPT-6 Sol), the host slept for most of the night, the
+review ran in its Claude Code default form, and the repository tests ran on
+the host. Kept because it produced the Luna refusal and the first PR-quality
+scores.
+
+| Case | Sonnet 4.6 | Luna |
+|---|---|---|
+| 001 | PR, tests pass, quality 4/5 | declined (repo AGENTS.md), decline 4/5 |
+| 002 | PR, tests pass (19 tests deleted), quality 3/5 | declined (unspecified sunset date), decline 4/5 |
+| 003 | PR, checks pass, quality 3/5 | PR, checks pass, quality 3/5 |
+| 004 | PR, tests pass, quality 3/5 | PR, tests pass, quality 3/5 |
+| 005 | PR, tests fail (lockfile not regenerated), quality 2/5 | did not finish (infrastructure) |
+
+### Opus 4.6 (fleet as-is) vs Luna, 2026-09-26 and 2026-10-06, five cases, one judge
+
+**Why outdated:** three things changed after these runs. The fleet moved its
+code agent from Opus 4.6 to Opus 5.5 on October 2, so this arm is no longer
+the deployed agent. The review step ran in the harness's Claude Code default
+form (Opus 4.6 parent, Claude sub-agents), not the pi persona ensemble the
+agents repository deploys, so the review evidence the judge saw differs from
+the rerun's. And the repository tests ran on the eval host rather than in a
+sandbox. The GPT-6 Sol verdicts here were also made before the judge was
+confined to its inputs and while per-case author notes were still shown to
+it. The Luna arm was dropped in favour of GLM 5.3, which is free to run on
+Red Hat's gateway.
+
+Cases 001, 003, 004 on 09-26 and 002, 005 on 10-06, same configuration and
+the same agent checkout throughout. Judge: GPT-6 Sol on the codex runner, one
+sample per case. Reviewer: the production review agent on Claude Code, Opus
+4.6 orchestrator, sub-agents on their configured tiers. "Fleet as-is" means
+the agents repository's harness defaults; the fleet's own deployed
+configuration has since moved to newer models, so this baseline is dated.
+
+| Case | Opus 4.6 | Luna |
+|---|---|---|
+| 001 | PR, 95 turns, tests pass, 12 review findings, quality 3/5 | declined (same reason as before), 13 turns, decline 3/5 |
+| 002 | PR, 62 turns, tests pass (21 test functions removed, 11 added), 22 findings, quality 3/5 | declined, 9 turns, decline 3/5 |
+| 003 | PR, 54 turns, checks pass, 7 findings, quality 3/5 | PR, 53 turns, checks pass, 6 findings, quality 3/5 |
+| 004 | PR, 76 turns, tests pass, 5 findings, quality 3/5 | PR, 29 turns, tests pass, 6 findings, quality 3/5 |
+| 005 | PR, 248 turns, tests fail (lockfile not regenerated), 16 findings, quality 1/5 | PR, 172 turns, tests pass, 16 findings, quality 3/5 |
+
+Totals under this judge: Opus 4.6 five PRs, quality 3, 3, 3, 3, 1 (mean
+2.6), repo tests pass on 4 of 5; Luna three PRs at 3, 3, 3 (mean 3.0) with
+tests passing on all three, plus two declines at 3. Cost at published rates:
+Opus coder $29 for five cases; Luna coder about $0.50; the eight production
+reviews $4 to $11 each ($55 total; the two largest PRs each drew a review
+over $10); judging about $1 per verdict.
+
+The reference verdicts for this experiment are not Sol's but the confined
+Opus 5 judge's (last column of the four-judge table below): Opus 4.6 PRs
+3, 3, 3, 4, 2 (mean 3.0); Luna PRs 4, 4, 3 (mean 3.67) and declines 4, 4.
+Same ranking, slightly wider gap.
+
+### Four judges on the ten artifacts of the Opus 4.6 vs Luna runs
+
+**Why outdated:** the artifacts are those of the superseded runs above. The
+table is kept as the evidence for the judge findings in Current results.
+
+The stored artifacts were re-scored without re-running any agent, one sample
+each: Opus 5 on the first six (Vertex, 10-06), Opus 5.5 on all ten (10-07,
+via a gateway on the harness side), Sonnet 5 on all ten (Vertex, 10-07), and
+finally Opus 5 again on all ten with the judge confined to its inputs and a
+revised decline prompt (both explained under "What the judge comparisons
+established" in Current results). The last column is the reference set.
+
+| Artifact | GPT-6 Sol | Opus 5 | Opus 5.5 | Sonnet 5 | Opus 5, confined |
+|---|---|---|---|---|---|
+| Opus 4.6, 001 PR | 3 | 3 | 3 | 3 | 3 |
+| Opus 4.6, 002 PR | 3 | - | 3 | 3 | 3 |
+| Opus 4.6, 003 PR | 3 | 3 | 3 | 3 | 3 |
+| Opus 4.6, 004 PR | 3 | 3 | 4 | 4 | 4 |
+| Opus 4.6, 005 PR | 1 | - | 1 | 2 | 2 |
+| Luna, 001 decline | 3 | 2 | 2 | 4 | 4* |
+| Luna, 002 decline | 3 | - | 2 | 4 | 4* |
+| Luna, 003 PR | 3 | 3 | 4 | 4 | 4 |
+| Luna, 004 PR | 3 | 4 | 4 | 4 | 4 |
+| Luna, 005 PR | 3 | - | 4 | 3 | 3 |
+
+\* under the revised decline prompt; the first four columns use the original.
+
+### Observations that no longer apply
+
+- **Reproducible refusals, on both sides.** Luna declined RHAI-517 in every
+  run (five of five) and RHAI-331 in every run (three of three), each time
+  because the repository's `AGENTS.md` and `CONTRIBUTING.md` require an
+  assignee and an agreed approach before non-trivial work, and for RHAI-331
+  also because the epic leaves the deprecation sunset date to a pending
+  product decision. Sonnet and Opus implemented both. On RHAI-331 Opus chose
+  a sunset date itself, which the judge flagged as "asserted without
+  evidence of the required PM decision". Under the final decline prompt the
+  judges rate both declines 4: the stated reasons check out against the
+  repository's rules, docked one point where a claim cannot be verified from
+  the snapshot (RHAI-517's assignment state) or is unsupported (RHAI-331's
+  description of an upstream PR). Under the original prompt the Opus judges
+  also docked for leaving no proposal or plan behind, which the eval now
+  treats as a separate question. Obedience versus initiative, visible from
+  both sides because the outcome classification does not hide a decline as a
+  failure.
+- **Luna is cheap, and not worse here.** Roughly 60 times cheaper than Opus
+  4.6 per case, with equal or better judge scores on the three cases both
+  completed. Opus's extra turns did not buy quality on the largest case: 248
+  turns produced a bigger scaffold that does not install, where Luna's 172
+  turns passed the repo's tests. The sample is far too small to conclude
+  anything; it sets the stake for the question.
+
+The Luna observations describe an arm that is no longer run. The refusal
+behaviour it showed (declining when the repository's contribution rules ask
+for an assignee or an agreed approach) remains a real phenomenon the outcome
+classification is designed to surface; GLM 5.3 and Opus 5 did not decline on
+any of the five cases in the rerun.
