@@ -21,8 +21,11 @@ needs). The runnable eval lives in `fullsend-ai/agents` under
 
 The production code agent can be measured on real, feature-scale work, the
 epics an engineering organisation actually hands it, without anyone writing
-reference solutions or hidden tests, and that measurement is sharp enough to
-tell two agent configurations apart.
+reference solutions or hidden tests. The measurement should be grounded in
+what the repository itself can confirm (an outcome class, the repository's
+own tests on the result, the review agent's findings) and in a judged quality
+score that different judges agree on, so that a later comparison between
+agent configurations has something trustworthy to stand on.
 
 Secondary questions: how the unmodified agent compares with a cheaper model
 on the same work, and whether the agent's own review step is useful evidence
