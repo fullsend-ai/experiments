@@ -28,6 +28,52 @@ Secondary questions: how the unmodified agent compares with a cheaper model
 on the same work, and whether the agent's own review step is useful evidence
 for a model judge.
 
+## What we learned
+
+Five cases, one run per arm, so every observation after the first is a
+direction the data is consistent with, not a conclusion. Details and tables
+are in Current results.
+
+1. **The measurement works.** Real epics, no reference solutions, no hidden
+   tests, and every run still yields an outcome class, a test result, a
+   review and a score. The October rerun completed ten runs across two arms
+   without an infrastructure failure.
+2. **The data so far does not separate strong models on quality.** Opus 4.6,
+   Opus 5, GLM 5.3 and Luna all score 3 to 4 out of 5 on nearly every case:
+   the work is done, with issues a maintainer would fix in review, and rarely
+   mergeable as is. Arm means differ by at most 0.6, and GLM 5.3 sits within
+   0.2 of Opus 5 under two judges. The sample is far too small to call them
+   equal; it is large enough to say the quality score is not where these
+   models differ on this work.
+3. **Where they differ is behaviour.** Luna declined two epics every time
+   because the repository's rules asked for an assignee first, where the
+   Claude models implemented them. GLM wrote ten times the code Opus did on
+   the largest case and took four times as long. Opus 4.6 twice shipped a
+   monorepo PR that did not install because of a lockfile convention. These
+   show up only because the eval classifies declines separately from failures
+   and keeps every artifact; whether they generalise needs more cases.
+4. **Judges agree closely, and cheaper judges look usable.** Across five judge
+   models, PR scores never differ by more than a point, and the one two-point
+   split was an ambiguous prompt. GLM 5.3 as a judge matched Opus 5 exactly on
+   six of ten verdicts here and twenty of twenty-six across both datasets.
+   Consistent with cheap judging at scale; not yet proof of it.
+5. **Cost has two shapes.** Today, with GLM free on early access, a GLM-arm
+   case costs $5 to $10 for review and judging and nothing for the coder,
+   against $12 to $30 for an Opus 5 case. If GLM is later billed at roughly
+   GPT-6.1 Sol's rate ($2 per million input, $0.20 cached, $10 output), the
+   five coder runs would have cost about $18, $11 of it on the largest case,
+   against $42 for Opus 5. The review step, $3 to $10 per case with the
+   deployed persona set, is the floor of the per-case cost either way.
+6. **Not learned.** Whether the deployed agent on Opus 5.5 differs from the
+   Opus 5 stand-in. Whether the review evidence improves the judge. Anything
+   about run-to-run variance.
+
+One lesson is about the method rather than the agents: the judge could reach
+live GitHub, the review's sub-agents failed silently, and the repository tests
+ran on the laptop until each was checked. Every component that runs an agent
+needs its behaviour verified against what actually ran, not what the config
+says. Limitations has the details.
+
 ## Approach
 
 **Cases are recipe cards, not bundles.** A case is an epic from a public
@@ -252,24 +298,15 @@ re-run without the notes.
 
 ## Conclusion
 
-Open. The pipeline works end to end on real epics without reference
-solutions, and it already measures something the synthetic benchmark in 0006
-could not: how an agent behaves when the repository's own rules push back.
-The quality signal is consistent across four judges, survives confining the
-judge to its inputs, and in the rerun holds up under a second, free judge
-that agrees with the first on six of ten PRs and is never more than a point
-away. With the review step configured as deployed and the tests sandboxed,
-a free GLM 5.3 arm lands within 0.2 of an Opus 5 arm on these five cases;
-what the measurement still lacks is sample size.
-
-Next: repeated judge samples per 0026 on the stored artifacts; a second case
-set built from 0006's twenty scenarios, which also brings in the safety
-traps; a re-baseline against the agent as currently deployed; a finer
-outcome taxonomy that separates "asked for clarification" from "declined"
-and judges the stated need; an instruction-compliance judge; the
-"implementation, not PR" instruction as a matrix arm; then one treatment at
-a time (a minimal platform-contract-only agent as a floor, and practices
-from epic-code-gen).
+The pipeline measures the code agent on real, feature-scale work without
+reference solutions, and the first results are summarised under What we
+learned: the quality score does not yet separate strong models, behaviour
+does, judges agree, and the cost of a case is set by the review step. What
+the experiment lacks is sample size; the next steps are repeated runs per
+0026 on the stored artifacts and cards, a second case set from 0006's twenty
+scenarios, a controlled test of whether the review evidence helps the judge,
+and then one treatment at a time (a minimal platform-contract-only agent as a
+floor, and practices from epic-code-gen).
 
 ## Related
 
