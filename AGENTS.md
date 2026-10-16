@@ -43,7 +43,9 @@ Pre-commit hooks enforce experiment conventions. Always stage your changes befor
 | `lint-experiment-frontmatter` | Required fields (`title`, `status`), valid status values, `topics` is a list, H1 heading matches frontmatter `title` |
 | `lint-experiment-index` | README.md index table lists every experiment on disk and vice versa |
 
-Run all hooks manually: `pre-commit run --all-files`
+Run all hooks manually on specific files: `pre-commit run --files <paths>`
+
+Avoid `pre-commit run --all-files` when preparing a change: it runs every hook across every experiment — including file-rewriting hooks such as `ruff --fix`, `ruff-format`, `end-of-file-fixer` and `trailing-whitespace`, plus `ty` and `bandit` — rewriting and flagging pre-existing code outside your change.
 
 ### Commit message format
 
