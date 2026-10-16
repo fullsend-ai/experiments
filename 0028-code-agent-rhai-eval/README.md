@@ -307,8 +307,9 @@ learned: the quality score does not yet separate strong models, behaviour
 does, judges agree, and the cost of a case is set by the review step. What
 the experiment lacks is sample size; the next steps are repeated runs per
 0026 on the stored artifacts and cards, a second case set from 0006's twenty
-scenarios, a controlled test of whether the review evidence helps the judge,
-and then one treatment at a time (a minimal platform-contract-only agent as a
+scenarios, a controlled test of whether the review evidence helps the judge
+(planned on the larger GLM-only runs, judging the same PRs with and without
+the review findings), and then one treatment at a time (a minimal platform-contract-only agent as a
 floor, and practices from epic-code-gen).
 
 ## Related
