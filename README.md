@@ -33,6 +33,7 @@ Experiments for the fullsend platform — each tests a hypothesis about autonomo
 | 0025 | [Subagent process isolation via PreToolUse hooks](0025-subagent-process-isolation/) | Active |
 | 0026 | [Statistical significance for non-deterministic evals](0026-eval-statistical-significance/) | Concluded |
 | 0027 | [Software Development Life Cycle](0027-sdlc/) | Concluded |
+| 0028 | [Code agent on feature-scale epics, graded without reference solutions](0028-code-agent-rhai-eval/) | Active |
 
 ## Conventions
 
