@@ -1,0 +1,92 @@
+{
+  "synthetic": true,
+  "notice": "SYNTHETIC: invented for offline reproduction; not a live, exported or authenticated observation.",
+  "description": "GitLab forge fixture: approved, no findings, required check green, but risk_score is null (Review output lacked the required risk assessment).",
+  "cli_input": {
+    "schema_version": "forge-fixture/v1",
+    "source_kind": "synthetic-fixture",
+    "forge": "gitlab",
+    "gitlab": {
+      "project": {
+        "id": 100002,
+        "path_with_namespace": "example/gitlab-consumer",
+        "host": "gitlab.example.test"
+      },
+      "merge_request": {
+        "iid": 7,
+        "state": "opened",
+        "draft": false,
+        "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "target_branch": "main"
+      },
+      "target_branch_sha": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+    },
+    "observation": {
+      "source_kind": "synthetic-fixture",
+      "subject": {
+        "identity": {
+          "forge": "gitlab",
+          "host": "gitlab.example.test",
+          "project_id": "100002",
+          "repository": "example/gitlab-consumer",
+          "target_branch": "main"
+        },
+        "change": 7,
+        "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "target_sha": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "policy_sha256": "0f81db78fd9a7c381524d2ebba6da8a96477cad9423d8e2b023bb2bbdcd9ec87",
+        "binding_sha256": "0529b5194cf10df48849d6883e0dc4ac7e15d0b66f95e55f885d5c3413c9e6b9"
+      },
+      "collected_at": "2026-10-20T00:05:00Z",
+      "open": true,
+      "draft": false,
+      "files": [
+        {
+          "path": "docs/example-feature.md",
+          "kind": "modified",
+          "mode": "100644"
+        }
+      ],
+      "review": {
+        "completed": true,
+        "action": "approve",
+        "risk_score": null,
+        "findings": []
+      },
+      "checks": [
+        {
+          "name": "documentation-contract",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "success"
+        }
+      ],
+      "publication": {
+        "workflow": "fullsend-review",
+        "run_id": "9001",
+        "attempt": 1,
+        "subject": {
+          "identity": {
+            "forge": "gitlab",
+            "host": "gitlab.example.test",
+            "project_id": "100002",
+            "repository": "example/gitlab-consumer",
+            "target_branch": "main"
+          },
+          "change": 7,
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "target_sha": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+          "policy_sha256": "0f81db78fd9a7c381524d2ebba6da8a96477cad9423d8e2b023bb2bbdcd9ec87",
+          "binding_sha256": "0529b5194cf10df48849d6883e0dc4ac7e15d0b66f95e55f885d5c3413c9e6b9"
+        },
+        "artifact_sha256": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4"
+      },
+      "protections": {
+        "protected_target": true,
+        "required_policy_gate": true,
+        "discussions_resolved": true,
+        "bypass_enabled": false,
+        "merge_mechanism": "merge-train"
+      }
+    }
+  }
+}

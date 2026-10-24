@@ -1,0 +1,921 @@
+{
+  "schema": "0029-source-register/v1",
+  "observed": "2026-10-24",
+  "status_values": {
+    "immutable-source": "File or tree at a pinned commit.",
+    "historical-hosted": "Issue, PR, run, job or artifact page; describes a past observation and may change, expire or need login.",
+    "synthetic": "Invented for offline reproduction; never live evidence.",
+    "proposal": "Related discussion or design; not adoption evidence.",
+    "unknown": "Exists only privately or was not established; nothing is claimed beyond the note."
+  },
+  "claims": {
+    "ARCH": "Gemara supplies schemas and SDK assessment machinery; it does not run the judge, authenticate evidence, mint tokens, grant authority or merge.",
+    "A": "Baseline Review evidence: completed approval, findings, risk, exact revision/configuration binding.",
+    "B": "Five shared candidate controls are reusable across forge bindings; missing risk holds.",
+    "C": "238/254 at 99% failed quality and held; writer skipped enrollment.",
+    "D": "Same observation at 90% passes quality; PR #56 is the earlier merged 90% case; PR #54 is not.",
+    "E": "Selected OSPS-QA-03.01 mapped through our adapter and native SDK step.",
+    "F": "Issue #57 -> PR #58 protected merge chain and cleanup.",
+    "OWNER": "Owner configuration surface and its experimental status.",
+    "MAINT": "Ownership, pins and update procedure.",
+    "LESSONS": "Failures and lessons.",
+    "LIMITS": "Explicit limits.",
+    "REPRO": "Offline reproduction inputs and code.",
+    "CONTEXT": "Related research and Fullsend work."
+  },
+  "subjects": {
+    "reviewed_head": "14499514434b02c4b2563cd0e50aec225b77fa86",
+    "trusted_configuration": "5f4f8f39ff196d815866396e6f05ebe6aff6e7a9",
+    "merge_group_head": "fee00797c19a07a2e3bdd83ce7fd1dbc917087f1",
+    "merge_commit": "fee00797c19a07a2e3bdd83ce7fd1dbc917087f1",
+    "cleanup_commit": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71",
+    "queue_enrollment_at": "2026-10-23T12:58:50Z",
+    "merged_at": "2026-10-23T13:03:51Z"
+  },
+  "sources": [
+    {
+      "id": "gemara-schema",
+      "title": "Gemara schema repository",
+      "url": "https://github.com/gemaraproj/gemara/tree/9d36c253484d14922010252bfffe58bdcd49a144",
+      "kind": "upstream",
+      "status": "immutable-source",
+      "claims": [
+        "ARCH"
+      ],
+      "observed": "2026-10-24",
+      "revision": "9d36c253484d14922010252bfffe58bdcd49a144"
+    },
+    {
+      "id": "go-gemara",
+      "title": "Gemara Go SDK",
+      "url": "https://github.com/gemaraproj/go-gemara/tree/5e33fda460a80ffa99e9efbe19afb43e7d4c4dd2",
+      "kind": "upstream",
+      "status": "immutable-source",
+      "claims": [
+        "ARCH"
+      ],
+      "observed": "2026-10-24",
+      "revision": "5e33fda460a80ffa99e9efbe19afb43e7d4c4dd2"
+    },
+    {
+      "id": "osps-qa-03-01",
+      "title": "OpenSSF OSPS-QA-03.01 (release v2026.08.28; parent control OSPS-QA-03)",
+      "url": "https://github.com/ossf/security-baseline/blob/a26a7963f6fd098c1e82829322ec9e1196a4f294/baseline/OSPS-QA.yaml#L84-L101",
+      "kind": "upstream",
+      "status": "immutable-source",
+      "claims": [
+        "E"
+      ],
+      "observed": "2026-10-24",
+      "revision": "a26a7963f6fd098c1e82829322ec9e1196a4f294"
+    },
+    {
+      "id": "shared-readme-md",
+      "title": "Shared integration overview",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/README.md",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "ARCH",
+        "B"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-docs-adoption-md",
+      "title": "Adoption and ownership boundary",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/docs/ADOPTION.md",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "ARCH",
+        "MAINT"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-docs-roadmap-md",
+      "title": "Limitations and future work",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/docs/ROADMAP.md",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "LIMITS"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-policy-catalog-json",
+      "title": "Shared catalog",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/policy/catalog.json",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "B"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-policy-common-json",
+      "title": "Common assessment policy",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/policy/common.json",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "B"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-evaluate-go",
+      "title": "Deterministic evaluation",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/evaluate.go",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "B"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-candidate-go",
+      "title": "Candidate composition",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/candidate.go",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "C",
+        "D"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-examples-github-binding-json",
+      "title": "GitHub binding example (not proof of deployment)",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/examples/github/binding.json",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "B"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-examples-gitlab-binding-json",
+      "title": "GitLab binding example (not proof of deployment)",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/examples/gitlab/binding.json",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "B"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-docs-review-quality-md",
+      "title": "Quality-check semantics and caveats",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/docs/REVIEW-QUALITY.md",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "C"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-judge_check-go",
+      "title": "Judge threshold implementation",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/judge_check.go",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "C",
+        "D"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-scripts-collect_mlflow_judge-py",
+      "title": "MLflow aggregate collector (public implementation)",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/scripts/collect_mlflow_judge.py",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "C"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-examples-quality-policy-json",
+      "title": "Synthetic threshold policy",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/examples/quality/policy.json",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "C"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-cmd-gemara-owner-main-go",
+      "title": "Shared CLI used by the offline runner",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/cmd/gemara-owner/main.go",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "REPRO"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "shared-license",
+      "title": "Shared module license (Apache-2.0)",
+      "url": "https://github.com/ascerra/fullsend-gemara-integration/blob/61a01465478e50d8e9b3e21dd056fdef90baff30/LICENSE",
+      "kind": "shared-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "REPRO"
+      ],
+      "observed": "2026-10-24",
+      "revision": "61a01465478e50d8e9b3e21dd056fdef90baff30"
+    },
+    {
+      "id": "consumer-fullsend-config-yaml",
+      "title": "Consumer configuration",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/.fullsend/config.yaml",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "OWNER"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-docs-add-an-upstream-control-md",
+      "title": "Add an upstream control: owner flow",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/docs/ADD-AN-UPSTREAM-CONTROL.md",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "OWNER",
+        "E"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-local-fullsend-patch",
+      "title": "Local Fullsend source patch (experimental, not released)",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/local-fullsend.patch",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "OWNER"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-fullsend-local-build-json",
+      "title": "Vendored build provenance",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/.fullsend/local-build.json",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "OWNER",
+        "LESSONS"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-upstream-osps-baseline-source-json",
+      "title": "OpenSSF source pin",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/upstream/osps-baseline/source.json",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "E"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-upstream-osps-baseline-catalog-json",
+      "title": "Catalog transport wrapper",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/upstream/osps-baseline/catalog.json",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "E"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-upstream-osps-baseline-policy-json",
+      "title": "Requirement-to-assessment-plan mapping",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/upstream/osps-baseline/policy.json",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "E"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-configured_policy-py",
+      "title": "GitHub evidence adapter (OSPS-QA-03.01)",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/configured_policy.py#L51-L123",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "E",
+        "REPRO"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71",
+      "note": "Repository publishes no license file; linked only, nothing copied."
+    },
+    {
+      "id": "consumer-gemara-auto-merge-native-evaluator-policy_assessment-go",
+      "title": "Native SDK plan implementation",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/native-evaluator/policy_assessment.go",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "E"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-native-evaluator-main-go",
+      "title": "Native evaluator entry point",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/native-evaluator/main.go",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "E"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-toolchain-lock-json",
+      "title": "Pinned schema/toolchain lock",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/toolchain-lock.json",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "MAINT"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-authorize_auto_merge-py",
+      "title": "Trusted authorizer",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/authorize_auto_merge.py",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "F",
+        "REPRO"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-github_pr_evidence-py",
+      "title": "GitHub evidence collector",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/github_pr_evidence.py",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "A"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-review_evidence_contract-py",
+      "title": "Review-evidence contract",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/review_evidence_contract.py",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "A"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-gemara-auto-merge-shared_gate-py",
+      "title": "Shared gate adapter",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/gemara-auto-merge/shared_gate.py",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "B"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-scripts-shared_gate_runtime-py",
+      "title": "Shared-code execution boundary",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/scripts/shared_gate_runtime.py",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "B"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-github-workflows-gemara-auto-merge-yml",
+      "title": "Automatic evaluation workflow",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/.github/workflows/gemara-auto-merge.yml",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-github-workflows-gemara-queue-writer-yml",
+      "title": "Existing App writer",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/.github/workflows/gemara-queue-writer.yml",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-github-workflows-gemara-merge-queue-yml",
+      "title": "Combined-revision queue validation",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/.github/workflows/gemara-merge-queue.yml",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "consumer-github-workflows-gemara-shadow-observation-yml",
+      "title": "Read-only shadow observation",
+      "url": "https://github.com/fullsend-ai/auto-merge/blob/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71/.github/workflows/gemara-shadow-observation.yml",
+      "kind": "consumer-implementation",
+      "status": "immutable-source",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "am-pr-50",
+      "title": "auto-merge PR #50: Prove Python post-script Review evidence (merged 2026-10-19; preparatory)",
+      "url": "https://github.com/fullsend-ai/auto-merge/pull/50",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "A"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "am-pr-52",
+      "title": "auto-merge PR #52: Isolate shared Gemara Review assessment from publisher (merged 2026-10-21; preparatory)",
+      "url": "https://github.com/fullsend-ai/auto-merge/pull/52",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "A"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "am-pr-53",
+      "title": "auto-merge PR #53: Demonstrate the shared review-quality hold (open, unmerged hold demonstration)",
+      "url": "https://github.com/fullsend-ai/auto-merge/pull/53",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "C"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "am-run-39594830599",
+      "title": "99% quality-hold evaluation run",
+      "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39594830599",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "C"
+      ],
+      "observed": "2026-10-24",
+      "artifact": {
+        "name": "shared-gate-assessment-1",
+        "id": 12344096345,
+        "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39594830599/artifacts/12344096345"
+      }
+    },
+    {
+      "id": "am-pr-54",
+      "title": "auto-merge PR #54 (open, unmerged; NOT the successful merge)",
+      "url": "https://github.com/fullsend-ai/auto-merge/pull/54",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "D"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "am-pr-56",
+      "title": "auto-merge PR #56: earlier 90% demonstration (merged 2026-10-21 17:16:46 UTC as 9e13b23b)",
+      "url": "https://github.com/fullsend-ai/auto-merge/pull/56",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "D"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "am-issue-57",
+      "title": "auto-merge issue #57: requested documentation behavior (still open at observation)",
+      "url": "https://github.com/fullsend-ai/auto-merge/issues/57",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "am-pr-58",
+      "title": "auto-merge PR #58: merged 2026-10-23 13:03:51 UTC; head 14499514; merge fee00797",
+      "url": "https://github.com/fullsend-ai/auto-merge/pull/58",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "D",
+        "F"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "am-commit-fee00797",
+      "title": "Merge commit of PR #58 (merge-group revision)",
+      "url": "https://github.com/fullsend-ai/auto-merge/commit/fee00797c19a07a2e3bdd83ce7fd1dbc917087f1",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24",
+      "revision": "fee00797c19a07a2e3bdd83ce7fd1dbc917087f1"
+    },
+    {
+      "id": "am-run-39955761534",
+      "title": "Current-head Fullsend Review run (pull_request_target, head 14499514)",
+      "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39955761534",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "F",
+        "A"
+      ],
+      "observed": "2026-10-24",
+      "artifact": {
+        "name": "fullsend-review-evidence-1",
+        "id": 12502054995,
+        "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39955761534/artifacts/12502054995"
+      }
+    },
+    {
+      "id": "am-run-39956959534",
+      "title": "Enrollment evaluation run (workflow_run on trusted configuration 5f4f8f39)",
+      "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39956959534",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "F",
+        "E"
+      ],
+      "observed": "2026-10-24",
+      "artifact": {
+        "name": "shared-gate-assessment-1",
+        "id": 12502977284,
+        "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39956959534/artifacts/12502977284"
+      }
+    },
+    {
+      "id": "am-artifact-12503645276",
+      "title": "Native enrollment / OpenSSF artifact",
+      "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39956959534/artifacts/12503645276",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "E",
+        "F"
+      ],
+      "observed": "2026-10-24",
+      "artifact": {
+        "name": "gemara-evaluation-evaluate-1",
+        "id": 12503645276
+      }
+    },
+    {
+      "id": "am-job-120426280311",
+      "title": "App writer job 'enqueue / writer' (completed 12:58:57 UTC): protected queue request",
+      "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39956959534/job/120426280311",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24",
+      "artifact": {
+        "name": "gemara-evaluation-writer-1",
+        "id": 12503242005,
+        "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39956959534/artifacts/12503242005"
+      }
+    },
+    {
+      "id": "am-run-39957499141",
+      "title": "Merge-group evaluation run (merge_group, head fee00797)",
+      "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39957499141",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "F",
+        "E"
+      ],
+      "observed": "2026-10-24",
+      "artifact": {
+        "name": "gemara-evaluation-gate-1",
+        "id": 12503845545,
+        "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39957499141/artifacts/12503845545"
+      }
+    },
+    {
+      "id": "am-run-39957499387",
+      "title": "Combined-revision CI (merge_group, head fee00797)",
+      "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39957499387",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "am-commit-4c86073e",
+      "title": "Return-to-shadow / grant-revocation commit",
+      "url": "https://github.com/fullsend-ai/auto-merge/commit/4c86073ea6e05aff69b22b261eb7e2c74f3a5f71",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24",
+      "revision": "4c86073ea6e05aff69b22b261eb7e2c74f3a5f71"
+    },
+    {
+      "id": "am-run-39958588002",
+      "title": "Cleanup CI (workflow_dispatch on 4c86073e)",
+      "url": "https://github.com/fullsend-ai/auto-merge/actions/runs/39958588002",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "am-pr-58-timeline",
+      "title": "PR #58 timeline: added_to_merge_queue by gemara-auto-merge-pilot-lab[bot] 12:58:50 UTC; merged 13:03:51 UTC; removed_from_merge_queue by github-merge-queue[bot] 13:03:51 UTC",
+      "url": "https://github.com/fullsend-ai/auto-merge/pull/58",
+      "kind": "hosted-evidence",
+      "status": "historical-hosted",
+      "claims": [
+        "F"
+      ],
+      "observed": "2026-10-24",
+      "note": "GitHub attributes the merged event to the account that enqueued the PR; the merge queue performed the merge. Token revocation is reported by the lab, not visible in this timeline."
+    },
+    {
+      "id": "fullsend-8789",
+      "title": "Companion research issue: findings and problem-space documentation",
+      "url": "https://github.com/fullsend-ai/fullsend/issues/8789",
+      "kind": "related",
+      "status": "proposal",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "fullsend-7911",
+      "title": "Configurable automerge and deterministic-rule design",
+      "url": "https://github.com/fullsend-ai/fullsend/issues/7911",
+      "kind": "related",
+      "status": "proposal",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "fullsend-5808",
+      "title": "defaults.auto_merge parsed but not consumed",
+      "url": "https://github.com/fullsend-ai/fullsend/issues/5808",
+      "kind": "related",
+      "status": "proposal",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "fullsend-5849",
+      "title": "Merge-queue integration gap",
+      "url": "https://github.com/fullsend-ai/fullsend/issues/5849",
+      "kind": "related",
+      "status": "proposal",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "fullsend-6892",
+      "title": "Revert/defect visibility",
+      "url": "https://github.com/fullsend-ai/fullsend/issues/6892",
+      "kind": "related",
+      "status": "proposal",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "fullsend-pr-7151",
+      "title": "Dedicated auto-merge authority boundary (open; not an accepted decision)",
+      "url": "https://github.com/fullsend-ai/fullsend/pull/7151",
+      "kind": "related",
+      "status": "proposal",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "fullsend-pr-8467",
+      "title": "Earlier repo-restricted writer prototype (closed without merge; did not ship the lab writer)",
+      "url": "https://github.com/fullsend-ai/fullsend/pull/8467",
+      "kind": "related",
+      "status": "proposal",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "problem-trustworthiness-evidence",
+      "title": "Trustworthiness evidence",
+      "url": "https://github.com/fullsend-ai/fullsend/blob/6d925afefb5bbe97853ad7b35f88916e9d3e8111/docs/problems/trustworthiness-evidence.md#composing-evidence-into-trust-decisions",
+      "kind": "related",
+      "status": "immutable-source",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24",
+      "revision": "6d925afefb5bbe97853ad7b35f88916e9d3e8111"
+    },
+    {
+      "id": "problem-governance",
+      "title": "Governance: configuration security",
+      "url": "https://github.com/fullsend-ai/fullsend/blob/6d925afefb5bbe97853ad7b35f88916e9d3e8111/docs/problems/governance.md#2-configuration-security",
+      "kind": "related",
+      "status": "immutable-source",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24",
+      "revision": "6d925afefb5bbe97853ad7b35f88916e9d3e8111"
+    },
+    {
+      "id": "problem-autonomy-spectrum",
+      "title": "Autonomy spectrum: graduation criteria",
+      "url": "https://github.com/fullsend-ai/fullsend/blob/6d925afefb5bbe97853ad7b35f88916e9d3e8111/docs/problems/autonomy-spectrum.md#graduation-criteria",
+      "kind": "related",
+      "status": "immutable-source",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24",
+      "revision": "6d925afefb5bbe97853ad7b35f88916e9d3e8111"
+    },
+    {
+      "id": "problem-graduated-approval-policy",
+      "title": "Graduated approval policy",
+      "url": "https://github.com/fullsend-ai/fullsend/blob/6d925afefb5bbe97853ad7b35f88916e9d3e8111/docs/problems/graduated-approval-policy.md#path-forward",
+      "kind": "related",
+      "status": "immutable-source",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24",
+      "revision": "6d925afefb5bbe97853ad7b35f88916e9d3e8111"
+    },
+    {
+      "id": "problem-code-review",
+      "title": "Code review: composing decisions",
+      "url": "https://github.com/fullsend-ai/fullsend/blob/6d925afefb5bbe97853ad7b35f88916e9d3e8111/docs/problems/code-review.md#how-sub-agents-compose-a-decision",
+      "kind": "related",
+      "status": "immutable-source",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24",
+      "revision": "6d925afefb5bbe97853ad7b35f88916e9d3e8111"
+    },
+    {
+      "id": "problem-review-autonomy-evidence",
+      "title": "Review autonomy evidence: open questions",
+      "url": "https://github.com/fullsend-ai/fullsend/blob/6d925afefb5bbe97853ad7b35f88916e9d3e8111/docs/problems/review-autonomy-evidence.md#open-questions",
+      "kind": "related",
+      "status": "immutable-source",
+      "claims": [
+        "CONTEXT"
+      ],
+      "observed": "2026-10-24",
+      "revision": "6d925afefb5bbe97853ad7b35f88916e9d3e8111"
+    },
+    {
+      "id": "synthetic-fixtures",
+      "title": "Offline fixtures in this experiment (all invented)",
+      "url": "../fixtures/",
+      "kind": "synthetic",
+      "status": "synthetic",
+      "claims": [
+        "REPRO"
+      ],
+      "observed": "2026-10-24"
+    },
+    {
+      "id": "unknown-private-gitlab",
+      "title": "Original GitLab consumer deployment (private; intentionally not identified)",
+      "url": null,
+      "kind": "private-context",
+      "status": "unknown",
+      "claims": [
+        "B"
+      ],
+      "observed": "2026-10-24",
+      "note": "Described generically. Public evidence for the missing-risk hold is the synthetic fixture only."
+    },
+    {
+      "id": "unknown-mlflow-export",
+      "title": "Authenticated export of the historical MLflow aggregate",
+      "url": null,
+      "kind": "private-context",
+      "status": "unknown",
+      "claims": [
+        "C"
+      ],
+      "observed": "2026-10-24",
+      "note": "Not published. The 238/254 fixture reuses the counts with an invented source identity."
+    }
+  ]
+}

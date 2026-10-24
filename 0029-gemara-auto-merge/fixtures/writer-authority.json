@@ -1,0 +1,15 @@
+{
+  "synthetic": true,
+  "notice": "SYNTHETIC: invented for offline reproduction; not a live, exported or authenticated observation.",
+  "description": "Mode and owner-authority combinations for the mock writer gate. 'assessment' names which composed result is supplied: 'eligible' (all assessments passed) or 'hold'. No live writer, credential or forge call exists in this experiment.",
+  "evaluation_time": "2026-10-20T00:10:00Z",
+  "cases": {
+    "shadow-with-valid-authority": {"mode": "shadow", "authority": {"enabled": true, "expires_at": "2026-10-21T00:00:00Z"}, "assessment": "eligible", "expect_write": false},
+    "off-with-valid-authority": {"mode": "off", "authority": {"enabled": true, "expires_at": "2026-10-21T00:00:00Z"}, "assessment": "eligible", "expect_write": false},
+    "enforce-without-authority": {"mode": "enforce", "authority": null, "assessment": "eligible", "expect_write": false},
+    "enforce-expired-authority": {"mode": "enforce", "authority": {"enabled": true, "expires_at": "2026-10-19T00:00:00Z"}, "assessment": "eligible", "expect_write": false},
+    "enforce-disabled-authority": {"mode": "enforce", "authority": {"enabled": false, "expires_at": "2026-10-21T00:00:00Z"}, "assessment": "eligible", "expect_write": false},
+    "enforce-valid-authority-held-assessment": {"mode": "enforce", "authority": {"enabled": true, "expires_at": "2026-10-21T00:00:00Z"}, "assessment": "hold", "expect_write": false},
+    "enforce-valid-authority-eligible-positive-control": {"mode": "enforce", "authority": {"enabled": true, "expires_at": "2026-10-21T00:00:00Z"}, "assessment": "eligible", "expect_write": true}
+  }
+}

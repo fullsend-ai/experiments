@@ -1,0 +1,72 @@
+{
+  "synthetic": true,
+  "notice": "SYNTHETIC: invented for offline reproduction; not a live, exported or authenticated observation.",
+  "description": "Clean normalized GitHub candidate (collector-observation shape). Head a1a1..., base b2b2....",
+  "cli_input": {
+    "source_kind": "collector-observation",
+    "subject": {
+      "identity": {
+        "forge": "github",
+        "host": "github.example.test",
+        "project_id": "100001",
+        "repository": "example/github-consumer",
+        "target_branch": "main"
+      },
+      "change": 7,
+      "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "target_sha": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "policy_sha256": "0f81db78fd9a7c381524d2ebba6da8a96477cad9423d8e2b023bb2bbdcd9ec87",
+      "binding_sha256": "3836b8934f630fdc524e38a88e8922a862b277c5aec9a1bef4d7533402087181"
+    },
+    "collected_at": "2026-10-20T00:05:00Z",
+    "open": true,
+    "draft": false,
+    "files": [
+      {
+        "path": "docs/example-feature.md",
+        "kind": "modified",
+        "mode": "100644"
+      }
+    ],
+    "review": {
+      "completed": true,
+      "action": "approve",
+      "risk_score": 1,
+      "findings": []
+    },
+    "checks": [
+      {
+        "name": "docs-contract",
+        "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "status": "success"
+      }
+    ],
+    "publication": {
+      "workflow": ".github/workflows/fullsend.yaml",
+      "run_id": "9001",
+      "attempt": 1,
+      "subject": {
+        "identity": {
+          "forge": "github",
+          "host": "github.example.test",
+          "project_id": "100001",
+          "repository": "example/github-consumer",
+          "target_branch": "main"
+        },
+        "change": 7,
+        "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "target_sha": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "policy_sha256": "0f81db78fd9a7c381524d2ebba6da8a96477cad9423d8e2b023bb2bbdcd9ec87",
+        "binding_sha256": "3836b8934f630fdc524e38a88e8922a862b277c5aec9a1bef4d7533402087181"
+      },
+      "artifact_sha256": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4"
+    },
+    "protections": {
+      "protected_target": true,
+      "required_policy_gate": true,
+      "discussions_resolved": true,
+      "bypass_enabled": false,
+      "merge_mechanism": "merge-queue"
+    }
+  }
+}
