@@ -37,6 +37,13 @@ AT = "2026-10-20T00:10:00Z"
 GITHUB_ACTIONS_APP_ID = 15368
 QUEUE_WORKFLOW = ".github/workflows/gemara-merge-queue.yml"
 MERGE_GROUP_HEAD = "c3" * 20
+CANDIDATE_CONTROLS = (
+    "OWNER-SCOPE",
+    "REVIEW-CLEAR",
+    "CHECKS-PASS",
+    "EVIDENCE-CURRENT",
+    "PROTECTIONS-ACTIVE",
+)
 
 
 class CliUnavailable(RuntimeError):
@@ -51,7 +58,8 @@ def binary() -> str:
         raise CliUnavailable(
             f"gemara-owner not found at {path}; run scripts/reproduce.sh (setup) or set GEMARA_OWNER"
         )
-    return path
+    # cli() runs the binary from a temporary directory, so a relative path must not leak.
+    return str(Path(path).resolve())
 
 
 def load(name: str) -> dict:
@@ -403,6 +411,24 @@ def s06_judge_evidence_unknown() -> dict:
     return out
 
 
+def outcome(r: dict) -> dict:
+    """Decision, exit code and either the rejection text or the non-passed assessments.
+
+    A rejection or crash yields a string detail, so it cannot match an
+    expectation that lists specific assessments.
+    """
+    return {
+        "decision": r["decision"],
+        "exit": r["exit"],
+        "detail": r.get("rejected")
+        or {
+            k: v
+            for k, v in r["candidate"]["assessments"].items()
+            if not v.startswith("passed:")
+        },
+    }
+
+
 def s07_subject_and_trust() -> dict:
     base = fixture("github-candidate.json")
     head_mismatch = copy.deepcopy(base)
@@ -423,16 +449,7 @@ def s07_subject_and_trust() -> dict:
         "untrusted-source-kind": untrusted,
         "stale-observation": stale,
     }.items():
-        r = assess("quality-policy-9000.json", observation=value)
-        out[name] = {
-            "decision": r["decision"],
-            "detail": r.get("rejected")
-            or {
-                k: v
-                for k, v in r["candidate"]["assessments"].items()
-                if not v.startswith("passed:")
-            },
-        }
+        out[name] = outcome(assess("quality-policy-9000.json", observation=value))
     return out
 
 
@@ -459,14 +476,24 @@ def s08_writer_authority() -> dict:
 
 def s09_distinct_subjects() -> dict:
     candidate = fixture("github-candidate.json")
-    merge_group = copy.deepcopy(candidate)
-    merge_group["subject"]["head_sha"] = MERGE_GROUP_HEAD
-    reused = assess("quality-policy-9000.json", observation=merge_group)
+    # Only the top-level subject moves; publication and checks keep the candidate head.
+    inconsistent = copy.deepcopy(candidate)
+    inconsistent["subject"]["head_sha"] = MERGE_GROUP_HEAD
+    # Candidate evidence relabelled throughout, so the observation is self-consistent.
+    consistent = copy.deepcopy(inconsistent)
+    consistent["publication"]["subject"]["head_sha"] = MERGE_GROUP_HEAD
+    for check in consistent["checks"]:
+        check["head_sha"] = MERGE_GROUP_HEAD
     sources = json.loads((ROOT / "evidence" / "sources.json").read_text())["subjects"]
     return {
         "synthetic_heads_distinct": candidate["subject"]["head_sha"]
         != MERGE_GROUP_HEAD,
-        "candidate_evidence_reused_for_merge_group": reused["decision"],
+        "inconsistent_relabel_for_merge_group": outcome(
+            assess("quality-policy-9000.json", observation=inconsistent)
+        ),
+        "consistent_relabel_for_merge_group": outcome(
+            assess("quality-policy-9000.json", observation=consistent)
+        ),
         "historical_reviewed_head_differs_from_merge_group": sources["reviewed_head"]
         != sources["merge_group_head"],
         "historical_merge_commit_is_merge_group_head": sources["merge_commit"]
@@ -593,17 +620,33 @@ SCENARIOS = {
         {
             "head-mismatch": {
                 "decision": "hold",
+                "exit": 2,
                 "detail": {
                     "CHECKS-PASS": "unknown:check_for_wrong_revision",
                     "EVIDENCE-CURRENT": "unknown:publication_binding_invalid",
                 },
             },
-            "bound-to-other-binding": {"decision": "hold"},
+            "bound-to-other-binding": {
+                "decision": "hold",
+                "exit": 2,
+                "detail": {
+                    control: "unknown:wrong_subject_or_policy"
+                    for control in CANDIDATE_CONTROLS
+                },
+            },
             "untrusted-source-kind": {
                 "decision": "hold",
+                "exit": 2,
                 "detail": "collector_observation_required",
             },
-            "stale-observation": {"decision": "hold"},
+            "stale-observation": {
+                "decision": "hold",
+                "exit": 2,
+                "detail": {
+                    control: "unknown:stale_or_future_evidence"
+                    for control in CANDIDATE_CONTROLS
+                },
+            },
         },
     ),
     "S08 shadow/absent/expired authority -> no writer call (mock)": (
@@ -618,11 +661,22 @@ SCENARIOS = {
             "enforce-valid-authority-eligible-positive-control": {"mock_calls": 1},
         },
     ),
-    "S09 candidate and merge-group subjects stay distinct": (
+    "S09 merge-group relabel: inconsistent -> hold, consistent -> not detected": (
         s09_distinct_subjects,
         {
             "synthetic_heads_distinct": True,
-            "candidate_evidence_reused_for_merge_group": "hold",
+            "inconsistent_relabel_for_merge_group": {
+                "decision": "hold",
+                "exit": 2,
+                "detail": {
+                    "CHECKS-PASS": "unknown:check_for_wrong_revision",
+                    "EVIDENCE-CURRENT": "unknown:publication_binding_invalid",
+                },
+            },
+            # Limitation, not a pass: the CLI cannot tell relabelled candidate
+            # evidence from a fresh merge-group observation. Keeping the
+            # subjects distinct is the collector's job.
+            "consistent_relabel_for_merge_group": {"decision": "eligible", "exit": 0},
             "historical_reviewed_head_differs_from_merge_group": True,
             "historical_merge_commit_is_merge_group_head": True,
         },

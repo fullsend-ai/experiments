@@ -59,7 +59,7 @@ The diagram maps dependencies and authority. It does not show Gemara scheduling 
 
 Reusing a policy does not mean sharing write credentials. It does not mean trusting a PR's own policy changes to authorize that PR. It does not make a JSON digest an authenticated source.
 
-The lab ran five scenarios (A–F below). This directory republishes only public metadata and adds synthetic fixtures for offline replay.
+The lab ran six scenarios (A–F below). This directory republishes only public metadata and adds synthetic fixtures for offline replay.
 
 ## Results
 
@@ -72,7 +72,7 @@ Hosted observations are summarized here and detailed in [RESULTS.md](RESULTS.md)
 | C. Quality at 99% | 238 / 254 = 93.7008…% < 99% → quality Failed → composed hold; the writer skipped enrollment ([PR #53](https://github.com/fullsend-ai/auto-merge/pull/53), still open) | S01 → **hold** |
 | D. Owner lowers threshold to 90% | Same counts pass quality. [PR #56](https://github.com/fullsend-ai/auto-merge/pull/56) was the earlier merged 90% case; [PR #54](https://github.com/fullsend-ai/auto-merge/pull/54) was not merged | S02 → **eligible**, with no authorization and no writer call |
 | E. Add OSPS-QA-03.01 | The selected requirement passed at enrollment and at queue validation for PR #58 | S05: optional check failed while required checks were green → **hold**; all relevant checks green → pass |
-| F. Protected merge and cleanup | Issue #57 → [PR #58](https://github.com/fullsend-ai/auto-merge/pull/58). App enqueued it at 12:58:50 UTC; GitHub merged `fee00797` at 13:03:51 UTC on 2026-10-23; cleanup commit `4c86073e` returned the lab to shadow mode | S09: candidate and merge-group subjects stay distinct; S08: mock writer never called in shadow mode or without active authority |
+| F. Protected merge and cleanup | Issue #57 → [PR #58](https://github.com/fullsend-ai/auto-merge/pull/58). App enqueued it at 12:58:50 UTC; GitHub merged `fee00797` at 13:03:51 UTC on 2026-10-23; cleanup commit `4c86073e` returned the lab to shadow mode | S09: candidate evidence relabelled inconsistently for the merge-group head → **hold**; relabelled consistently it is **not detected** by the CLI, so fresh merge-group collection is required; S08: mock writer never called in shadow mode or without active authority |
 
 The hold cases (S01, S04, S05 and S06–S08) are successful demonstrations of policy behavior, not failures.
 
@@ -84,7 +84,7 @@ Requirements: Go 1.25 or newer (the shared module's CI uses 1.26) and Python 3.1
 0029-gemara-auto-merge/scripts/reproduce.sh
 ```
 
-On the first run, `go install` downloads the pinned shared CLI (`github.com/ascerra/fullsend-gemara-integration/cmd/gemara-owner@61a01465…`) and its pinned SDK into `.cache/` (git-ignored). That is the only network step. After setup, scenarios run offline at the fixed time `2026-10-20T00:10:00Z`. They use no secrets, no GitHub write access, no MLflow and no LLM. Set `GEMARA_OWNER=/path/to/gemara-owner` to reuse an existing build. Add `--json` to get full observations.
+On the first run, `go install` downloads the pinned shared CLI (`github.com/ascerra/fullsend-gemara-integration/cmd/gemara-owner@61a01465…`) and its pinned SDK into `.cache/` (git-ignored). That is the only network step. After setup, scenarios run offline at the fixed time `2026-10-20T00:10:00Z`. They use no secrets, no GitHub write access, no MLflow and no LLM. Set `GEMARA_OWNER=/path/to/gemara-owner` to reuse an existing build; `reproduce.sh` fails if it does not embed the pinned revision (`go version -m`), and reinstalls a cached build at another revision. Add `--json` to get full observations.
 
 ```text
 PASS  S01 clean candidate + 238/254 at 99% -> hold
@@ -95,7 +95,7 @@ PASS  S05 OSPS-QA-03.01 observed checks
 PASS  S06 missing/stale/insufficient/malformed judge evidence -> not passed
 PASS  S07 head mismatch or untrusted evidence -> hold
 PASS  S08 shadow/absent/expired authority -> no writer call (mock)
-PASS  S09 candidate and merge-group subjects stay distinct
+PASS  S09 merge-group relabel: inconsistent -> hold, consistent -> not detected
 PASS  S10 two runs at fixed time 2026-10-20T00:10:00Z produce identical summaries
 ```
 
