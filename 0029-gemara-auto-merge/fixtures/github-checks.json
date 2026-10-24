@@ -1,0 +1,348 @@
+{
+  "synthetic": true,
+  "notice": "SYNTHETIC: invented for offline reproduction; not a live, exported or authenticated observation.",
+  "description": "Recorded-shape GitHub check-run and commit-status responses for the OSPS-QA-03.01 replay. Only fields the adapter reads are kept. App 15368 is the GitHub Actions app. Head a1a1... is the candidate; c3c3... is a merge-group revision.",
+  "cases": {
+    "required-green-optional-failed": {
+      "phase": "enroll",
+      "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "api_errors": false,
+      "check_runs": [
+        {
+          "id": 101,
+          "name": "docs-contract",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "success",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 501
+          }
+        },
+        {
+          "id": 102,
+          "name": "optional-link-check",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "failure",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 502
+          }
+        }
+      ],
+      "statuses": []
+    },
+    "all-success": {
+      "phase": "enroll",
+      "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "api_errors": false,
+      "check_runs": [
+        {
+          "id": 101,
+          "name": "docs-contract",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "success",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 501
+          }
+        },
+        {
+          "id": 103,
+          "name": "optional-link-check",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "failure",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 502
+          }
+        },
+        {
+          "id": 104,
+          "name": "optional-link-check",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "success",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 502
+          }
+        },
+        {
+          "id": 105,
+          "name": "deploy-preview",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "skipped",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 503
+          }
+        },
+        {
+          "id": 106,
+          "name": "advisory-scan",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "neutral",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 504
+          }
+        }
+      ],
+      "statuses": [
+        {
+          "id": 1,
+          "context": "example/legacy-ci",
+          "state": "failure"
+        },
+        {
+          "id": 2,
+          "context": "example/legacy-ci",
+          "state": "success"
+        }
+      ]
+    },
+    "pending": {
+      "phase": "enroll",
+      "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "api_errors": false,
+      "check_runs": [
+        {
+          "id": 101,
+          "name": "docs-contract",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "success",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 501
+          }
+        },
+        {
+          "id": 107,
+          "name": "optional-link-check",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "in_progress",
+          "conclusion": null,
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 502
+          }
+        }
+      ],
+      "statuses": []
+    },
+    "absent": {
+      "phase": "enroll",
+      "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "api_errors": false,
+      "check_runs": [],
+      "statuses": []
+    },
+    "incomplete-api": {
+      "phase": "enroll",
+      "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "api_errors": true,
+      "check_runs": null,
+      "statuses": []
+    },
+    "row-for-other-revision": {
+      "phase": "enroll",
+      "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "api_errors": false,
+      "check_runs": [
+        {
+          "id": 101,
+          "name": "docs-contract",
+          "head_sha": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+          "status": "completed",
+          "conclusion": "success",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 501
+          }
+        }
+      ],
+      "statuses": []
+    },
+    "queue-self-check-excluded": {
+      "phase": "queue",
+      "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+      "api_errors": false,
+      "queue_run": {
+        "path": ".github/workflows/gemara-merge-queue.yml",
+        "event": "merge_group",
+        "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+        "check_suite_id": 777
+      },
+      "check_runs": [
+        {
+          "id": 201,
+          "name": "docs-contract",
+          "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+          "status": "completed",
+          "conclusion": "success",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 701
+          }
+        },
+        {
+          "id": 202,
+          "name": "gate",
+          "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+          "status": "in_progress",
+          "conclusion": null,
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 777
+          }
+        }
+      ],
+      "statuses": []
+    },
+    "queue-same-suite-other-app": {
+      "phase": "queue",
+      "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+      "api_errors": false,
+      "queue_run": {
+        "path": ".github/workflows/gemara-merge-queue.yml",
+        "event": "merge_group",
+        "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+        "check_suite_id": 777
+      },
+      "check_runs": [
+        {
+          "id": 201,
+          "name": "docs-contract",
+          "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+          "status": "completed",
+          "conclusion": "success",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 701
+          }
+        },
+        {
+          "id": 203,
+          "name": "external-gate",
+          "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+          "status": "in_progress",
+          "conclusion": null,
+          "app": {
+            "id": 99999
+          },
+          "check_suite": {
+            "id": 777
+          }
+        }
+      ],
+      "statuses": []
+    },
+    "queue-run-not-merge-group": {
+      "phase": "queue",
+      "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+      "api_errors": false,
+      "queue_run": {
+        "path": ".github/workflows/gemara-merge-queue.yml",
+        "event": "pull_request",
+        "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+        "check_suite_id": 777
+      },
+      "check_runs": [
+        {
+          "id": 201,
+          "name": "docs-contract",
+          "head_sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+          "status": "completed",
+          "conclusion": "success",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 701
+          }
+        }
+      ],
+      "statuses": []
+    },
+    "neutral-rerun-does-not-clear-failure": {
+      "phase": "enroll",
+      "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "api_errors": false,
+      "check_runs": [
+        {
+          "id": 101,
+          "name": "docs-contract",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "success",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 501
+          }
+        },
+        {
+          "id": 108,
+          "name": "optional-link-check",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "failure",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 502
+          }
+        },
+        {
+          "id": 109,
+          "name": "optional-link-check",
+          "head_sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "status": "completed",
+          "conclusion": "neutral",
+          "app": {
+            "id": 15368
+          },
+          "check_suite": {
+            "id": 502
+          }
+        }
+      ],
+      "statuses": []
+    }
+  }
+}
