@@ -1,0 +1,16 @@
+{
+  "synthetic": true,
+  "notice": "SYNTHETIC: invented for offline reproduction; not a live, exported or authenticated observation.",
+  "description": "Owner quality policy at 9000 basis points (90%). Separate file so both thresholds stay inspectable.",
+  "cli_input": {
+    "schema_version": "judge-policy/v1",
+    "scorer": "review_correctly_approved",
+    "source_id": "synthetic.not-an-mlflow-export",
+    "experiment_id": "synthetic-1",
+    "lookback_days": 365,
+    "minimum_samples": 100,
+    "minimum_basis_points": 9000,
+    "maximum_snapshot_age_seconds": 900,
+    "maximum_score_age_seconds": 604800
+  }
+}

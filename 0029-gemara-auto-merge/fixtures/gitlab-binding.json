@@ -1,0 +1,37 @@
+{
+  "synthetic": true,
+  "notice": "SYNTHETIC: invented for offline reproduction; not a live, exported or authenticated observation.",
+  "description": "Owner binding for an invented GitLab consumer. Same shared policy; forge-specific identity, checks and Review workflow.",
+  "cli_input": {
+    "schema_version": "owner-binding/v1",
+    "identity": {
+      "forge": "gitlab",
+      "host": "gitlab.example.test",
+      "project_id": "100002",
+      "repository": "example/gitlab-consumer",
+      "target_branch": "main"
+    },
+    "allowed_paths": [
+      "docs/**"
+    ],
+    "governed_paths": [
+      ".github/**",
+      ".gitlab/**",
+      ".gitlab-ci.yml",
+      ".fullsend/**",
+      ".gemara/**",
+      "policy/**",
+      "tests/**",
+      "AGENTS.md",
+      "CODEOWNERS"
+    ],
+    "required_checks": [
+      "documentation-contract"
+    ],
+    "review_workflow": "fullsend-review",
+    "maximum_risk": 1,
+    "maximum_evidence_age_seconds": 600,
+    "owner_grant_enabled": true,
+    "owner_grant_expires_at": "2026-10-21T00:00:00Z"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "synthetic": true,
+  "notice": "SYNTHETIC: invented for offline reproduction; not a live, exported or authenticated observation.",
+  "description": "Aggregate with the historical counts (238 passing / 254 scored approvals) and an invented source identity.",
+  "cli_input": {
+    "schema_version": "judge-observation/v1",
+    "scorer": "review_correctly_approved",
+    "source_id": "synthetic.not-an-mlflow-export",
+    "experiment_id": "synthetic-1",
+    "cohort": "experiment-scored-approvals",
+    "window_start": "2025-10-20T00:00:00Z",
+    "window_end": "2026-10-20T00:00:00Z",
+    "collected_at": "2026-10-20T00:00:00Z",
+    "latest_score_at": "2026-10-19T12:00:00Z",
+    "passed": 238,
+    "total": 254,
+    "invalid": 0,
+    "excluded_other_sources": 0,
+    "complete": true,
+    "records_sha256": "e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+    "authorization": "none",
+    "mutation_permitted": false
+  }
+}
