@@ -32,5 +32,5 @@ WebFetch, WebSearch, or direct GitHub API requests.
    `github-mcp-report.md`.
 4. If the MCP request fails, report the exact error and do not create a
    misleading success artifact.
-6. Never print credentials, authorization headers, placeholders, or MCP
+5. Never print credentials, authorization headers, placeholders, or MCP
    configuration.
