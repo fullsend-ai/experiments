@@ -107,7 +107,15 @@ OpenShell. Verify that Claude discovers and uses the authentication-required
    The report should show `get_me`, a login, numeric user ID, and profile URL.
    The agent should have discovered the `github` MCP server and available tool
    from the configured plugin. Do not include the token, email, or full profile
-   response in the artifact.
+    response in the artifact.
+
+## Expected Output
+
+The unauthenticated check in Step 4 should print HTTP `401`. A successful run
+should produce `results/github-mcp-report.md` containing the `get_me` tool name,
+the authenticated user's login, numeric user ID, and profile URL. The artifact
+must not contain the token, email, authorization headers, or full profile
+response.
 
 ## Repeat runs and troubleshooting
 
