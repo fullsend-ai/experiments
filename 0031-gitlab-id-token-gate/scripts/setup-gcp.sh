@@ -8,7 +8,7 @@ COND="assertion.project_path == '${GITLAB_PROJECT}' \
 && assertion.ref == 'main' \
 && assertion.ref_protected == 'true' \
 && assertion.ci_config_ref_uri == 'gitlab.com/${GITLAB_PROJECT}//.gitlab-ci.yml@refs/heads/main' \
-&& assertion.pipeline_source == 'schedule' \
+&& assertion.pipeline_source in ['schedule', 'pipeline', 'api'] \
 && assertion.user_login == '${SA_LOGIN}'"
 
 gcloud services enable secretmanager.googleapis.com sts.googleapis.com iam.googleapis.com --project "$GCP_PROJECT"

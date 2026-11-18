@@ -38,15 +38,20 @@ Manager, so no custom server is needed:
 
 - A WIF pool trusts GitLab.com ID tokens for one project. Its provider
   condition requires the project path, `ref == main`, `ref_protected ==
-  true`, the exact `ci_config_ref_uri` of `.gitlab-ci.yml` on `main`,
-  `pipeline_source == schedule`, and `user_login` equal to the service
-  account.
+  true`, the exact `ci_config_ref_uri` of `.gitlab-ci.yml` on `main`, a
+  `pipeline_source` of `schedule`, `pipeline`, or `api`, and `user_login`
+  equal to the service account.
 - A Secret Manager secret holds a **false** forge credential. Only
   identities from that pool can read it.
 - A `gate` job requests an ID token (`id_tokens`), exchanges it at Google
   STS, and tries to read the secret. It prints the signed claims and only
   the length and a short SHA-256 prefix of the credential. The STS and
   secret endpoints are literals in the committed files, not CI variables.
+- A `dispatch` job starts a pipeline with its own `CI_JOB_TOKEN`, like the
+  fullsend trigger account route. GitLab reports that pipeline as
+  `source=pipeline`, run by the user of the triggering job.
+- A `gate-manual` job (`when: manual`) runs the same gate inside the
+  service account's scheduled pipeline.
 
 Two GitLab.com accounts play the roles:
 
@@ -62,7 +67,11 @@ earlier value back when it exits.
 
 ## Results
 
-GitLab.com, 2026-11-18, Free tier, SaaS shared runners.
+GitLab.com, 2026-11-18, Free tier, SaaS shared runners. Scenarios 1 to 8
+ran first with a gate that allowed only `schedule`. All scenarios then ran
+again with the `schedule`, `pipeline`, or `api` gate. The packaged scripts
+ran end to end in a new project: `setup-gcp.sh`, `render-ci.sh`,
+`run-scenarios.sh`, and `teardown.sh` all worked, and the results matched.
 
 | # | Scenario | Signed claims | Gate result |
 |---|---|---|---|
@@ -74,6 +83,11 @@ GitLab.com, 2026-11-18, Free tier, SaaS shared runners.
 | 6 | Person edits the service account's schedule, or adds a `BASH_ENV` variable to it | none | HTTP 403. Only the owner can change a schedule. |
 | 7 | Person retries the service account's scheduled job | `user_login`: person, `pipeline_source: schedule` | Refused |
 | 8 | Person takes ownership of the service account's schedule and runs it | `user_login`: person, `pipeline_source: schedule` | Refused |
+| 9 | Service account starts a pipeline through the API (the fullsend Poller route) | `user_login`: service account, `pipeline_source: api` | **Credential issued** |
+| 10 | A service account pipeline starts a child with its job token (the trigger account route) | `user_login`: service account, `pipeline_source: pipeline` | **Credential issued** |
+| 11 | A person's pipeline starts a child with its job token | `user_login`: person, `pipeline_source: pipeline` | Refused |
+| 12 | Person plays the manual gate job in the service account's scheduled pipeline, with job variables | `user_login`: person, `pipeline_source: schedule` | Refused |
+| 13 | `BASH_ENV` set on a person's pipeline, then its job token child | child: `user_login`: person | Refused. The child did not get the parent's `BASH_ENV`. |
 
 What the results show:
 
@@ -81,10 +95,15 @@ What the results show:
   `pipeline_source` (scenario 4) or the other claims. The gate decides
   outside the job, so code in the job (scenario 5) cannot change the
   decision.
-- **`user_login` does the work.** Scenarios 2, 7, and 8 all carry
+- **`user_login` does the work.** Scenarios 2, 7, 8, and 12 all carry
   `pipeline_source: schedule`. Only the `user_login` check refuses them. A
-  retry runs as the person who retried it, and a person who takes
-  ownership becomes the pipeline user.
+  retry or a manual job runs as the person who clicked it, and a person
+  who takes ownership becomes the pipeline user.
+- **The fullsend routes carry the service account identity.** The Poller
+  route (`api`, scenario 9) and the trigger account route (`pipeline`,
+  scenario 10) both pass. A person cannot use the job token route to take
+  the service account identity (scenario 11). So a gate must pair each
+  source with the account that starts it, not accept a source alone.
 - **A caller cannot get into the service account's pipelines.** The
   person cannot add variables to a schedule they do not own (scenario 6).
   Taking ownership changes `user_login`, so the credential stops (scenario
@@ -100,11 +119,11 @@ What the results show:
   issuer would be the mint (ADR 0029), which would hold or issue the role
   and poller credentials after the same claim checks.
 - The webhook trigger path. A trigger pipeline runs as the trigger token
-  owner. Test it with a trigger token that the service account owns.
-- Manual jobs that a person starts with variables inside a service
-  account pipeline. A manual job should run as the person, like a retry.
+  owner, and a holder of the token can pass variables. In relaxed mode the
+  webhook path must stay off, or the gate must refuse `trigger`.
 - A Developer as the attacker. The person was the Owner. The gate does not
   read roles, so a Developer should be refused the same way.
+- A separate Poller and trigger account. Here one account plays both.
 - GitLab self-managed versions, which can lack some ID token claims.
 
 ## Reproduce
@@ -130,7 +149,7 @@ verify their identity before they can run pipelines.
 5. As the person, create an inactive schedule on `main`. As the service
    account, take ownership of it and run it. The job log shows scenario 1.
 6. Run the attacks as the person. Set `SA_SCHEDULE_ID` to the schedule ID
-   to also run scenarios 6 and 7:
+   to also run scenarios 6, 7, and 12:
 
    ```bash
    SA_SCHEDULE_ID=<id> scripts/run-scenarios.sh
@@ -146,6 +165,9 @@ Teardown: `scripts/teardown.sh`, then delete the GitLab project.
 The hypothesis holds on GitLab.com. Pipeline variable control, including
 code execution through `BASH_ENV`, gives a caller nothing when the job
 holds no long-lived credential and the issuer checks the signed
-`user_login` and `pipeline_source` claims. This keeps the in project
-install and needs no extra GitLab tier. It points the #9597 decision at
-mint-issued GitLab credentials, not at a companion project.
+`user_login` claim, paired with `pipeline_source`, `ref_protected`, and
+`ci_config_ref_uri`. All three fullsend start routes (schedule, Poller
+API, and job token trigger) carry the service account identity, so the
+gate does not break them. This keeps the in project install and needs no
+extra GitLab tier. The issuer can be the adopter's own GCP project (WIF
+plus Secret Manager), as here.

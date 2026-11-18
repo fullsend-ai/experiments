@@ -1,11 +1,36 @@
-# ID token gate demo. Only a scheduled pipeline that the service account
-# owns, on protected main, from this CI config, can read the fake forge
-# credential. GATE_RUN=1 lets other pipelines run the job, so the attacks
-# can be shown.
+# ID token gate demo. Only pipelines that the service account starts
+# (schedule, API, or job token trigger), on protected main, from this CI
+# config, can read the fake forge credential. Every other pipeline runs
+# the same job so the refusals can be shown.
 gate:
   image: alpine:3.20
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && ($CI_PIPELINE_SOURCE == "schedule" || $GATE_RUN == "1")
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "pipeline" || $CI_PIPELINE_SOURCE == "api")
+  id_tokens:
+    GATE_ID_TOKEN:
+      aud: "${WIF_AUDIENCE}"
+  script:
+    - apk add -q --no-progress curl jq >/dev/null
+    - sh gate.sh
+
+# Trigger account route: start a pipeline with this job's CI_JOB_TOKEN.
+# GitLab reports it as source=pipeline, run by the user of this job.
+dispatch:
+  image: alpine:3.20
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "api")
+  script:
+    - apk add -q --no-progress curl jq >/dev/null
+    - 'curl -s -X POST --form "token=${CI_JOB_TOKEN}" --form "ref=main" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/trigger/pipeline" | jq -c "{id, source, user: .user.username}"'
+
+# A manual gate job inside the service account's scheduled pipeline. A
+# person who plays it becomes the job user.
+gate-manual:
+  image: alpine:3.20
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "schedule"
+      when: manual
+      allow_failure: true
   id_tokens:
     GATE_ID_TOKEN:
       aud: "${WIF_AUDIENCE}"
