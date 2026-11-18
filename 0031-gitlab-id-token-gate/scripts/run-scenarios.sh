@@ -42,9 +42,14 @@ start() {  # $1 label, $2 JSON body
 }
 
 old=$(glab api "projects/$P" | jq -r .ci_pipeline_variables_minimum_override_role)
-trap 'glab api -X PUT "projects/$P" -f ci_pipeline_variables_minimum_override_role="$old" >/dev/null; rm -rf "$TMP"' EXIT
-glab api -X PUT "projects/$P" -f ci_pipeline_variables_minimum_override_role=developer >/dev/null
-echo "Variable role set to developer for the run (restored to $old on exit)."
+if [ "$old" = developer ]; then
+  trap 'rm -rf "$TMP"' EXIT
+  echo "Variable role is already developer."
+else
+  trap 'glab api -X PUT "projects/$P" -f ci_pipeline_variables_minimum_override_role="$old" >/dev/null; rm -rf "$TMP"' EXIT
+  glab api -X PUT "projects/$P" -f ci_pipeline_variables_minimum_override_role=developer >/dev/null
+  echo "Variable role set to developer for the run (restored to $old on exit)."
+fi
 
 start "Plain API pipeline" '{"ref":"main"}'
 start "Forged CI_PIPELINE_SOURCE=schedule" '{"ref":"main","variables":[{"key":"CI_PIPELINE_SOURCE","value":"schedule"}]}'

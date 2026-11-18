@@ -21,7 +21,8 @@ dispatch:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "api")
   script:
     - apk add -q --no-progress curl jq >/dev/null
-    - 'curl -s -X POST --form "token=${CI_JOB_TOKEN}" --form "ref=main" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/trigger/pipeline" | jq -c "{id, source, user: .user.username}"'
+    # A self-managed instance with a private CA gives its CA file here.
+    - 'curl -s ${CI_SERVER_TLS_CA_FILE:+--cacert "$CI_SERVER_TLS_CA_FILE"} -X POST --form "token=${CI_JOB_TOKEN}" --form "ref=main" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/trigger/pipeline" | jq -c "{id, source, user: .user.username}"'
 
 # A manual gate job inside the service account's scheduled pipeline. A
 # person who plays it becomes the job user.

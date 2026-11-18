@@ -89,6 +89,35 @@ ran end to end in a new project: `setup-gcp.sh`, `render-ci.sh`,
 | 12 | Person plays the manual gate job in the service account's scheduled pipeline, with job variables | `user_login`: person, `pipeline_source: schedule` | Refused |
 | 13 | `BASH_ENV` set on a person's pipeline, then its job token child | child: `user_login`: person | Refused. The child did not get the parent's `BASH_ENV`. |
 
+### Self-managed GitLab
+
+A self-managed instance on a private network, GitLab 19.4, 2026-11-18.
+The service account was a project access token bot: self-managed GitLab
+gives project access tokens on all tiers, and each token makes a bot
+user. The instance is not reachable from the internet, so Google cannot
+fetch its signing keys. `setup-gcp.sh` uploaded the instance's JWKS to
+the WIF provider (`JWKS_FILE`) in place of OIDC discovery. The runners
+could reach Google STS and Secret Manager.
+
+| # | Scenario | Signed claims | Gate result |
+|---|---|---|---|
+| 1 | Bot runs its own schedule | `user_login`: bot, `pipeline_source: schedule` | **Credential issued** |
+| 9 | Bot starts a pipeline through the API | `user_login`: bot, `pipeline_source: api` | **Credential issued** |
+| 10 | Bot pipelines start children with their job tokens | `user_login`: bot, `pipeline_source: pipeline` | **Credential issued** |
+| 3, 11 | Person starts an API pipeline, and its job token child | `user_login`: person, `api` and `pipeline` | Refused |
+| 4 | Person sets `CI_PIPELINE_SOURCE=schedule` | Still `api` | Refused |
+| 5, 13 | Person sets `BASH_ENV`, and its job token child | `api` and `pipeline` | Refused. The `sh` job shell does not read `BASH_ENV`, so the injected code did not run here. Scenario 5 on GitLab.com covers that case. |
+| 6 | Person opens the edit page of the bot's schedule | none | HTTP 404. The list shows no edit button, only "Take ownership". |
+| 7 | Person retries the bot's scheduled gate job | `user_login`: person, `pipeline_source: schedule` | Refused |
+| 8 | Person takes ownership of the bot's schedule and runs it | `user_login`: person, `pipeline_source: schedule` | Refused |
+| 12 | Person plays the manual gate job in the bot's scheduled pipeline, with job variables | `user_login`: person, `pipeline_source: schedule` | Refused |
+
+The ID tokens carry all the claims that the gate uses. Two setup details
+differ from GitLab.com. The instance runners need a tag, and the
+`dispatch` job must trust the instance CA (`CI_SERVER_TLS_CA_FILE`). The
+uploaded JWKS is a copy, so the WIF provider must get the new keys each
+time the instance rotates its signing key, or every exchange fails.
+
 What the results show:
 
 - **GitLab signs what really happened.** A pipeline variable cannot change
@@ -116,15 +145,17 @@ What the results show:
 ## Not covered
 
 - A real forge credential. The secret here is false. In fullsend the
-  issuer would be the mint (ADR 0029), which would hold or issue the role
-  and poller credentials after the same claim checks.
+  adopter's GCP project would hold the role and Poller credentials in
+  Secret Manager, behind the same claim checks.
 - The webhook trigger path. A trigger pipeline runs as the trigger token
   owner, and a holder of the token can pass variables. In relaxed mode the
   webhook path must stay off, or the gate must refuse `trigger`.
 - A Developer as the attacker. The person was the Owner. The gate does not
   read roles, so a Developer should be refused the same way.
 - A separate Poller and trigger account. Here one account plays both.
-- GitLab self-managed versions, which can lack some ID token claims.
+- Self-managed versions older than 19.4, which can lack some ID token
+  claims. The instance tested here is 19.4.
+- Signing key rotation with an uploaded JWKS.
 
 ## Reproduce
 
@@ -141,13 +172,18 @@ verify their identity before they can run pipelines.
    export GCP_PROJECT=<gcp project id>
    export GITLAB_PROJECT=<group/project>
    export SA_LOGIN=<service account username>
+   # Self-managed only:
+   export GITLAB_HOST=<instance host>
+   export JWKS_FILE=<path to the instance's /oauth/discovery/keys>  # if Google cannot reach it
    ```
 
 3. Create the GCP parts: `scripts/setup-gcp.sh`
 4. Render the CI files into a checkout of the project, then commit and
    push them to `main`: `scripts/render-ci.sh <checkout>`
-5. As the person, create an inactive schedule on `main`. As the service
-   account, take ownership of it and run it. The job log shows scenario 1.
+5. As the service account, create and run an inactive schedule on
+   `main`, and start an API pipeline: `scripts/run-as-service-account.sh`
+   asks for the service account's token and prints `SA_SCHEDULE_ID`. Or
+   do the same in the GitLab UI. The job logs show scenarios 1, 9, and 10.
 6. Run the attacks as the person. Set `SA_SCHEDULE_ID` to the schedule ID
    to also run scenarios 6, 7, and 12:
 
@@ -162,7 +198,7 @@ Teardown: `scripts/teardown.sh`, then delete the GitLab project.
 
 ## Conclusion
 
-The hypothesis holds on GitLab.com. Pipeline variable control, including
+The hypothesis holds on GitLab.com and on self-managed GitLab 19.4. Pipeline variable control, including
 code execution through `BASH_ENV`, gives a caller nothing when the job
 holds no long-lived credential and the issuer checks the signed
 `user_login` claim, paired with `pipeline_source`, `ref_protected`, and
