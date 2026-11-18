@@ -1,0 +1,14 @@
+# ID token gate demo. Only a scheduled pipeline that the service account
+# owns, on protected main, from this CI config, can read the fake forge
+# credential. GATE_RUN=1 lets other pipelines run the job, so the attacks
+# can be shown.
+gate:
+  image: alpine:3.20
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && ($CI_PIPELINE_SOURCE == "schedule" || $GATE_RUN == "1")
+  id_tokens:
+    GATE_ID_TOKEN:
+      aud: "${WIF_AUDIENCE}"
+  script:
+    - apk add -q --no-progress curl jq >/dev/null
+    - sh gate.sh

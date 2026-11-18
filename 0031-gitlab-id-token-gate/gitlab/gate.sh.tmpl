@@ -1,0 +1,34 @@
+#!/bin/sh
+# ID token gate. The job exchanges its GitLab ID token at Google STS. The
+# WIF provider condition decides if the job can read the fake forge
+# credential. The job prints the signed claims and only a hash prefix of
+# the credential. render-ci.sh writes the endpoints as literals, so a CI
+# variable cannot change them.
+set -u
+AUDIENCE="${WIF_AUDIENCE}"
+SECRET_URL="${SECRET_URL}"
+
+claims=$(printf '%s' "${GATE_ID_TOKEN}" | cut -d. -f2 | tr '_-' '/+' \
+  | awk '{l=length($0)%4; if(l==2)$0=$0"=="; else if(l==3)$0=$0"="; print}' \
+  | base64 -d 2>/dev/null)
+echo "CLAIMS $(printf '%s' "$claims" | jq -c '{user_login, pipeline_source, ref, ref_protected, ci_config_ref_uri}')"
+
+sts=$(curl -s https://sts.googleapis.com/v1/token \
+  --data-urlencode "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
+  --data-urlencode "audience=${AUDIENCE}" \
+  --data-urlencode "scope=https://www.googleapis.com/auth/cloud-platform" \
+  --data-urlencode "requested_token_type=urn:ietf:params:oauth:token-type:access_token" \
+  --data-urlencode "subject_token_type=urn:ietf:params:oauth:token-type:jwt" \
+  --data-urlencode "subject_token=${GATE_ID_TOKEN}")
+access=$(printf '%s' "$sts" | jq -r '.access_token // empty')
+if [ -z "$access" ]; then
+  echo "GATE RESULT: refused by STS: $(printf '%s' "$sts" | jq -c '{error, error_description}')"
+  exit 0
+fi
+val=$(curl -s -H "Authorization: Bearer ${access}" "${SECRET_URL}" \
+  | jq -r '.payload.data // empty' | base64 -d 2>/dev/null)
+if [ -z "$val" ]; then
+  echo "GATE RESULT: STS token issued, but secret read failed"
+  exit 0
+fi
+echo "GATE RESULT: credential issued len=${#val} sha=$(printf '%s' "$val" | sha256sum | cut -c1-12)"
