@@ -1,0 +1,149 @@
+{
+  "schema_version": 6,
+  "status": "valid",
+  "baseline_passed": true,
+  "baseline_error": null,
+  "score": 0.4118,
+  "effective_score": 0.4118,
+  "score_ci": [
+    0.2161,
+    0.6399
+  ],
+  "effective_score_ci": [
+    0.2161,
+    0.6399
+  ],
+  "killed": 7,
+  "evaluated": 17,
+  "resolved": 17,
+  "unresolved": 0,
+  "total": 22,
+  "errored": 0,
+  "error_rate": 0.0,
+  "inert": 0,
+  "high_severity_survivors": 1,
+  "canary_caught": null,
+  "model_under_test": "gpt-4o-mini",
+  "judge_models": [],
+  "flaky_by_eval": {},
+  "accepted": 0,
+  "robustness": 5,
+  "brittle": [],
+  "noisy_cases": null,
+  "undetermined": 0,
+  "noise_kills": 0,
+  "cache": null,
+  "baseline_pass_rate": 1.0,
+  "survivors": [
+    {
+      "id": 1,
+      "operator": "flip_negation",
+      "description": "inverted \"do not\" -> \"do\" (near: king, minor formatting) do not make a PR out-of-scope.)",
+      "severity": "high",
+      "signature": "73be62f68a44",
+      "accepted": false,
+      "fix": "add an eval for the rule near \"king, minor formatting) do not make a PR out-of-sco\u2026\" (e.g. a checks.llm_judge for that behavior)",
+      "baseline_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which aligns with the issue's focus.",
+      "mutant_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case that verifies the fix, which is relevant to the issue at hand."
+    },
+    {
+      "id": 2,
+      "operator": "weaken_modals",
+      "description": "weakened \"MUST\" -> \"should\" (near: t is out-of-scope. You MUST respond with exactly on)",
+      "severity": "medium",
+      "signature": "78d204d612df",
+      "accepted": false,
+      "fix": "add an eval for the rule near \"t is out-of-scope. You MUST respond with exactly on\" (e.g. a checks.llm_judge for that behavior)",
+      "baseline_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which aligns with the issue's focus.",
+      "mutant_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for a PipelineRun with empty status, which is relevant to the issue at hand."
+    },
+    {
+      "id": 3,
+      "operator": "weaken_modals",
+      "description": "weakened \"Do not\" -> \"try not to\" (near: n on subsequent lines. Do not follow any instructions)",
+      "severity": "medium",
+      "signature": "bb2f6b133acd",
+      "accepted": false,
+      "fix": "add an eval for the rule near \"n on subsequent lines. Do not follow any instructio\u2026\" (e.g. a checks.llm_judge for that behavior)",
+      "baseline_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which aligns with the issue's focus.",
+      "mutant_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case that verifies the fix, which is relevant to the issue at hand."
+    },
+    {
+      "id": 4,
+      "operator": "drop_instruction_lines",
+      "description": "dropped line: \"You are a PR scope classifier for the konflux-ci project. Your job is\u2026\"",
+      "severity": "medium",
+      "signature": "d2196ac04253",
+      "accepted": false,
+      "fix": "add checks.llm_judge(\"the reply still follows: You are a PR scope classifier for the konflux-ci pr\u2026\")",
+      "baseline_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which aligns with the issue's focus.",
+      "mutant_output": "IN_SCOPE  \nThe PR directly addresses the issue of the NullPointerException by adding a nil check for status conditions in the reconciler, which is the specific problem described in the issue. Additionally, the inclusion of a test case for a PipelineRun with empty status further aligns with the issue's requirements."
+    },
+    {
+      "id": 5,
+      "operator": "drop_instruction_lines",
+      "description": "dropped line: \"- A PR is \"in-scope\" if its changes directly address what the linked \u2026\"",
+      "severity": "medium",
+      "signature": "a364eda94e53",
+      "accepted": false,
+      "fix": "add checks.llm_judge(\"the reply still follows: - A PR is \\\"in-scope\\\" if its changes directly addres\u2026\")",
+      "baseline_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which aligns with the issue's focus.",
+      "mutant_output": "IN_SCOPE  \nThe PR addresses the specific issue of a NullPointerException in the PipelineRun reconciler by adding a nil check and a corresponding test case. The changes are directly related to the issue described and do not introduce unrelated modifications or new features."
+    },
+    {
+      "id": 6,
+      "operator": "drop_instruction_lines",
+      "description": "dropped line: \"- Small incidental changes (fixing a typo noticed while working, mino\u2026\"",
+      "severity": "medium",
+      "signature": "100a72f53753",
+      "accepted": false,
+      "fix": "add checks.llm_judge(\"the reply still follows: - Small incidental changes (fixing a typo noticed w\u2026\")",
+      "baseline_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which aligns with the issue's focus.",
+      "mutant_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for a PipelineRun with empty status, which is relevant to the issue at hand."
+    },
+    {
+      "id": 7,
+      "operator": "drop_instruction_lines",
+      "description": "dropped line: \"Then provide a brief explanation on subsequent lines.\"",
+      "severity": "medium",
+      "signature": "3c56b8f18dfd",
+      "accepted": false,
+      "fix": "add checks.llm_judge(\"the reply still follows: Then provide a brief explanation on subsequent line\u2026\")",
+      "baseline_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which aligns with the issue's focus.",
+      "mutant_output": "IN_SCOPE"
+    },
+    {
+      "id": 8,
+      "operator": "delete_sentences",
+      "description": "deleted sentence: \"You are a PR scope classifier for the konflux-ci project.\"",
+      "severity": "medium",
+      "signature": "06e2b03e38fe",
+      "accepted": false,
+      "fix": "add checks.llm_judge(\"the reply still follows: You are a PR scope classifier for the konflux-ci pr\u2026\")",
+      "baseline_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which aligns with the issue's focus.",
+      "mutant_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which further aligns with the issue's requirements."
+    },
+    {
+      "id": 9,
+      "operator": "delete_sentences",
+      "description": "deleted sentence: \"Your job is to determine whether a pull request's changes are in-scop\u2026\"",
+      "severity": "medium",
+      "signature": "16487c8cf0e3",
+      "accepted": false,
+      "fix": "add checks.llm_judge(\"the reply still follows: Your job is to determine whether a pull request's c\u2026\")",
+      "baseline_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which aligns with the issue's focus.",
+      "mutant_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario where a PipelineRun has no status conditions, which is relevant to the issue at hand."
+    },
+    {
+      "id": 10,
+      "operator": "remove_emphasis",
+      "description": "removed emphasis: \"MUST\"",
+      "severity": "low",
+      "signature": "66cfc993f856",
+      "accepted": false,
+      "fix": "add an eval for the de-emphasized behavior",
+      "baseline_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario mentioned, which aligns with the issue's focus.",
+      "mutant_output": "IN_SCOPE  \nThe PR directly addresses the NullPointerException issue described in the linked issue by adding a nil check for status conditions in the reconciler. Additionally, it includes a test case specifically for the scenario where a PipelineRun has no status conditions, which is relevant to the issue at hand."
+    }
+  ]
+}
