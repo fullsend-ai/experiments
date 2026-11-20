@@ -1,0 +1,6 @@
+version: "1"
+runtime: claude
+agents:
+  - name: github-mcp-poc
+    source: harness/github-mcp-poc.yaml
+    model: sonnet

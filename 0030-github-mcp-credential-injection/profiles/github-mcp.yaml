@@ -1,0 +1,37 @@
+---
+id: github-mcp-poc
+display_name: GitHub MCP PoC
+description: Read-only access to the host-side official GitHub MCP server
+category: data
+inference_capable: false
+
+credentials:
+  - name: github_pat
+    description: Fine-grained GitHub personal access token
+    env_vars: [GITHUB_MCP_PAT]
+    required: true
+    auth_style: bearer
+    header_name: authorization
+
+endpoints:
+  - host: host.openshell.internal
+    port: 8766
+    path: /mcp
+    protocol: mcp
+    enforcement: enforce
+    mcp:
+      versions: ["2025-11-25"]
+    rules:
+      - allow:
+          method: initialize
+      - allow:
+          method: notifications/initialized
+      - allow:
+          method: tools/list
+      - allow:
+          method: tools/call
+          tool: get_me
+
+binaries:
+  - "**/node"
+  - "**/claude.exe"

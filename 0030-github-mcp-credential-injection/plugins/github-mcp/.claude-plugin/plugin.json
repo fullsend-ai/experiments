@@ -1,0 +1,5 @@
+{
+  "name": "github-mcp",
+  "version": "0.1.0",
+  "description": "Read-only GitHub MCP connection for the experiment"
+}
