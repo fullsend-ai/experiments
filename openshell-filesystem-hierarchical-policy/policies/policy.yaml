@@ -1,0 +1,17 @@
+version: 1
+
+filesystem_policy:
+  include_workdir: false
+  read_only:
+    - /usr
+    - /lib
+    - /proc
+    - /dev/urandom
+    - /app
+    - /etc
+    - /var/log
+    - /sandbox/workspace/target-repo/
+  read_write:
+    - /sandbox
+    - /tmp
+    - /dev/null
