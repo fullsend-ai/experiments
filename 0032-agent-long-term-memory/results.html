@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memory experiment results</title>
+<style>
+:root{color-scheme:light;--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--border:rgba(11,11,11,.10);--more:#e34948;--less:#2a78d6;--good:#006300;--bad:#d03b3b;--link:#1c5cab}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;--border:rgba(255,255,255,.10);--more:#e66767;--less:#3987e5;--good:#0ca30c;--bad:#e66767;--link:#86b6ef}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1080px;margin:0 auto;padding:28px 16px 72px}
+h1{font-size:26px;line-height:1.2;margin:0 0 8px}
+h2{font-size:18px;margin:44px 0 4px}
+p{margin:6px 0;max-width:74ch}
+.sub{color:var(--ink2)}
+a{color:var(--link)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:8px}
+.tile .label{color:var(--ink2);font-size:13px}
+.tile .value{font-size:28px;font-weight:600;line-height:1.2;margin-top:2px}
+.tile .delta{font-size:13px;color:var(--ink2);margin-top:4px}
+.tile .delta.was{color:var(--muted);margin-top:2px}
+.icon{font-size:11px;margin-right:4px}
+.icon.worse{color:var(--bad)}
+.icon.better{color:var(--good)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink2);margin-top:12px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+@media (max-width:720px){.charts{grid-template-columns:minmax(0,1fr)}}
+.tiles-note{margin-top:18px;font-size:13px}
+figure{margin:0}
+figcaption{font-weight:600;font-size:14px;margin-bottom:4px}
+figcaption span{display:block;font-weight:400;color:var(--ink2);font-size:12px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:inherit}
+.hit{outline:none;cursor:default}
+.scroll{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 10px;text-align:right;border-bottom:1px solid var(--grid);white-space:nowrap;font-variant-numeric:tabular-nums}
+th{color:var(--ink2);font-weight:600}
+th.group{text-align:center;border-bottom:none;padding-bottom:0}
+th:first-child,td:first-child{text-align:left}
+td.text,th.text{text-align:left;white-space:normal;min-width:16ch}
+tr.aside td{color:var(--ink2)}
+details{margin-top:10px}
+details>summary{cursor:pointer;font-weight:600}
+details .sub{font-weight:400}
+ul{margin:6px 0;padding-left:20px;max-width:74ch}
+li{margin:3px 0}
+.badge{display:inline-block;font-size:11px;border:1px solid var(--border);border-radius:999px;padding:0 7px;margin-left:6px;color:var(--ink2);white-space:nowrap}
+.badge.under{display:block;width:max-content;margin:3px 0 0}
+.known{font-size:10px;color:var(--ink2);margin-right:6px;vertical-align:1px}
+.scroll th:first-child,.scroll td:first-child{position:sticky;left:0;background:var(--surface)}
+.card.scroll{padding-left:0;padding-right:0}
+.card.scroll th:first-child,.card.scroll td:first-child{padding-left:26px}
+.card.scroll th:last-child,.card.scroll td:last-child{padding-right:26px}
+#problems .name{overflow-wrap:anywhere}
+@media (max-width:720px){.scroll th:first-child,.scroll td:first-child{box-shadow:1px 0 0 var(--grid)}#problems .name{width:40vw}}
+#tip{position:fixed;pointer-events:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,.18);display:none;max-width:260px;z-index:5}
+#tip .head{color:var(--ink2);margin-bottom:2px}
+#tip .big{font-size:15px;font-weight:600}
+#tip .row{display:flex;justify-content:space-between;gap:14px;color:var(--ink2)}
+#tip .row b{color:var(--ink)}
+footer{margin-top:44px;color:var(--ink2);font-size:13px}
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title"></h1>
+  <div id="intro" class="sub"></div>
+  <p class="sub tiles-note" id="tiles-note"></p>
+  <section class="tiles" id="tiles" aria-label="Headline figures"></section>
+
+  <section id="findings-section" hidden>
+    <h2>What the runs showed</h2>
+    <ul id="findings"></ul>
+  </section>
+
+  <h2>Memory against no memory, issue by issue</h2>
+  <p class="sub">Each bar is one issue that both repositories handled. A bar above zero means the run with memory used more than the run without it. Hover or tab to a bar for the two figures; the table below has every number.</p>
+  <div class="legend" id="legend"></div>
+  <section class="charts" id="charts"></section>
+
+  <h2>Every issue</h2>
+  <p class="sub">Each cell shows the figure with memory, then the figure without it. The count covers the issue's own runs up to the last review verdict. The retro run, once the pull request was merged or closed, is listed separately under each issue.</p>
+  <div class="card scroll"><table id="pairs"></table></div>
+
+  <section id="problems-section" hidden>
+    <h2>Problems that agents had already met</h2>
+    <p class="sub" id="problems-intro"></p>
+    <p class="sub" id="problems-key"></p>
+    <div class="card scroll"><table id="problems"></table></div>
+  </section>
+
+  <h2>Run by run</h2>
+  <div id="details"></div>
+
+  <h2>How to read this</h2>
+  <ul id="notes"></ul>
+  <footer id="footer"></footer>
+</main>
+<div id="tip" role="status"></div>
+<script type="application/json" id="data">{"title": "Shared long-term memory for fullsend agents: results", "intro": ["Two public test repositories started from the same snapshot of fullsend's code and ran fullsend's stock agents. One gave the agents a shared long-term memory of what earlier runs learned; the other did not. Seven fullsend bug reports were each copied into both and handled by each repository's agents as usual.", "This page shows the numbers. The method, the findings and their limits are in the experiment's README.md and RESULTS.md, next to this file."], "repos": {"memory": "https://github.com/ascerra/fullsend-memory-poc", "baseline": "https://github.com/ascerra/fullsend-memory-poc-baseline"}, "setups": {"1": "used for #9572 and #9320. They asked agents to search memory at the start and again when a check failed, and to check what they recalled against the code. In practice the triage, code, fix and retro agents searched once, at the start, and the review agent's main agent never did.", "2": "used for the other five issues. They ask every agent to search for the task's subject and for the limits of its own sandbox at the start, and to plan around a known limit instead of re-running a step that cannot work."}, "notes": ["Cost is fullsend's own estimate for each run, not a bill.", "Input tokens include cached tokens, which cost much less than fresh ones.", "Each issue ran once per side. One issue proves little; the direction across the five issues under the revised instructions is the result, not any single percentage.", "Each repository's own follow-up work, such as issues its retro agent filed and their fixes, is left out of these figures."], "findings": [{"text": "With the first instructions, memory cost more on both issues (+27% and +10%). Agents recalled lessons about their sandbox's limits and then ran the failing steps anyway.", "links": []}, {"text": "With the revised instructions, all five issues were cheaper and faster with memory: $43.28 against $58.87 (−26%), 3h 35m against 5h 12m (−31%), and 17 failed tool calls against 40. The totals lean on #9157, where the side without memory needed an extra fix round: the per-issue medians are −20% cost and −31% time.", "links": []}, {"text": "Most of the saving came from the review. With memory, the review agent's main agent wrote each sub-agent's brief to a file and sent a short pointer, as an earlier review had saved in memory. All 10 reviews with memory under the revised instructions did this, and 1 of the other 17. Its median output was 14,694 tokens against 50,248.", "links": [{"label": "the review that saved the lesson", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45172423058"}, {"label": "the review without memory that found it itself", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45418944781"}]}, {"text": "Agents ran into problems that a stored lesson already described, such as commands the sandbox blocks and checks that cannot work there. Under the revised instructions such a problem came up on either side in 71 cases, and the side with memory avoided 39 of them.", "links": []}, {"text": "Memory can hide a problem that deserves a real fix. With memory, agents worked around six tests that fail only in the sandbox, and the retro filed nothing. Without memory, the retro filed the root cause. fullsend's agents fixed it upstream the same day it was reported there.", "links": [{"label": "the retro with memory", "url": "https://github.com/ascerra/fullsend-memory-poc/pull/19#issuecomment-7114697861"}, {"label": "the issue filed without memory", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/issues/15"}, {"label": "fullsend#9832", "url": "https://github.com/fullsend-ai/fullsend/issues/9832"}, {"label": "its fix, fullsend#9834", "url": "https://github.com/fullsend-ai/fullsend/pull/9834"}]}], "updated": "24 Nov 2026, 18:46 UTC", "pairs": [{"n": 1, "upstream": "9572", "upstream_url": "https://github.com/fullsend-ai/fullsend/issues/9572", "title": "A glob carve-out copies the wrong glob entry", "setup": 1, "notes": ["Ran first, while memory held almost nothing, under the first memory instructions.", "The two copies were posted 2 hours 11 minutes apart, because the repository without memory was set up after it. From #9320 on, both copies were posted within two seconds of each other."], "memory": {"issue": "https://github.com/ascerra/fullsend-memory-poc/issues/8", "pr": "https://github.com/ascerra/fullsend-memory-poc/pull/10", "cost": 5.6061, "input": 6091361, "output": 91817, "seconds": 1620, "turns": 78, "tools": 117, "failed": 5, "memory_calls": 13, "reviews": 1, "fixes": 0, "verdict": "approved", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45084643826", "seconds": 217, "cost": 0.4981, "input": 348487, "output": 6826, "turns": 14, "tools": 12, "failed": 1, "memory_calls": 2, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45084970059", "seconds": 733, "cost": 1.155, "input": 1964451, "output": 12271, "turns": 33, "tools": 31, "failed": 1, "memory_calls": 4, "note": null}, {"agent": "review", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45086076816", "seconds": 621, "cost": 3.953, "input": 3778423, "output": 72720, "turns": 31, "tools": 74, "failed": 3, "memory_calls": 7, "note": null}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45095962100", "seconds": 745, "cost": 3.1513, "input": 2967073, "output": 42820, "turns": 15, "tools": 69, "failed": 3, "memory_calls": 4, "note": null}}, "baseline": {"issue": "https://github.com/ascerra/fullsend-memory-poc-baseline/issues/3", "pr": "https://github.com/ascerra/fullsend-memory-poc-baseline/pull/4", "cost": 4.4078, "input": 4376765, "output": 75403, "seconds": 1440, "turns": 64, "tools": 95, "failed": 2, "memory_calls": 0, "reviews": 1, "fixes": 0, "verdict": "approved", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45097016611", "seconds": 233, "cost": 0.4808, "input": 356813, "output": 9945, "turns": 14, "tools": 12, "failed": 1, "memory_calls": 0, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45097387218", "seconds": 663, "cost": 0.9838, "input": 1454854, "output": 10359, "turns": 25, "tools": 23, "failed": 0, "memory_calls": 0, "note": null}, {"agent": "review", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45098424562", "seconds": 510, "cost": 2.9432, "input": 2565098, "output": 55099, "turns": 25, "tools": 60, "failed": 1, "memory_calls": 0, "note": null}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45158949792", "seconds": 474, "cost": 2.3562, "input": 1937010, "output": 32596, "turns": 5, "tools": 55, "failed": 5, "memory_calls": 0, "note": null}}}, {"n": 2, "upstream": "9320", "upstream_url": "https://github.com/fullsend-ai/fullsend/issues/9320", "title": "repos uninstall writes back the repos.yaml it loaded before teardown", "setup": 1, "notes": ["The first issue where lessons existed beforehand. Agents recalled lessons about their sandbox's limits and then ran the failing steps anyway.", "The side without memory was merged with two low findings open, after a maintainer stopped its second fix run."], "memory": {"issue": "https://github.com/ascerra/fullsend-memory-poc/issues/12", "pr": "https://github.com/ascerra/fullsend-memory-poc/pull/13", "cost": 11.2978, "input": 14537106, "output": 176456, "seconds": 3321, "turns": 190, "tools": 254, "failed": 5, "memory_calls": 30, "reviews": 2, "fixes": 1, "verdict": "approved after one fix round", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45159288772", "seconds": 228, "cost": 0.5912, "input": 472845, "output": 6487, "turns": 17, "tools": 15, "failed": 0, "memory_calls": 3, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45159879176", "seconds": 949, "cost": 1.7133, "input": 3479716, "output": 18579, "turns": 48, "tools": 46, "failed": 1, "memory_calls": 6, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45162250883", "seconds": 622, "cost": 4.2566, "input": 4537355, "output": 74291, "turns": 36, "tools": 88, "failed": 1, "memory_calls": 11, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45163898226", "seconds": 945, "cost": 1.5795, "input": 2788549, "output": 22264, "turns": 57, "tools": 52, "failed": 2, "memory_calls": 5, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45166298921", "seconds": 543, "cost": 3.1572, "input": 3258641, "output": 54835, "turns": 32, "tools": 53, "failed": 1, "memory_calls": 5, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45168877242", "seconds": 472, "cost": 2.5671, "input": 3460473, "output": 32779, "turns": 8, "tools": 60, "failed": 2, "memory_calls": 4, "note": null}}, "baseline": {"issue": "https://github.com/ascerra/fullsend-memory-poc-baseline/issues/5", "pr": "https://github.com/ascerra/fullsend-memory-poc-baseline/pull/6", "cost": 10.2811, "input": 11463548, "output": 175166, "seconds": 3141, "turns": 148, "tools": 204, "failed": 6, "memory_calls": 0, "reviews": 2, "fixes": 1, "verdict": "changes requested after one fix round; merged by a maintainer", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45159289926", "seconds": 213, "cost": 0.4737, "input": 304078, "output": 6102, "turns": 12, "tools": 10, "failed": 0, "memory_calls": 0, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45159841828", "seconds": 892, "cost": 1.394, "input": 2593858, "output": 14748, "turns": 34, "tools": 32, "failed": 2, "memory_calls": 0, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45162056362", "seconds": 670, "cost": 3.8827, "input": 3622497, "output": 72818, "turns": 33, "tools": 73, "failed": 1, "memory_calls": 0, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45163844558", "seconds": 739, "cost": 1.125, "input": 1668302, "output": 13981, "turns": 36, "tools": 31, "failed": 2, "memory_calls": 0, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45165719873", "seconds": 590, "cost": 3.4057, "input": 3274813, "output": 67517, "turns": 33, "tools": 58, "failed": 1, "memory_calls": 0, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45168883955", "seconds": 917, "cost": 5.0658, "input": 6352390, "output": 69552, "turns": 6, "tools": 116, "failed": 7, "memory_calls": 0, "note": null}}}, {"n": 3, "upstream": "9596", "upstream_url": "https://github.com/fullsend-ai/fullsend/issues/9596", "title": "repos install flags the managed Jira credential as an orphan variable", "setup": 2, "notes": ["The first issue under the revised instructions. Both reviews with memory briefed their sub-agents through files."], "memory": {"issue": "https://github.com/ascerra/fullsend-memory-poc/issues/16", "pr": "https://github.com/ascerra/fullsend-memory-poc/pull/17", "cost": 7.3271, "input": 8930521, "output": 72417, "seconds": 2343, "turns": 138, "tools": 223, "failed": 2, "memory_calls": 56, "reviews": 2, "fixes": 1, "verdict": "approved after one fix round", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45177134783", "seconds": 214, "cost": 0.5822, "input": 411579, "output": 6216, "turns": 15, "tools": 13, "failed": 0, "memory_calls": 4, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45177738606", "seconds": 746, "cost": 0.9108, "input": 1375645, "output": 8217, "turns": 29, "tools": 27, "failed": 0, "memory_calls": 6, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45179701906", "seconds": 379, "cost": 2.6748, "input": 3444216, "output": 28718, "turns": 16, "tools": 88, "failed": 0, "memory_calls": 21, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45180754623", "seconds": 609, "cost": 0.8952, "input": 1319544, "output": 10712, "turns": 43, "tools": 37, "failed": 1, "memory_calls": 9, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45182478310", "seconds": 341, "cost": 2.2641, "input": 2379537, "output": 18554, "turns": 35, "tools": 58, "failed": 1, "memory_calls": 16, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45204806283", "seconds": 559, "cost": 3.791, "input": 4203110, "output": 55701, "turns": 29, "tools": 91, "failed": 3, "memory_calls": 7, "note": null}}, "baseline": {"issue": "https://github.com/ascerra/fullsend-memory-poc-baseline/issues/8", "pr": "https://github.com/ascerra/fullsend-memory-poc-baseline/pull/9", "cost": 8.5497, "input": 8462431, "output": 146549, "seconds": 2508, "turns": 107, "tools": 163, "failed": 8, "memory_calls": 0, "reviews": 2, "fixes": 1, "verdict": "approved after one fix round", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45177138285", "seconds": 227, "cost": 0.5535, "input": 320160, "output": 8925, "turns": 14, "tools": 11, "failed": 2, "memory_calls": 0, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45177772649", "seconds": 563, "cost": 0.7945, "input": 1103075, "output": 7754, "turns": 24, "tools": 22, "failed": 1, "memory_calls": 0, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45179230930", "seconds": 563, "cost": 3.6644, "input": 3486463, "output": 63517, "turns": 10, "tools": 62, "failed": 1, "memory_calls": 0, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45180757720", "seconds": 533, "cost": 0.7541, "input": 937901, "output": 8233, "turns": 28, "tools": 23, "failed": 2, "memory_calls": 0, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45182240873", "seconds": 595, "cost": 2.7832, "input": 2614832, "output": 58120, "turns": 31, "tools": 45, "failed": 2, "memory_calls": 0, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45204770531", "seconds": 690, "cost": 3.0309, "input": 3018206, "output": 35934, "turns": 4, "tools": 67, "failed": 2, "memory_calls": 0, "note": null}}}, {"n": 4, "upstream": "9571", "upstream_url": "https://github.com/fullsend-ai/fullsend/issues/9571", "title": "repos install: convergence lists glob orgs again after the preflights", "setup": 2, "notes": ["The review of the side without memory ended with comments only: three low findings in code its fix agent had just added. A maintainer merged it as it stood."], "memory": {"issue": "https://github.com/ascerra/fullsend-memory-poc/issues/18", "pr": "https://github.com/ascerra/fullsend-memory-poc/pull/19", "cost": 10.734, "input": 17082094, "output": 121505, "seconds": 2907, "turns": 160, "tools": 301, "failed": 3, "memory_calls": 54, "reviews": 2, "fixes": 1, "verdict": "approved after one fix round", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45208044072", "seconds": 269, "cost": 0.6863, "input": 667482, "output": 7627, "turns": 21, "tools": 19, "failed": 1, "memory_calls": 5, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45208885800", "seconds": 997, "cost": 2.6278, "input": 6085113, "output": 27426, "turns": 69, "tools": 67, "failed": 0, "memory_calls": 7, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45212015792", "seconds": 477, "cost": 3.7082, "input": 5098163, "output": 44376, "turns": 14, "tools": 109, "failed": 0, "memory_calls": 21, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45213582333", "seconds": 701, "cost": 1.2451, "input": 2275438, "output": 14674, "turns": 50, "tools": 46, "failed": 2, "memory_calls": 7, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45215844260", "seconds": 413, "cost": 2.4666, "input": 2955898, "output": 27402, "turns": 6, "tools": 60, "failed": 0, "memory_calls": 14, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45270058797", "seconds": 499, "cost": 2.7966, "input": 3034439, "output": 38218, "turns": 8, "tools": 74, "failed": 4, "memory_calls": 9, "note": null}}, "baseline": {"issue": "https://github.com/ascerra/fullsend-memory-poc-baseline/issues/11", "pr": "https://github.com/ascerra/fullsend-memory-poc-baseline/pull/12", "cost": 15.165, "input": 20218917, "output": 264307, "seconds": 4195, "turns": 182, "tools": 346, "failed": 8, "memory_calls": 0, "reviews": 2, "fixes": 1, "verdict": "comments only after one fix round; merged by a maintainer", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45208050271", "seconds": 218, "cost": 0.4899, "input": 511950, "output": 7455, "turns": 18, "tools": 16, "failed": 1, "memory_calls": 0, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45208775705", "seconds": 1319, "cost": 2.2637, "input": 5029308, "output": 26297, "turns": 55, "tools": 53, "failed": 1, "memory_calls": 0, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45212921194", "seconds": 637, "cost": 4.7575, "input": 5179038, "output": 87571, "turns": 31, "tools": 104, "failed": 2, "memory_calls": 0, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45214975230", "seconds": 1236, "cost": 2.141, "input": 3404665, "output": 41143, "turns": 69, "tools": 64, "failed": 3, "memory_calls": 0, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45218906585", "seconds": 737, "cost": 5.5129, "input": 6093956, "output": 101841, "turns": 9, "tools": 109, "failed": 1, "memory_calls": 0, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45270002857", "seconds": 936, "cost": 5.6838, "input": 7096623, "output": 81424, "turns": 5, "tools": 134, "failed": 4, "memory_calls": 0, "note": null}}}, {"n": 5, "upstream": "9564", "upstream_url": "https://github.com/fullsend-ai/fullsend/issues/9564", "title": "agent set --effort writes an inherited model to config.yaml", "setup": 2, "notes": ["Both code agents chose the same fix, and both first reviews found the same defect in it."], "memory": {"issue": "https://github.com/ascerra/fullsend-memory-poc/issues/20", "pr": "https://github.com/ascerra/fullsend-memory-poc/pull/21", "cost": 7.9083, "input": 10287731, "output": 87668, "seconds": 2701, "turns": 121, "tools": 229, "failed": 2, "memory_calls": 53, "reviews": 2, "fixes": 1, "verdict": "approved after one fix round", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45309356818", "seconds": 199, "cost": 0.5452, "input": 345558, "output": 6078, "turns": 16, "tools": 14, "failed": 0, "memory_calls": 6, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45309778103", "seconds": 740, "cost": 1.1762, "input": 2024864, "output": 12706, "turns": 40, "tools": 38, "failed": 2, "memory_calls": 6, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45311325494", "seconds": 453, "cost": 3.1921, "input": 3667148, "output": 34703, "turns": 13, "tools": 93, "failed": 0, "memory_calls": 23, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45312281776", "seconds": 933, "cost": 1.1891, "input": 1924534, "output": 14472, "turns": 42, "tools": 37, "failed": 0, "memory_calls": 5, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45314211876", "seconds": 313, "cost": 1.8057, "input": 2325627, "output": 19709, "turns": 10, "tools": 47, "failed": 0, "memory_calls": 13, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45378159934", "seconds": 471, "cost": 2.5229, "input": 2353638, "output": 36292, "turns": 9, "tools": 65, "failed": 4, "memory_calls": 17, "note": null}}, "baseline": {"issue": "https://github.com/ascerra/fullsend-memory-poc-baseline/issues/17", "pr": "https://github.com/ascerra/fullsend-memory-poc-baseline/pull/18", "cost": 9.0348, "input": 9887695, "output": 145483, "seconds": 3332, "turns": 120, "tools": 191, "failed": 5, "memory_calls": 0, "reviews": 2, "fixes": 1, "verdict": "approved after one fix round", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45309358140", "seconds": 196, "cost": 0.4933, "input": 296607, "output": 7541, "turns": 13, "tools": 11, "failed": 1, "memory_calls": 0, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45309795010", "seconds": 1188, "cost": 1.0894, "input": 1959108, "output": 14268, "turns": 35, "tools": 33, "failed": 1, "memory_calls": 0, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45312229274", "seconds": 564, "cost": 3.6311, "input": 3211004, "output": 61906, "turns": 7, "tools": 67, "failed": 0, "memory_calls": 0, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45313403503", "seconds": 745, "cost": 0.9666, "input": 1496446, "output": 10879, "turns": 36, "tools": 31, "failed": 3, "memory_calls": 0, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45314915280", "seconds": 592, "cost": 2.8544, "input": 2924530, "output": 50889, "turns": 29, "tools": 49, "failed": 0, "memory_calls": 0, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45378169228", "seconds": 661, "cost": 3.2955, "input": 4291572, "output": 42117, "turns": 5, "tools": 87, "failed": 3, "memory_calls": 0, "note": null}}}, {"n": 6, "upstream": "9197", "upstream_url": "https://github.com/fullsend-ai/fullsend/issues/9197", "title": "scan context reports \"All context files clean\" when requested files cannot be read", "setup": 2, "notes": ["The change was in internal/cli, where six tests fail only in the agents' sandbox. The agents with memory ran only the tests for the changed code; the agents without memory ran the whole package three times."], "memory": {"issue": "https://github.com/ascerra/fullsend-memory-poc/issues/22", "pr": "https://github.com/ascerra/fullsend-memory-poc/pull/23", "cost": 7.7735, "input": 10068405, "output": 75878, "seconds": 2099, "turns": 112, "tools": 233, "failed": 3, "memory_calls": 56, "reviews": 2, "fixes": 1, "verdict": "approved after one fix round", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45388818069", "seconds": 235, "cost": 0.6053, "input": 480444, "output": 7241, "turns": 20, "tools": 18, "failed": 0, "memory_calls": 6, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45389440176", "seconds": 605, "cost": 1.1435, "input": 1845331, "output": 12090, "turns": 37, "tools": 35, "failed": 1, "memory_calls": 9, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45391047938", "seconds": 366, "cost": 2.9556, "input": 3572324, "output": 27158, "turns": 10, "tools": 87, "failed": 0, "memory_calls": 20, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45392054865", "seconds": 503, "cost": 0.8207, "input": 1440971, "output": 8214, "turns": 39, "tools": 35, "failed": 2, "memory_calls": 8, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45393448814", "seconds": 340, "cost": 2.2484, "input": 2729335, "output": 21175, "turns": 6, "tools": 58, "failed": 0, "memory_calls": 13, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45402257561", "seconds": 550, "cost": 2.6067, "input": 2888627, "output": 37387, "turns": 7, "tools": 72, "failed": 5, "memory_calls": 14, "note": null}}, "baseline": {"issue": "https://github.com/ascerra/fullsend-memory-poc-baseline/issues/19", "pr": "https://github.com/ascerra/fullsend-memory-poc-baseline/pull/20", "cost": 9.7355, "input": 10186682, "output": 170787, "seconds": 3180, "turns": 147, "tools": 207, "failed": 8, "memory_calls": 0, "reviews": 2, "fixes": 1, "verdict": "approved after one fix round", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45388825366", "seconds": 227, "cost": 0.4708, "input": 356004, "output": 5989, "turns": 16, "tools": 13, "failed": 1, "memory_calls": 0, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45389407017", "seconds": 1042, "cost": 1.1568, "input": 2030950, "output": 13033, "turns": 37, "tools": 35, "failed": 2, "memory_calls": 0, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45392153695", "seconds": 604, "cost": 4.0811, "input": 4087611, "output": 75267, "turns": 37, "tools": 83, "failed": 3, "memory_calls": 0, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45393806644", "seconds": 625, "cost": 0.6318, "input": 803468, "output": 6652, "turns": 26, "tools": 21, "failed": 0, "memory_calls": 0, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45395529153", "seconds": 638, "cost": 3.395, "input": 2908649, "output": 69846, "turns": 31, "tools": 55, "failed": 2, "memory_calls": 0, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45402273246", "seconds": 612, "cost": 1.2453, "input": 1267382, "output": 19665, "turns": 26, "tools": 32, "failed": 4, "memory_calls": 0, "note": null}}}, {"n": 7, "upstream": "9157", "upstream_url": "https://github.com/fullsend-ai/fullsend/issues/9157", "title": "envmanifest: \"export -n NAME\" is recorded as exporting NAME", "setup": 2, "notes": ["Neither side was approved. Both code agents grew a small shell parser and each review kept finding edge cases in it; the side without memory needed a second fix round.", "Both pull requests were closed without merging when the experiment stopped. The retro still ran on each."], "memory": {"issue": "https://github.com/ascerra/fullsend-memory-poc/issues/26", "pr": "https://github.com/ascerra/fullsend-memory-poc/pull/27", "cost": 9.5397, "input": 11164563, "output": 135074, "seconds": 2826, "turns": 136, "tools": 237, "failed": 7, "memory_calls": 55, "reviews": 2, "fixes": 1, "verdict": "comments only after one fix round; closed unmerged", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45409296704", "seconds": 213, "cost": 0.5144, "input": 264975, "output": 5948, "turns": 14, "tools": 12, "failed": 0, "memory_calls": 5, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45409997099", "seconds": 665, "cost": 1.2077, "input": 1803677, "output": 17161, "turns": 36, "tools": 34, "failed": 3, "memory_calls": 7, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45412035886", "seconds": 421, "cost": 2.9192, "input": 3051744, "output": 31629, "turns": 13, "tools": 75, "failed": 0, "memory_calls": 18, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45413339267", "seconds": 805, "cost": 1.5415, "input": 2207735, "output": 27161, "turns": 54, "tools": 48, "failed": 2, "memory_calls": 6, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45415882527", "seconds": 682, "cost": 3.3569, "input": 3836432, "output": 53175, "turns": 19, "tools": 68, "failed": 2, "memory_calls": 19, "note": 2}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45433259545", "seconds": 1379, "cost": 4.3401, "input": 5835743, "output": 51343, "turns": 39, "tools": 106, "failed": 4, "memory_calls": 18, "note": null}}, "baseline": {"issue": "https://github.com/ascerra/fullsend-memory-poc-baseline/issues/21", "pr": "https://github.com/ascerra/fullsend-memory-poc-baseline/pull/22", "cost": 16.3866, "input": 16459946, "output": 313000, "seconds": 5490, "turns": 216, "tools": 304, "failed": 11, "memory_calls": 0, "reviews": 3, "fixes": 2, "verdict": "comments only after two fix rounds; closed unmerged", "runs": [{"agent": "triage", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45409308001", "seconds": 244, "cost": 0.4641, "input": 249022, "output": 7429, "turns": 12, "tools": 10, "failed": 2, "memory_calls": 0, "note": null}, {"agent": "code", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45410076693", "seconds": 893, "cost": 0.8055, "input": 1422373, "output": 11634, "turns": 31, "tools": 29, "failed": 2, "memory_calls": 0, "note": null}, {"agent": "review 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45412806370", "seconds": 714, "cost": 3.9142, "input": 3268367, "output": 82606, "turns": 33, "tools": 58, "failed": 2, "memory_calls": 0, "note": 1}, {"agent": "fix 1", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45415072582", "seconds": 1229, "cost": 1.7891, "input": 2604173, "output": 33815, "turns": 54, "tools": 48, "failed": 2, "memory_calls": 0, "note": 1}, {"agent": "review 2", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45418944781", "seconds": 611, "cost": 3.6115, "input": 3453417, "output": 62694, "turns": 9, "tools": 63, "failed": 1, "memory_calls": 0, "note": 2}, {"agent": "fix 2", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45420920233", "seconds": 1053, "cost": 1.4565, "input": 1812564, "output": 26575, "turns": 42, "tools": 37, "failed": 1, "memory_calls": 0, "note": 2}, {"agent": "review 3", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45424385260", "seconds": 672, "cost": 4.3457, "input": 3650030, "output": 88247, "turns": 35, "tools": 59, "failed": 1, "memory_calls": 0, "note": 3}], "retro": {"agent": "retro", "url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45433270761", "seconds": 918, "cost": 4.2887, "input": 4805416, "output": 67220, "turns": 5, "tools": 94, "failed": 6, "memory_calls": 0, "note": null}}}], "problems": {"issues": ["9572", "9320", "9596", "9571", "9564", "9197", "9157"], "rows": [{"problem": "pre-commit run cannot fetch its hooks in the sandbox (TLS error)", "cells": {"9572": {"memory": 1, "baseline": 1, "lesson": false}, "9320": {"memory": 2, "baseline": 2, "lesson": true}, "9596": {"memory": 2, "baseline": 2, "lesson": true}, "9571": {"memory": 1, "baseline": 2, "lesson": true}, "9564": {"memory": 2, "baseline": 2, "lesson": true}, "9197": {"memory": 1, "baseline": 2, "lesson": true}, "9157": {"memory": 2, "baseline": 3, "lesson": true}}, "effect": "repeated"}, {"problem": "Reading .pre-commit-config.yaml to work out which hooks to run by hand", "cells": {"9572": {"memory": 3, "baseline": 2, "lesson": false}, "9320": {"memory": 3, "baseline": 4, "lesson": true}, "9596": {"memory": 3, "baseline": 2, "lesson": true}, "9571": {"memory": 2, "baseline": 4, "lesson": true}, "9564": {"memory": 4, "baseline": 2, "lesson": true}, "9197": {"memory": 3, "baseline": 3, "lesson": true}, "9157": {"memory": 3, "baseline": 4, "lesson": true}}, "effect": "repeated"}, {"problem": "semgrep-scan cannot download its ruleset", "cells": {"9572": {"memory": 1, "baseline": 1, "lesson": false}, "9320": {"memory": 1, "baseline": 2, "lesson": true}, "9596": {"memory": 1, "baseline": 1, "lesson": true}, "9571": {"memory": 1, "baseline": 1, "lesson": true}, "9564": {"memory": 1, "baseline": 1, "lesson": true}, "9197": {"memory": 1, "baseline": 2, "lesson": true}, "9157": {"memory": 2, "baseline": 1, "lesson": true}}, "effect": "repeated"}, {"problem": "Whole go test ./internal/cli/ run: 6 tests fail only in the sandbox, about 2 minutes a run", "cells": {"9572": {"memory": null, "baseline": null, "lesson": false}, "9320": {"memory": 3, "baseline": 3, "lesson": true}, "9596": {"memory": null, "baseline": null, "lesson": false}, "9571": {"memory": 1, "baseline": 3, "lesson": true}, "9564": {"memory": 2, "baseline": 3, "lesson": true}, "9197": {"memory": 0, "baseline": 3, "lesson": true}, "9157": {"memory": null, "baseline": null, "lesson": false}}, "effect": ""}, {"problem": "Re-running the 6 sandbox-only tests on the base code to prove they are unrelated", "cells": {"9572": {"memory": null, "baseline": null, "lesson": false}, "9320": {"memory": 1, "baseline": 1, "lesson": true}, "9596": {"memory": null, "baseline": null, "lesson": false}, "9571": {"memory": 1, "baseline": 2, "lesson": true}, "9564": {"memory": 1, "baseline": 2, "lesson": true}, "9197": {"memory": 0, "baseline": 2, "lesson": true}, "9157": {"memory": null, "baseline": null, "lesson": false}}, "effect": ""}, {"problem": "Tirith blocks $(( $(..) )) (the elapsed-time line in the step commands)", "cells": {"9572": {"memory": 0, "baseline": 0, "lesson": false}, "9320": {"memory": 2, "baseline": 2, "lesson": true}, "9596": {"memory": 0, "baseline": 1, "lesson": true}, "9571": {"memory": 0, "baseline": 2, "lesson": true}, "9564": {"memory": 0, "baseline": 1, "lesson": true}, "9197": {"memory": 1, "baseline": 0, "lesson": true}, "9157": {"memory": 1, "baseline": 2, "lesson": true}}, "effect": "avoided by code, repeated by fix"}, {"problem": "Tirith blocks shell functions, { } groups or heredocs inside $( )", "cells": {"9572": {"memory": 1, "baseline": 0, "lesson": false}, "9320": {"memory": 2, "baseline": 2, "lesson": true}, "9596": {"memory": 0, "baseline": 4, "lesson": true}, "9571": {"memory": 0, "baseline": 0, "lesson": true}, "9564": {"memory": 0, "baseline": 0, "lesson": true}, "9197": {"memory": 0, "baseline": 2, "lesson": true}, "9157": {"memory": 1, "baseline": 3, "lesson": true}}, "effect": "avoided by review 1, repeated by review 2"}, {"problem": "The review sandbox cannot run go test (toolchain download blocked, pr-head has only the changed files)", "cells": {"9572": {"memory": 1, "baseline": 3, "lesson": false}, "9320": {"memory": 0, "baseline": 1, "lesson": true}, "9596": {"memory": 0, "baseline": 1, "lesson": true}, "9571": {"memory": 0, "baseline": 6, "lesson": true}, "9564": {"memory": 0, "baseline": 1, "lesson": true}, "9197": {"memory": 0, "baseline": 1, "lesson": true}, "9157": {"memory": 0, "baseline": 7, "lesson": true}}, "effect": "avoided"}, {"problem": "cp into a /tmp copy of the repo is denied (the copy is read-only)", "cells": {"9572": {"memory": 1, "baseline": 1, "lesson": false}, "9320": {"memory": 0, "baseline": 0, "lesson": true}, "9596": {"memory": 0, "baseline": 1, "lesson": true}, "9571": {"memory": 0, "baseline": 2, "lesson": true}, "9564": {"memory": 0, "baseline": 0, "lesson": true}, "9197": {"memory": 0, "baseline": 1, "lesson": true}, "9157": {"memory": 0, "baseline": 1, "lesson": true}}, "effect": "avoided"}, {"problem": "Looking into CI's failing TestLivePerRepoScaffoldFilesMatchInstallRender", "cells": {"9572": {"memory": 0, "baseline": 0, "lesson": true}, "9320": {"memory": 0, "baseline": 2, "lesson": true}, "9596": {"memory": 0, "baseline": 0, "lesson": true}, "9571": {"memory": 0, "baseline": 0, "lesson": true}, "9564": {"memory": 0, "baseline": 0, "lesson": true}, "9197": {"memory": 0, "baseline": 0, "lesson": true}, "9157": {"memory": 0, "baseline": 0, "lesson": true}}, "effect": "did not come up"}, {"problem": "Triage writes its result before the output folder exists", "cells": {"9572": {"memory": 0, "baseline": 1, "lesson": false}, "9320": {"memory": 0, "baseline": 0, "lesson": true}, "9596": {"memory": 0, "baseline": 1, "lesson": true}, "9571": {"memory": 0, "baseline": 0, "lesson": true}, "9564": {"memory": 0, "baseline": 1, "lesson": true}, "9197": {"memory": 0, "baseline": 0, "lesson": true}, "9157": {"memory": 0, "baseline": 1, "lesson": true}}, "effect": "avoided"}, {"problem": "Triage's issue lookup passes -F number:=N to gh api graphql, which GitHub rejects", "cells": {"9572": {"memory": 1, "baseline": 0, "lesson": false}, "9320": {"memory": 0, "baseline": 0, "lesson": false}, "9596": {"memory": 0, "baseline": 1, "lesson": false}, "9571": {"memory": 1, "baseline": 1, "lesson": false}, "9564": {"memory": 0, "baseline": 0, "lesson": true}, "9197": {"memory": 0, "baseline": 1, "lesson": true}, "9157": {"memory": 0, "baseline": 1, "lesson": true}}, "effect": "avoided"}, {"problem": "The fix agent's result check refuses a CI classification that is not on its list (such as unknown)", "cells": {"9572": {"memory": null, "baseline": null, "lesson": false}, "9320": {"memory": 0, "baseline": 0, "lesson": false}, "9596": {"memory": 0, "baseline": 0, "lesson": false}, "9571": {"memory": 1, "baseline": 0, "lesson": false}, "9564": {"memory": 0, "baseline": 0, "lesson": true}, "9197": {"memory": 0, "baseline": 0, "lesson": true}, "9157": {"memory": 0, "baseline": 0, "lesson": true}}, "effect": "did not come up"}], "asides": [{"problem": "All of these", "cells": {"9572": "10 / 9", "9320": "14 / 19", "9596": "6 / 14", "9571": "8 / 23", "9564": "10 / 13", "9197": "6 / 17", "9157": "9 / 23"}}, {"problem": "Time the commands that hit them took", "cells": {"9572": "0m 07s / 2m 29s", "9320": "7m 58s / 7m 34s", "9596": "2m 09s / 1m 02s", "9571": "2m 34s / 9m 40s", "9564": "5m 31s / 6m 43s", "9197": "0m 27s / 10m 40s", "9157": "0m 38s / 1m 03s"}}, {"problem": "Avoided with memory, of the problems a lesson already described that came up on either side", "cells": {"9572": null, "9320": "2 of 11", "9596": "8 of 13", "9571": "9 of 15", "9564": "4 of 12", "9197": "11 of 16", "9157": "7 of 15"}}], "intro": "Agents save a lesson when they hit a limit of their sandbox, such as a command that cannot work there. This table counts how often each side hit those same problems during an issue. If memory works, the count with memory should fall below the count without it wherever a lesson was already known."}}</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const el = (tag, attrs, text) => { const e = document.createElement(tag); for (const k in attrs || {}) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; };
+const svg = (tag, attrs, text) => { const e = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const k in attrs || {}) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; };
+const none = '–';
+const money = v => v == null ? none : '$' + (Math.round(v * 100 + 1e-9) / 100).toFixed(2);   // half up, as the report rounds ($15.165 is $15.17)
+const compact = v => v == null ? none : v >= 1e6 ? (v / 1e6).toFixed(2) + 'M' : v >= 1e4 ? (v / 1e3).toFixed(1) + 'K' : v.toLocaleString('en-US');
+const dur = s => s == null ? none : Math.floor(s / 60) + 'm ' + String(Math.round(s % 60)).padStart(2, '0') + 's';
+const plain = v => v == null ? none : String(v);
+const signed = (v, unit) => (v > 0 ? '+' : v < 0 ? '−' : '') + (unit === '%' ? Math.abs(v).toFixed(0) + '%' : String(Math.abs(v)));
+const link = (url, text) => url ? el('a', {href: url, rel: 'noopener'}, text) : document.createTextNode(text);
+
+const METRICS = [
+  {key: 'cost', label: 'Cost per issue', hint: 'the tool’s own estimate', fmt: money, unit: '%'},
+  {key: 'input', label: 'Input tokens', hint: 'cached tokens included', fmt: compact, unit: '%'},
+  {key: 'seconds', label: 'Time to the last review verdict', hint: 'from the issue being opened', fmt: dur, unit: '%'},
+  {key: 'failed', label: 'Failed tool calls', hint: 'a difference in count, not percent', fmt: plain, unit: ''},
+];
+const both = (p, k) => p.memory[k] != null && p.baseline[k] != null;
+const diff = (p, m) => !both(p, m.key) ? null : m.unit === '%' ? (p.memory[m.key] / p.baseline[m.key] - 1) * 100 : p.memory[m.key] - p.baseline[m.key];
+const mean = xs => xs.reduce((a, b) => a + b, 0) / xs.length;
+
+// ---- heading
+document.getElementById('title').textContent = D.title;
+for (const line of D.intro) document.getElementById('intro').append(el('p', {}, line));
+
+// ---- headline tiles
+const tiles = document.getElementById('tiles');
+function tile(label, value, lines) {
+  const t = el('div', {class: 'card tile'});
+  t.append(el('div', {class: 'label'}, label), el('div', {class: 'value'}, value));
+  (lines || []).forEach((nodes, i) => { const d = el('div', {class: i ? 'delta was' : 'delta'}); d.append(...nodes); t.append(d); });
+  tiles.append(t);
+}
+// When the memory instructions have changed, the tiles show the issues since
+// the change; the difference under the earlier instructions follows below it.
+const setups = [...new Set(D.pairs.map(p => p.setup))];
+const latest = Math.max(...setups);
+const current = D.pairs.filter(p => p.setup === latest);
+const earlier = D.pairs.filter(p => p.setup !== latest);
+const issues = n => n + (n === 1 ? ' issue' : ' issues');
+document.getElementById('tiles-note').textContent = earlier.length
+  ? 'Average per issue under the revised memory instructions (' + issues(current.length) + '), for the runs with memory compared with the runs without it. '
+    + 'The second line of each tile is the same comparison under the first instructions (' + issues(earlier.length) + ').'
+  : 'Average per issue for the runs with memory, compared with the runs without it.';
+tile('Issues handled by both repositories', String(D.pairs.length),
+  earlier.length ? [[document.createTextNode(current.length + ' under the revised instructions')]] : null);
+const tidy = (m, v) => m.unit === '%' ? (m.key === 'cost' ? v : Math.round(v)) : Number(v.toFixed(1));
+function compare(ps, m) {
+  const a = mean(ps.map(p => p.memory[m.key])), b = mean(ps.map(p => p.baseline[m.key]));
+  const same = Math.abs(a - b) < 1e-9, worse = a > b;
+  const amount = m.unit === '%' ? Math.abs((a / b - 1) * 100).toFixed(0) + '%' : String(Number(Math.abs(a - b).toFixed(1)));
+  return {a, b, same, worse, text: same ? 'the same' : amount + ' ' + (worse ? 'more' : m.unit === '%' ? 'less' : 'fewer')};
+}
+for (const m of METRICS) {
+  const ps = current.filter(p => both(p, m.key));
+  if (!ps.length) continue;
+  const c = compare(ps, m);
+  const icon = el('span', {class: 'icon ' + (c.same ? '' : c.worse ? 'worse' : 'better'), 'aria-hidden': 'true'}, c.same ? '●' : c.worse ? '▲' : '▼');
+  const lines = [[icon, document.createTextNode(c.same ? 'the same as without memory' : c.text + ' than without memory (' + m.fmt(tidy(m, c.b)) + ')')]];
+  const old = earlier.filter(p => both(p, m.key));
+  if (old.length) lines.push([document.createTextNode('First instructions: ' + compare(old, m).text)]);
+  tile(m.label, m.fmt(tidy(m, c.a)), lines);
+}
+
+// ---- what the runs showed
+if (D.findings && D.findings.length) {
+  document.getElementById('findings-section').hidden = false;
+  const list = document.getElementById('findings');
+  for (const f of D.findings) {
+    const li = el('li', {}, f.text);
+    (f.links || []).forEach((l, i) => { li.append(i ? ', ' : ' (', link(l.url, l.label)); });
+    if ((f.links || []).length) li.append(')');
+    list.append(li);
+  }
+}
+
+// ---- legend
+const legend = document.getElementById('legend');
+for (const [cls, text] of [['more', 'Memory used more'], ['less', 'Memory used less']]) {
+  const item = el('span'); const sw = el('i'); sw.style.background = 'var(--' + cls + ')'; item.append(sw, document.createTextNode(text)); legend.append(item);
+}
+
+// ---- tooltip
+const tip = document.getElementById('tip');
+function showTip(x, y, head, big, rows) {
+  tip.replaceChildren(el('div', {class: 'head'}, head), el('div', {class: 'big'}, big));
+  for (const [k, v] of rows) { const r = el('div', {class: 'row'}); r.append(el('span', {}, k), el('b', {}, v)); tip.append(r); }
+  tip.style.display = 'block';
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.max(8, Math.min(x + 14, innerWidth - w - 8)) + 'px';
+  tip.style.top = Math.max(8, Math.min(y + 14, innerHeight - h - 8)) + 'px';
+}
+const hideTip = () => { tip.style.display = 'none'; };
+
+// ---- charts: one small chart per measure, a bar per issue around zero
+function niceTop(maxAbs, unit) {
+  const steps = unit === '%' ? [10, 25, 50, 100, 250, 500, 1000] : [1, 2, 5, 10, 25, 50];
+  for (const s of steps) if (maxAbs <= s * 2) return {step: s, top: Math.max(s, Math.ceil(maxAbs / s) * s)};
+  const s = steps[steps.length - 1]; return {step: s, top: Math.ceil(maxAbs / s) * s};
+}
+function chart(m, W) {
+  const H = 216, mg = {l: 44, r: 12, t: 26, b: 28};
+  const iw = W - mg.l - mg.r, ih = H - mg.t - mg.b, n = D.pairs.length;
+  const vals = D.pairs.map(p => diff(p, m));
+  const {step, top} = niceTop(Math.max(m.unit === '%' ? 25 : 2, ...vals.filter(v => v != null).map(Math.abs)), m.unit);
+  const y = v => mg.t + ih / 2 - (v / top) * (ih / 2);
+  const s = svg('svg', {width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'group', 'aria-label': m.label + ': difference between the run with memory and the run without, per issue'});
+  for (let t = -top; t <= top + 1e-9; t += step) {
+    s.append(svg('line', {x1: mg.l, x2: W - mg.r, y1: y(t), y2: y(t), stroke: t === 0 ? 'var(--axis)' : 'var(--grid)', 'stroke-width': 1}));
+    s.append(svg('text', {x: mg.l - 6, y: y(t) + 3.5, 'text-anchor': 'end', 'font-size': 10, fill: 'var(--muted)'}, t === 0 ? '0' : signed(t, m.unit)));
+  }
+  const band = iw / n, bw = Math.min(24, band * 0.5);
+  D.pairs.forEach((p, i) => {
+    const x0 = mg.l + band * i, cx = x0 + band / 2, v = vals[i];
+    if (i > 0 && p.setup !== D.pairs[i - 1].setup) {
+      s.append(svg('line', {x1: x0, x2: x0, y1: mg.t - 12, y2: mg.t + ih, stroke: 'var(--axis)', 'stroke-width': 1}));
+      s.append(svg('text', {x: x0 + 4, y: mg.t - 4, 'font-size': 9.5, fill: 'var(--muted)'}, 'revised instructions'));
+    }
+    s.append(svg('text', {x: cx, y: H - 9, 'text-anchor': 'middle', 'font-size': n > 6 ? 9.5 : 11, fill: 'var(--muted)'}, '#' + p.upstream));
+    let bar = null;
+    if (v != null && v !== 0) {
+      const yv = y(v), yb = y(0), x = cx - bw / 2, r = Math.min(4, Math.abs(yv - yb)), up = v > 0, k = up ? 1 : -1;
+      bar = svg('path', {d: `M${x},${yb}V${yv + k * r}Q${x},${yv} ${x + r},${yv}H${x + bw - r}Q${x + bw},${yv} ${x + bw},${yv + k * r}V${yb}Z`, fill: up ? 'var(--more)' : 'var(--less)'});
+      s.append(bar);
+    }
+    if (v != null) s.append(svg('text', {x: cx, y: v >= 0 ? y(v) - 5 : y(v) + 13, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--ink2)'}, v === 0 ? '0' : signed(m.unit === '%' ? Math.round(v) : v, m.unit)));
+    const label = v == null ? 'no figure yet' : (v === 0 ? 'no difference' : signed(m.unit === '%' ? Math.round(v) : v, m.unit));
+    const hit = svg('rect', {class: 'hit', x: x0, y: mg.t, width: band, height: ih, fill: 'transparent', tabindex: 0, role: 'img',
+      'aria-label': `${m.label}, issue ${p.upstream}: with memory ${m.fmt(p.memory[m.key])}, without ${m.fmt(p.baseline[m.key])}, ${label}`});
+    const rows = [['with memory', m.fmt(p.memory[m.key])], ['without', m.fmt(p.baseline[m.key])]];
+    const on = (x, yy) => { if (bar) bar.style.filter = 'brightness(1.15)'; showTip(x, yy, m.label + ' · #' + p.upstream, label, rows); };
+    const off = () => { if (bar) bar.style.filter = ''; hideTip(); };
+    hit.addEventListener('pointermove', e => on(e.clientX, e.clientY));
+    hit.addEventListener('pointerleave', off);
+    hit.addEventListener('focus', () => { const b = hit.getBoundingClientRect(); on(b.left + b.width / 2, b.top + b.height / 2); });
+    hit.addEventListener('blur', off);
+    s.append(hit);
+  });
+  return s;
+}
+// Each chart is drawn at its card's real width, so text keeps its size on a
+// narrow screen; the charts are redrawn when the window changes width.
+const charts = document.getElementById('charts');
+const shown = METRICS.filter(m => D.pairs.some(p => both(p, m.key)));
+const figures = shown.map(m => {
+  const fig = el('figure', {class: 'card'});
+  const cap = el('figcaption', {}, m.label); cap.append(el('span', {}, (m.unit === '%' ? 'difference in percent' : 'difference in count') + ' · ' + m.hint));
+  const holder = el('div'); fig.append(cap, holder); charts.append(fig);
+  return {m, holder};
+});
+let drawnAt = 0;
+function drawCharts() {
+  if (!figures.length) return;
+  const w = Math.max(240, Math.floor(figures[0].holder.clientWidth));
+  if (w === drawnAt) return;
+  drawnAt = w; hideTip();
+  for (const f of figures) f.holder.replaceChildren(chart(f.m, w));
+}
+drawCharts();
+addEventListener('resize', drawCharts);
+
+// ---- table of every issue
+const pairsTable = document.getElementById('pairs');
+const COLS = [['Cost', 'cost', money], ['Input tokens', 'input', compact], ['Time to last verdict', 'seconds', dur],
+  ['Failed calls', 'failed', plain], ['Review rounds', 'reviews', plain], ['Fix runs', 'fixes', plain]];
+{
+  const head = el('tr'); head.append(el('th', {scope: 'col'}, 'Issue'));
+  for (const [name] of COLS) head.append(el('th', {scope: 'col'}, name));
+  head.append(el('th', {scope: 'col', class: 'text'}, 'Last review verdict'), el('th', {scope: 'col', class: 'text'}, 'Where'));
+  const thead = el('thead'); thead.append(head); pairsTable.append(thead);
+  const body = el('tbody');
+  for (const p of D.pairs) {
+    const tr = el('tr'); const first = el('td'); first.append(link(p.upstream_url, '#' + p.upstream));
+    if (D.setups && setups.length > 1) first.append(el('span', {class: 'badge under'}, p.setup === 1 ? 'first instructions' : 'revised instructions'));
+    tr.append(first);
+    for (const [, key, fmt] of COLS) tr.append(el('td', {}, fmt(p.memory[key]) + ' / ' + fmt(p.baseline[key])));
+    tr.append(el('td', {class: 'text'}, (p.memory.verdict || none) + ' / ' + (p.baseline.verdict || none)));
+    const where = el('td', {class: 'text'});
+    where.append('with memory: ', link(p.memory.issue, 'issue'), ', ', link(p.memory.pr, 'fix'), el('br'), 'without: ', link(p.baseline.issue, 'issue'), ', ', link(p.baseline.pr, 'fix'));
+    tr.append(where); body.append(tr);
+  }
+  pairsTable.append(body);
+}
+
+// ---- problems that agents had already met
+if (D.problems && D.problems.rows && D.problems.rows.length) {
+  document.getElementById('problems-section').hidden = false;
+  document.getElementById('problems-intro').textContent = D.problems.intro || '';
+  // One column per issue: the count with memory, then the count without it, as
+  // in the table of every issue. A dot marks a lesson that was already in memory.
+  const dot = () => el('span', {class: 'known', role: 'img', 'aria-label': 'lesson already in memory', title: 'A lesson about this problem was already in memory'}, '●');
+  const key = document.getElementById('problems-key');
+  key.append('Each cell shows how often the runs with memory hit the problem, then how often the runs without it did. ', dot(),
+    'marks a problem that a lesson already described when the issue started.');
+  const t = document.getElementById('problems');
+  // the name sits in a block of its own so a narrow screen can cap its width
+  const nameCell = text => { const td = el('td', {class: 'text'}); td.append(el('div', {class: 'name'}, text)); return td; };
+  const last = D.problems.issues[D.problems.issues.length - 1];
+  const head = el('tr'); head.append(el('th', {scope: 'col', class: 'text'}, 'Problem'));
+  for (const issue of D.problems.issues) head.append(el('th', {scope: 'col'}, '#' + issue));
+  head.append(el('th', {scope: 'col', class: 'text'}, 'With memory, on #' + last));
+  const thead = el('thead'); thead.append(head); t.append(thead);
+  const body = el('tbody');
+  for (const row of D.problems.rows) {
+    const tr = el('tr'); tr.append(nameCell(row.problem));
+    for (const issue of D.problems.issues) {
+      const c = (row.cells || {})[String(issue)] || {};
+      const td = el('td');
+      if (c.memory == null && c.baseline == null) td.textContent = none;
+      else {
+        if (c.lesson) td.append(dot());
+        td.append((c.memory == null ? none : c.memory) + ' / ' + (c.baseline == null ? none : c.baseline));
+      }
+      tr.append(td);
+    }
+    tr.append(el('td', {class: 'text'}, row.effect || ''));
+    body.append(tr);
+  }
+  for (const row of D.problems.asides || []) {
+    const tr = el('tr', {class: 'aside'}); tr.append(nameCell(row.problem));
+    for (const issue of D.problems.issues) tr.append(el('td', {}, (row.cells || {})[String(issue)] || none));
+    tr.append(el('td', {class: 'text'}, ''));
+    body.append(tr);
+  }
+  t.append(body);
+}
+
+// ---- run by run
+const details = document.getElementById('details');
+const RUN_COLS = [['Time', 'seconds', dur], ['Cost', 'cost', money], ['Input tokens', 'input', compact], ['Failed', 'failed', plain]];
+for (const p of D.pairs) {
+  const d = el('details', {class: 'card'}); const sm = el('summary', {}, '#' + p.upstream + ' ');
+  sm.append(el('span', {class: 'sub'}, p.title)); d.append(sm);
+  if (p.notes.length) { const ul = el('ul'); for (const n of p.notes) ul.append(el('li', {}, n)); d.append(ul); }
+  const wrap = el('div', {class: 'scroll'}); const t = el('table');
+  const top = el('tr'); top.append(el('th', {scope: 'col', rowspan: 2}, 'Agent run'), el('th', {scope: 'colgroup', colspan: RUN_COLS.length + 2, class: 'group'}, 'With memory'), el('th', {scope: 'colgroup', colspan: RUN_COLS.length + 1, class: 'group'}, 'Without'));
+  const second = el('tr');
+  for (const sideName of ['memory', 'baseline']) {
+    for (const [name] of RUN_COLS) second.append(el('th', {scope: 'col'}, name));
+    if (sideName === 'memory') second.append(el('th', {scope: 'col'}, 'Memory calls'));
+    second.append(el('th', {scope: 'col'}, 'Run'));
+  }
+  const thead = el('thead'); thead.append(top, second); t.append(thead);
+  const body = el('tbody');
+  const addRow = (name, a, b, aside) => {
+    const tr = el('tr', aside ? {class: 'aside'} : {}); tr.append(el('td', {}, name));
+    for (const [sideName, r] of [['memory', a], ['baseline', b]]) {
+      for (const [, key, fmt] of RUN_COLS) tr.append(el('td', {}, r ? fmt(r[key]) : none));
+      if (sideName === 'memory') tr.append(el('td', {}, r ? plain(r.memory_calls) : none));
+      const cell = el('td'); if (r && r.url) cell.append(link(r.url, 'open')); else cell.textContent = none; tr.append(cell);
+    }
+    body.append(tr);
+  };
+  const rows = Math.max(p.memory.runs.length, p.baseline.runs.length);
+  for (let i = 0; i < rows; i++) {
+    const a = p.memory.runs[i], b = p.baseline.runs[i];
+    const an = a && a.agent, bn = b && b.agent;
+    addRow(an && bn && an !== bn ? an + ' / ' + bn : (an || bn || ''), a, b, false);
+  }
+  if (p.memory.retro || p.baseline.retro) addRow('retro, once the pull request was merged or closed (not counted)', p.memory.retro, p.baseline.retro, true);
+  t.append(body); wrap.append(t); d.append(wrap); details.append(d);
+}
+
+// ---- notes and footer
+const notes = document.getElementById('notes');
+for (const [k, text] of Object.entries(D.setups || {})) notes.append(el('li', {}, (k === '1' ? 'First instructions: ' : 'Revised instructions: ') + text));
+for (const n of D.notes) notes.append(el('li', {}, n));
+const footer = document.getElementById('footer');
+footer.append('Built from the run records on ' + D.updated + '. ');
+if (D.repos.memory) footer.append(link(D.repos.memory, 'Repository with memory'), ' · ');
+if (D.repos.baseline) footer.append(link(D.repos.baseline, 'Repository without memory'));
+</script>
+</body>
+</html>
