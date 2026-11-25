@@ -1,0 +1,1352 @@
+{
+ "generated": "2026-11-23T12:10:26Z",
+ "report": "copy of fullsend-ai/fullsend#9320",
+ "sources": [
+  "GitHub Actions runs and jobs",
+  "MLflow experiments 9 and 10 (root run span, agent span usage, execute_tool spans)",
+  "run artifacts: Claude Code transcripts incl. sub-agents"
+ ],
+ "sides": {
+  "memory": {
+   "issue": "https://github.com/ascerra/fullsend-memory-poc/issues/12",
+   "pr": "https://github.com/ascerra/fullsend-memory-poc/pull/13",
+   "mlflow_experiment": 9,
+   "issue_created": "2026-11-23T10:47:23Z",
+   "pr_created": "2026-11-23T11:07:16Z",
+   "approved": "2026-11-23T11:42:44Z",
+   "merged": "2026-11-23T11:51:07Z",
+   "last_review_verdict": {
+    "state": "approved",
+    "at": "2026-11-23T11:42:44Z",
+    "open_findings": "1 low, not actionable"
+   },
+   "pipeline": [
+    {
+     "agent": "triage",
+     "repo": "ascerra/fullsend-memory-poc",
+     "run_id": 45159288772,
+     "run_url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45159288772",
+     "job_start": "2026-11-23T10:47:51Z",
+     "job_end": "2026-11-23T10:51:39Z",
+     "job_seconds": 228,
+     "conclusion": "success",
+     "trace_id": "tr-39278ead499c394347ee0f3409d0982d",
+     "work_item": "ascerra/fullsend-memory-poc#12",
+     "model": [
+      "claude-opus-5-5"
+     ],
+     "tokens": {
+      "input_including_cache": 472845,
+      "uncached_input": 26,
+      "cache_read": 396412,
+      "cache_write": 76407,
+      "output": 6487,
+      "reasoning_output": 434
+     },
+     "cost_usd": 0.59,
+     "turns": 17,
+     "tool_calls": 15,
+     "tools": {
+      "Skill": 1,
+      "Bash": 11,
+      "mcp__plugin_memory_memory__recall_memories": 1,
+      "mcp__plugin_memory_memory__reinforce_memory": 1,
+      "mcp__plugin_memory_memory__store_memory": 1
+     },
+     "failed_calls_in_trace": 0,
+     "memory_spans": [
+      {
+       "tool": "recall_memories",
+       "seconds": 3.51,
+       "refused": false,
+       "start": "2026-11-23T10:50:09Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 0.77,
+       "refused": false,
+       "start": "2026-11-23T10:51:07Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 1.74,
+       "refused": false,
+       "start": "2026-11-23T10:51:09Z"
+      }
+     ],
+     "subagents": 0,
+     "main_tool_calls": 15,
+     "subagent_tool_calls": 0,
+     "failed_calls": [],
+     "memory_calls": [
+      {
+       "tool": "recall_memories",
+       "where": "main",
+       "at": "2026-11-23T10:50:09.628Z",
+       "seconds": 3.51,
+       "results": 7,
+       "refused": false,
+       "reply": "",
+       "query": "triage issue",
+       "related": 4
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "main",
+       "at": "2026-11-23T10:51:07.360Z",
+       "seconds": 0.77,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "store_memory",
+       "where": "main",
+       "at": "2026-11-23T10:51:09.741Z",
+       "seconds": 1.74,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      }
+     ],
+     "cost_usd_exact": 0.5912
+    },
+    {
+     "agent": "code",
+     "repo": "ascerra/fullsend-memory-poc",
+     "run_id": 45159879176,
+     "run_url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45159879176",
+     "job_start": "2026-11-23T10:51:45Z",
+     "job_end": "2026-11-23T11:07:34Z",
+     "job_seconds": 949,
+     "conclusion": "success",
+     "trace_id": "tr-5feabfebd09fdbfa05f3e7537cc3a928",
+     "work_item": "ascerra/fullsend-memory-poc#12",
+     "model": [
+      "claude-opus-5-5"
+     ],
+     "tokens": {
+      "input_including_cache": 3479716,
+      "uncached_input": 80,
+      "cache_read": 3345171,
+      "cache_write": 134465,
+      "output": 18579,
+      "reasoning_output": 4071
+     },
+     "cost_usd": 1.71,
+     "turns": 48,
+     "tool_calls": 46,
+     "tools": {
+      "Skill": 1,
+      "Bash": 29,
+      "mcp__plugin_memory_memory__recall_memories": 1,
+      "Edit": 6,
+      "Read": 1,
+      "Write": 2,
+      "mcp__plugin_memory_memory__store_memory": 2,
+      "mcp__plugin_memory_memory__reinforce_memory": 3,
+      "ToolSearch": 1
+     },
+     "failed_calls_in_trace": 1,
+     "memory_spans": [
+      {
+       "tool": "recall_memories",
+       "seconds": 0.57,
+       "refused": false,
+       "start": "2026-11-23T10:54:10Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 3.94,
+       "refused": false,
+       "start": "2026-11-23T11:04:18Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 2.85,
+       "refused": false,
+       "start": "2026-11-23T11:04:21Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 2.79,
+       "refused": false,
+       "start": "2026-11-23T11:04:21Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 0.73,
+       "refused": false,
+       "start": "2026-11-23T11:04:28Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 0.75,
+       "refused": false,
+       "start": "2026-11-23T11:04:28Z"
+      }
+     ],
+     "subagents": 0,
+     "main_tool_calls": 46,
+     "subagent_tool_calls": 0,
+     "failed_calls": [
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "Tirith blocked the step's elapsed-time line, `$(( $(date +%s) - $(cat /tmp/agent_start) ))` (commit step)"
+      }
+     ],
+     "memory_calls": [
+      {
+       "tool": "recall_memories",
+       "where": "main",
+       "at": "2026-11-23T10:54:10.231Z",
+       "seconds": 0.56,
+       "results": 7,
+       "refused": false,
+       "reply": "",
+       "query": "implementing issue 12 fix",
+       "related": 2
+      },
+      {
+       "tool": "store_memory",
+       "where": "main",
+       "at": "2026-11-23T11:04:18.392Z",
+       "seconds": 3.94,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "store_memory",
+       "where": "main",
+       "at": "2026-11-23T11:04:21.091Z",
+       "seconds": 2.85,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "main",
+       "at": "2026-11-23T11:04:21.872Z",
+       "seconds": 2.79,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "main",
+       "at": "2026-11-23T11:04:28.213Z",
+       "seconds": 0.73,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "main",
+       "at": "2026-11-23T11:04:28.940Z",
+       "seconds": 0.75,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      }
+     ],
+     "cost_usd_exact": 1.7133
+    },
+    {
+     "agent": "review",
+     "repo": "ascerra/fullsend-memory-poc",
+     "run_id": 45162250883,
+     "run_url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45162250883",
+     "job_start": "2026-11-23T11:07:36Z",
+     "job_end": "2026-11-23T11:17:58Z",
+     "job_seconds": 622,
+     "conclusion": "success",
+     "round": 1,
+     "verdict": "changes requested at 11:17:46Z (4 lows); dismissed after the approval",
+     "trace_id": "tr-5c066f30c051637ce9712755eb9a3e15",
+     "work_item": "ascerra/fullsend-memory-poc#13",
+     "model": [
+      "claude-opus-5-5"
+     ],
+     "tokens": {
+      "input_including_cache": 4537355,
+      "uncached_input": 154,
+      "cache_read": 4056744,
+      "cache_write": 480457,
+      "output": 74291,
+      "reasoning_output": 10573
+     },
+     "cost_usd": 4.26,
+     "turns": 36,
+     "tool_calls": 88,
+     "tools": {
+      "Bash": 54,
+      "Skill": 2,
+      "Write": 2,
+      "Agent": 7,
+      "mcp__plugin_memory_memory__recall_memories": 3,
+      "Read": 9,
+      "mcp__plugin_memory_memory__store_memory": 4,
+      "ToolSearch": 3,
+      "mcp__plugin_memory_memory__reinforce_memory": 4
+     },
+     "failed_calls_in_trace": 1,
+     "memory_spans": [
+      {
+       "tool": "recall_memories",
+       "seconds": 0.3,
+       "refused": false,
+       "start": "2026-11-23T11:11:59Z"
+      },
+      {
+       "tool": "recall_memories",
+       "seconds": 0.26,
+       "refused": false,
+       "start": "2026-11-23T11:12:30Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 1.67,
+       "refused": false,
+       "start": "2026-11-23T11:12:57Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 0.7,
+       "refused": false,
+       "start": "2026-11-23T11:13:01Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 0.72,
+       "refused": false,
+       "start": "2026-11-23T11:13:02Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 1.18,
+       "refused": false,
+       "start": "2026-11-23T11:13:03Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 1.33,
+       "refused": false,
+       "start": "2026-11-23T11:13:04Z"
+      },
+      {
+       "tool": "recall_memories",
+       "seconds": 0.68,
+       "refused": false,
+       "start": "2026-11-23T11:15:45Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 1.4,
+       "refused": false,
+       "start": "2026-11-23T11:16:09Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 0.7,
+       "refused": false,
+       "start": "2026-11-23T11:16:13Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 1.11,
+       "refused": false,
+       "start": "2026-11-23T11:17:15Z"
+      }
+     ],
+     "subagents": 7,
+     "main_tool_calls": 33,
+     "subagent_tool_calls": 55,
+     "failed_calls": [
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "Tirith blocked the command that composes the sub-agent prompts (shell functions and `{ }` groups)"
+      }
+     ],
+     "memory_calls": [
+      {
+       "tool": "recall_memories",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:11:59.280Z",
+       "seconds": 0.27,
+       "results": 10,
+       "refused": false,
+       "reply": "",
+       "query": "repos uninstall manifest repos.yaml reload write back review",
+       "related": 5
+      },
+      {
+       "tool": "recall_memories",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:12:30.268Z",
+       "seconds": 0.24,
+       "results": 10,
+       "refused": false,
+       "reply": "",
+       "query": "security review repos uninstall manifest reload repos.yaml",
+       "related": 5
+      },
+      {
+       "tool": "store_memory",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:12:57.907Z",
+       "seconds": 1.65,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:13:01.316Z",
+       "seconds": 0.67,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:13:02.015Z",
+       "seconds": 0.68,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "store_memory",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:13:03.854Z",
+       "seconds": 1.17,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:13:04.300Z",
+       "seconds": 1.31,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "recall_memories",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:15:45.661Z",
+       "seconds": 0.68,
+       "results": 10,
+       "refused": false,
+       "reply": "",
+       "query": "review challenger repos uninstall manifest reload tests dry-run manifest-only",
+       "related": 5
+      },
+      {
+       "tool": "store_memory",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:16:09.057Z",
+       "seconds": 1.4,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:16:13.666Z",
+       "seconds": 0.7,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "store_memory",
+       "where": "main",
+       "at": "2026-11-23T11:17:15.979Z",
+       "seconds": 1.11,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      }
+     ],
+     "cost_usd_exact": 4.2566
+    },
+    {
+     "agent": "fix",
+     "repo": "ascerra/fullsend-memory-poc",
+     "run_id": 45163898226,
+     "run_url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45163898226",
+     "job_start": "2026-11-23T11:18:01Z",
+     "job_end": "2026-11-23T11:33:46Z",
+     "job_seconds": 945,
+     "conclusion": "success",
+     "round": 1,
+     "trace_id": "tr-2b5bf3545fa649c23497e56254453c45",
+     "work_item": "ascerra/fullsend-memory-poc#13",
+     "model": [
+      "claude-opus-5-5"
+     ],
+     "tokens": {
+      "input_including_cache": 2788549,
+      "uncached_input": 84,
+      "cache_read": 2668417,
+      "cache_write": 120048,
+      "output": 22264,
+      "reasoning_output": 6159
+     },
+     "cost_usd": 1.58,
+     "turns": 57,
+     "tool_calls": 52,
+     "tools": {
+      "Skill": 4,
+      "Bash": 29,
+      "mcp__plugin_memory_memory__recall_memories": 1,
+      "Edit": 11,
+      "Read": 1,
+      "Write": 1,
+      "mcp__plugin_memory_memory__store_memory": 2,
+      "ToolSearch": 1,
+      "mcp__plugin_memory_memory__reinforce_memory": 2
+     },
+     "failed_calls_in_trace": 2,
+     "memory_spans": [
+      {
+       "tool": "recall_memories",
+       "seconds": 0.78,
+       "refused": false,
+       "start": "2026-11-23T11:20:40Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 3.92,
+       "refused": false,
+       "start": "2026-11-23T11:30:10Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 3.46,
+       "refused": false,
+       "start": "2026-11-23T11:30:12Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 0.72,
+       "refused": false,
+       "start": "2026-11-23T11:30:17Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 0.71,
+       "refused": false,
+       "start": "2026-11-23T11:30:18Z"
+      }
+     ],
+     "subagents": 0,
+     "main_tool_calls": 52,
+     "subagent_tool_calls": 0,
+     "failed_calls": [
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "Tirith blocked the step's elapsed-time line, `$(( $(date +%s) - $(cat /tmp/agent_start) ))` (secret-scan step)"
+      },
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "hand-run hook checks ended with exit 1: `golangci-lint` is not installed in the sandbox"
+      }
+     ],
+     "memory_calls": [
+      {
+       "tool": "recall_memories",
+       "where": "main",
+       "at": "2026-11-23T11:20:40.518Z",
+       "seconds": 0.78,
+       "results": 10,
+       "refused": false,
+       "reply": "",
+       "query": "fix agent addressing review feedback on PR",
+       "related": 5
+      },
+      {
+       "tool": "store_memory",
+       "where": "main",
+       "at": "2026-11-23T11:30:10.379Z",
+       "seconds": 3.92,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "store_memory",
+       "where": "main",
+       "at": "2026-11-23T11:30:12.028Z",
+       "seconds": 3.46,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "main",
+       "at": "2026-11-23T11:30:17.631Z",
+       "seconds": 0.72,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "main",
+       "at": "2026-11-23T11:30:18.407Z",
+       "seconds": 0.71,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      }
+     ],
+     "cost_usd_exact": 1.5795
+    },
+    {
+     "agent": "review",
+     "repo": "ascerra/fullsend-memory-poc",
+     "run_id": 45166298921,
+     "run_url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45166298921",
+     "job_start": "2026-11-23T11:33:58Z",
+     "job_end": "2026-11-23T11:43:01Z",
+     "job_seconds": 543,
+     "conclusion": "success",
+     "round": 2,
+     "verdict": "approved at 11:42:44Z (1 low left, not actionable)",
+     "trace_id": "tr-95fe6f7397a17e954634a552545b19cd",
+     "work_item": "ascerra/fullsend-memory-poc#13",
+     "model": [
+      "claude-opus-5-5"
+     ],
+     "tokens": {
+      "input_including_cache": 3258641,
+      "uncached_input": 96,
+      "cache_read": 2915832,
+      "cache_write": 342713,
+      "output": 54835,
+      "reasoning_output": 8329
+     },
+     "cost_usd": 3.16,
+     "turns": 32,
+     "tool_calls": 53,
+     "tools": {
+      "Skill": 2,
+      "Bash": 34,
+      "Agent": 5,
+      "mcp__plugin_memory_memory__recall_memories": 1,
+      "Read": 4,
+      "ToolSearch": 1,
+      "mcp__plugin_memory_memory__reinforce_memory": 2,
+      "mcp__plugin_memory_memory__store_memory": 2,
+      "Write": 2
+     },
+     "failed_calls_in_trace": 1,
+     "memory_spans": [
+      {
+       "tool": "recall_memories",
+       "seconds": 0.34,
+       "refused": false,
+       "start": "2026-11-23T11:38:20Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 0.79,
+       "refused": false,
+       "start": "2026-11-23T11:39:15Z"
+      },
+      {
+       "tool": "reinforce_memory",
+       "seconds": 0.83,
+       "refused": false,
+       "start": "2026-11-23T11:39:15Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 1.85,
+       "refused": false,
+       "start": "2026-11-23T11:39:18Z"
+      },
+      {
+       "tool": "store_memory",
+       "seconds": 1.88,
+       "refused": false,
+       "start": "2026-11-23T11:42:06Z"
+      }
+     ],
+     "subagents": 5,
+     "main_tool_calls": 29,
+     "subagent_tool_calls": 24,
+     "failed_calls": [
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "Tirith blocked building the review body with a heredoc inside `$( )`"
+      }
+     ],
+     "memory_calls": [
+      {
+       "tool": "recall_memories",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:38:20.274Z",
+       "seconds": 0.34,
+       "results": 10,
+       "refused": false,
+       "reply": "",
+       "query": "repos uninstall manifest reload review correctness",
+       "related": 5
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:39:15.089Z",
+       "seconds": 0.78,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "reinforce_memory",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:39:15.790Z",
+       "seconds": 0.83,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "store_memory",
+       "where": "sub-agent",
+       "at": "2026-11-23T11:39:18.386Z",
+       "seconds": 1.85,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      },
+      {
+       "tool": "store_memory",
+       "where": "main",
+       "at": "2026-11-23T11:42:06.487Z",
+       "seconds": 1.88,
+       "results": null,
+       "refused": false,
+       "reply": ""
+      }
+     ],
+     "cost_usd_exact": 3.1572
+    }
+   ],
+   "cancelled_review_starts": [
+    {
+     "run_id": 45162250562,
+     "review_job": "11:07:33-11:07:34"
+    }
+   ],
+   "retro": {
+    "agent": "retro",
+    "repo": "ascerra/fullsend-memory-poc",
+    "run_id": 45168877242,
+    "run_url": "https://github.com/ascerra/fullsend-memory-poc/actions/runs/45168877242",
+    "job_start": "2026-11-23T11:51:26Z",
+    "job_end": "2026-11-23T11:59:18Z",
+    "job_seconds": 472,
+    "conclusion": "success",
+    "note": "filed issue #14 (the retry hint leaves out a non-default manifest path: the one low finding left open at approval); triage on #14 started at 11:59",
+    "trace_id": "tr-6e80cbeb866cf4d324f4f2c69160362a",
+    "work_item": "ascerra/fullsend-memory-poc#13",
+    "model": [
+     "claude-opus-5-5"
+    ],
+    "tokens": {
+     "input_including_cache": 3460473,
+     "uncached_input": 124,
+     "cache_read": 3206409,
+     "cache_write": 253940,
+     "output": 32779,
+     "reasoning_output": 8139
+    },
+    "cost_usd": 2.57,
+    "turns": 8,
+    "tool_calls": 60,
+    "tools": {
+     "Bash": 52,
+     "Skill": 1,
+     "mcp__plugin_memory_memory__recall_memories": 1,
+     "Agent": 2,
+     "Read": 1,
+     "mcp__plugin_memory_memory__store_memory": 1,
+     "mcp__plugin_memory_memory__reinforce_memory": 2
+    },
+    "failed_calls_in_trace": 2,
+    "memory_spans": [
+     {
+      "tool": "recall_memories",
+      "seconds": 2.34,
+      "refused": false,
+      "start": "2026-11-23T11:53:35Z"
+     },
+     {
+      "tool": "store_memory",
+      "seconds": 4.13,
+      "refused": false,
+      "start": "2026-11-23T11:58:45Z"
+     },
+     {
+      "tool": "reinforce_memory",
+      "seconds": 4.1,
+      "refused": false,
+      "start": "2026-11-23T11:58:46Z"
+     },
+     {
+      "tool": "reinforce_memory",
+      "seconds": 0.7,
+      "refused": false,
+      "start": "2026-11-23T11:58:52Z"
+     }
+    ],
+    "subagents": 2,
+    "main_tool_calls": 16,
+    "subagent_tool_calls": 44,
+    "failed_calls": [
+     {
+      "tool": "Bash",
+      "where": "sub-agent",
+      "reason": "Tirith blocked a sub-agent's command for reading run transcripts (command substitution)"
+     },
+     {
+      "tool": "Bash",
+      "where": "sub-agent",
+      "reason": "Tirith blocked a sub-agent's command for reading run transcripts (command substitution)"
+     }
+    ],
+    "memory_calls": [
+     {
+      "tool": "recall_memories",
+      "where": "main",
+      "at": "2026-11-23T11:53:35.264Z",
+      "seconds": 2.34,
+      "results": 10,
+      "refused": false,
+      "reply": "",
+      "query": "retro analysis of PR workflow in fullsend-memory-poc",
+      "related": 5
+     },
+     {
+      "tool": "store_memory",
+      "where": "main",
+      "at": "2026-11-23T11:58:45.738Z",
+      "seconds": 4.12,
+      "results": null,
+      "refused": false,
+      "reply": ""
+     },
+     {
+      "tool": "reinforce_memory",
+      "where": "main",
+      "at": "2026-11-23T11:58:46.468Z",
+      "seconds": 4.1,
+      "results": null,
+      "refused": false,
+      "reply": ""
+     },
+     {
+      "tool": "reinforce_memory",
+      "where": "main",
+      "at": "2026-11-23T11:58:52.177Z",
+      "seconds": 0.7,
+      "results": null,
+      "refused": false,
+      "reply": ""
+     }
+    ],
+    "cost_usd_exact": 2.5671,
+    "proposals": [
+     {
+      "target_repo": "ascerra/fullsend-memory-poc",
+      "filed_as": "https://github.com/ascerra/fullsend-memory-poc/issues/14",
+      "title": "repos uninstall: the --manifest-only retry hint leaves out a non-default -f/--manifest path"
+     }
+    ]
+   },
+   "fix": {
+    "files": 3,
+    "additions": 271,
+    "deletions": 4,
+    "production_lines_changed": "internal/cli/repos.go +71 -4: three new functions (uninstallRemovalManifest, manifestForRemoval, manifestChangedSinceLoad); install's guard now calls the shared byte compare",
+    "new_tests": "5 test functions, 189 lines (3 from the code agent, 2 added by the fix agent)",
+    "docs": "docs/cli/repos.md +11"
+   },
+   "totals": {
+    "issue_to_approval_seconds": 3321,
+    "issue_to_last_verdict_seconds": 3321,
+    "agent_job_seconds": 3287,
+    "tokens": {
+     "input_including_cache": 14537106,
+     "uncached_input": 440,
+     "cache_read": 13382576,
+     "cache_write": 1154090,
+     "output": 176456,
+     "reasoning_output": 29566
+    },
+    "cost_usd": 11.2978,
+    "turns": 190,
+    "tool_calls": 254,
+    "failed_calls": 5,
+    "memory_calls": 30,
+    "refused_memory_calls": 0,
+    "memory_seconds": 42.98,
+    "review_rounds": 2,
+    "fix_runs": 1
+   }
+  },
+  "baseline": {
+   "issue": "https://github.com/ascerra/fullsend-memory-poc-baseline/issues/5",
+   "pr": "https://github.com/ascerra/fullsend-memory-poc-baseline/pull/6",
+   "mlflow_experiment": 10,
+   "issue_created": "2026-11-23T10:47:24Z",
+   "pr_created": "2026-11-23T11:05:59Z",
+   "approved": null,
+   "merged": "2026-11-23T11:51:10Z",
+   "last_review_verdict": {
+    "state": "changes requested",
+    "at": "2026-11-23T11:39:45Z",
+    "open_findings": "2 lows (1 actionable)"
+   },
+   "merge_note": "merged with changes requested, on the maintainer's decision, after the second fix run was cancelled",
+   "pipeline": [
+    {
+     "agent": "triage",
+     "repo": "ascerra/fullsend-memory-poc-baseline",
+     "run_id": 45159289926,
+     "run_url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45159289926",
+     "job_start": "2026-11-23T10:47:50Z",
+     "job_end": "2026-11-23T10:51:23Z",
+     "job_seconds": 213,
+     "conclusion": "success",
+     "trace_id": "tr-74d83435465642a72f1dd3348051652e",
+     "work_item": "ascerra/fullsend-memory-poc-baseline#5",
+     "model": [
+      "claude-opus-5-5"
+     ],
+     "tokens": {
+      "input_including_cache": 304078,
+      "uncached_input": 20,
+      "cache_read": 243476,
+      "cache_write": 60582,
+      "output": 6102,
+      "reasoning_output": 706
+     },
+     "cost_usd": 0.47,
+     "turns": 12,
+     "tool_calls": 10,
+     "tools": {
+      "Bash": 9,
+      "Skill": 1
+     },
+     "failed_calls_in_trace": 0,
+     "memory_spans": [],
+     "subagents": 0,
+     "main_tool_calls": 10,
+     "subagent_tool_calls": 0,
+     "failed_calls": [],
+     "memory_calls": [],
+     "cost_usd_exact": 0.4737
+    },
+    {
+     "agent": "code",
+     "repo": "ascerra/fullsend-memory-poc-baseline",
+     "run_id": 45159841828,
+     "run_url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45159841828",
+     "job_start": "2026-11-23T10:51:25Z",
+     "job_end": "2026-11-23T11:06:17Z",
+     "job_seconds": 892,
+     "conclusion": "success",
+     "trace_id": "tr-84b6df96005072ce82d8a2e0f5c13c13",
+     "work_item": "ascerra/fullsend-memory-poc-baseline#5",
+     "model": [
+      "claude-opus-5-5"
+     ],
+     "tokens": {
+      "input_including_cache": 2593858,
+      "uncached_input": 66,
+      "cache_read": 2472963,
+      "cache_write": 120829,
+      "output": 14748,
+      "reasoning_output": 3795
+     },
+     "cost_usd": 1.39,
+     "turns": 34,
+     "tool_calls": 32,
+     "tools": {
+      "Skill": 1,
+      "Bash": 28,
+      "Edit": 2,
+      "Write": 1
+     },
+     "failed_calls_in_trace": 2,
+     "memory_spans": [],
+     "subagents": 0,
+     "main_tool_calls": 32,
+     "subagent_tool_calls": 0,
+     "failed_calls": [
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "Tirith blocked the step's elapsed-time line, `$(( $(date +%s) - $(cat /tmp/agent_start) ))` (pre-commit step)"
+      },
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "the tests-and-linters step ended with exit 1 because `golangci-lint` is not installed; the same 135 s command had just shown the 6 tests that fail only in the sandbox"
+      }
+     ],
+     "memory_calls": [],
+     "cost_usd_exact": 1.394
+    },
+    {
+     "agent": "review",
+     "repo": "ascerra/fullsend-memory-poc-baseline",
+     "run_id": 45162056362,
+     "run_url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45162056362",
+     "job_start": "2026-11-23T11:06:30Z",
+     "job_end": "2026-11-23T11:17:40Z",
+     "job_seconds": 670,
+     "conclusion": "success",
+     "round": 1,
+     "verdict": "changes requested at 11:17:23Z (2 lows)",
+     "trace_id": "tr-abdd3c577e3ee115c7fd1b82b4276c01",
+     "work_item": "ascerra/fullsend-memory-poc-baseline#6",
+     "model": [
+      "claude-opus-5-5"
+     ],
+     "tokens": {
+      "input_including_cache": 3622497,
+      "uncached_input": 134,
+      "cache_read": 3195876,
+      "cache_write": 426487,
+      "output": 72818,
+      "reasoning_output": 11496
+     },
+     "cost_usd": 3.88,
+     "turns": 33,
+     "tool_calls": 73,
+     "tools": {
+      "Skill": 2,
+      "Bash": 57,
+      "Read": 7,
+      "Agent": 7
+     },
+     "failed_calls_in_trace": 1,
+     "memory_spans": [],
+     "subagents": 7,
+     "main_tool_calls": 30,
+     "subagent_tool_calls": 43,
+     "failed_calls": [
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "Tirith blocked the command that composes the sub-agent prompts (a shell function and `{ }` groups)"
+      }
+     ],
+     "memory_calls": [],
+     "cost_usd_exact": 3.8827
+    },
+    {
+     "agent": "fix",
+     "repo": "ascerra/fullsend-memory-poc-baseline",
+     "run_id": 45163844558,
+     "run_url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45163844558",
+     "job_start": "2026-11-23T11:17:40Z",
+     "job_end": "2026-11-23T11:29:59Z",
+     "job_seconds": 739,
+     "conclusion": "success",
+     "round": 1,
+     "trace_id": "tr-89bc158cf65dce9358c36c39f4ec968c",
+     "work_item": "ascerra/fullsend-memory-poc-baseline#6",
+     "model": [
+      "claude-opus-5-5"
+     ],
+     "tokens": {
+      "input_including_cache": 1668302,
+      "uncached_input": 56,
+      "cache_read": 1561675,
+      "cache_write": 106571,
+      "output": 13981,
+      "reasoning_output": 1953
+     },
+     "cost_usd": 1.13,
+     "turns": 36,
+     "tool_calls": 31,
+     "tools": {
+      "Skill": 4,
+      "Bash": 23,
+      "Edit": 3,
+      "Read": 1
+     },
+     "failed_calls_in_trace": 2,
+     "memory_spans": [],
+     "subagents": 0,
+     "main_tool_calls": 31,
+     "subagent_tool_calls": 0,
+     "failed_calls": [
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "Tirith blocked the step's elapsed-time line, `$(( $(date +%s) - $(cat /tmp/agent_start) ))` (secret-scan step)"
+      },
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "hand-run hook checks ended with exit 1: `golangci-lint` is not installed in the sandbox"
+      }
+     ],
+     "memory_calls": [],
+     "cost_usd_exact": 1.125
+    },
+    {
+     "agent": "review",
+     "repo": "ascerra/fullsend-memory-poc-baseline",
+     "run_id": 45165719873,
+     "run_url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45165719873",
+     "job_start": "2026-11-23T11:30:06Z",
+     "job_end": "2026-11-23T11:39:56Z",
+     "job_seconds": 590,
+     "conclusion": "success",
+     "round": 2,
+     "verdict": "changes requested at 11:39:45Z (2 lows: 1 new, 1 carried over)",
+     "trace_id": "tr-166bdfc9a648e06bcfc372c62e880284",
+     "work_item": "ascerra/fullsend-memory-poc-baseline#6",
+     "model": [
+      "claude-opus-5-5"
+     ],
+     "tokens": {
+      "input_including_cache": 3274813,
+      "uncached_input": 104,
+      "cache_read": 2910471,
+      "cache_write": 364238,
+      "output": 67517,
+      "reasoning_output": 10402
+     },
+     "cost_usd": 3.41,
+     "turns": 33,
+     "tool_calls": 58,
+     "tools": {
+      "Skill": 2,
+      "Bash": 42,
+      "Write": 1,
+      "Agent": 6,
+      "Read": 7
+     },
+     "failed_calls_in_trace": 1,
+     "memory_spans": [],
+     "subagents": 6,
+     "main_tool_calls": 30,
+     "subagent_tool_calls": 28,
+     "failed_calls": [
+      {
+       "tool": "Bash",
+       "where": "main",
+       "reason": "Tirith blocked the command that assembles the review context (a shell function and `{ }` groups)"
+      }
+     ],
+     "memory_calls": [],
+     "cost_usd_exact": 3.4057
+    }
+   ],
+   "cancelled_review_starts": [
+    {
+     "run_id": 45162054621,
+     "review_job": "11:06:19-11:06:27"
+    }
+   ],
+   "cancelled_fix": {
+    "agent": "fix",
+    "repo": "ascerra/fullsend-memory-poc-baseline",
+    "run_id": 45167202219,
+    "run_url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45167202219",
+    "job_start": "2026-11-23T11:40:08Z",
+    "job_end": "2026-11-23T11:46:29Z",
+    "job_seconds": 381,
+    "conclusion": "cancelled",
+    "round": 2,
+    "note": "cancelled by the maintainer because only low findings were left; not in the totals",
+    "trace_id": "tr-fd274683ccc879d026d09aba2641d238",
+    "work_item": "ascerra/fullsend-memory-poc-baseline#6",
+    "model": [
+     "claude-opus-5-5"
+    ],
+    "tokens": {
+     "input_including_cache": 1242321,
+     "uncached_input": 50,
+     "cache_read": 1161411,
+     "cache_write": 80860,
+     "output": null,
+     "reasoning_output": null
+    },
+    "cost_usd": null,
+    "turns": 0,
+    "tool_calls": 30,
+    "tools": {
+     "Skill": 3,
+     "Bash": 18,
+     "Read": 3,
+     "Edit": 6
+    },
+    "failed_calls_in_trace": 2,
+    "memory_spans": [],
+    "subagents": 0,
+    "main_tool_calls": 30,
+    "subagent_tool_calls": 0,
+    "failed_calls": [
+     {
+      "tool": "Bash",
+      "where": "main",
+      "reason": "Tirith blocked the step's elapsed-time line, `$(( $(date +%s) - $(cat /tmp/agent_start) ))` (before `go test`)"
+     }
+    ],
+    "memory_calls": [],
+    "tokens_source": "iteration-1/output.jsonl (the trace recorded no usage; output tokens are not reliable in the stream)",
+    "model_calls": 25,
+    "cost_usd_estimate": 0.8,
+    "cost_note": "the trace recorded no usage for the cancelled run; about $0.80 at the other runs' rates, an estimate"
+   },
+   "retro": {
+    "agent": "retro",
+    "repo": "ascerra/fullsend-memory-poc-baseline",
+    "run_id": 45168883955,
+    "run_url": "https://github.com/ascerra/fullsend-memory-poc-baseline/actions/runs/45168883955",
+    "job_start": "2026-11-23T11:51:25Z",
+    "job_end": "2026-11-23T12:06:42Z",
+    "job_seconds": 917,
+    "conclusion": "success",
+    "note": "filed no issue: its one proposal targets fullsend-ai/agents, which this repo's agents may not file to (0 matching issues there)",
+    "trace_id": "tr-03989bbec21cd805d40288a2c34fe52c",
+    "work_item": "ascerra/fullsend-memory-poc-baseline#6",
+    "model": [
+     "claude-opus-5-5"
+    ],
+    "tokens": {
+     "input_including_cache": 6352390,
+     "uncached_input": 216,
+     "cache_read": 5851453,
+     "cache_write": 500721,
+     "output": 69552,
+     "reasoning_output": 13282
+    },
+    "cost_usd": 5.07,
+    "turns": 6,
+    "tool_calls": 116,
+    "tools": {
+     "Bash": 96,
+     "Skill": 2,
+     "Agent": 4,
+     "ScheduleWakeup": 2,
+     "Read": 12
+    },
+    "failed_calls_in_trace": 7,
+    "memory_spans": [],
+    "subagents": 4,
+    "main_tool_calls": 14,
+    "subagent_tool_calls": 102,
+    "failed_calls": [
+     {
+      "tool": "Bash",
+      "where": "sub-agent",
+      "reason": "Tirith blocked a pipe into an interpreter (`base64 | python3`) in a sub-agent"
+     },
+     {
+      "tool": "Bash",
+      "where": "sub-agent",
+      "reason": "Tirith blocked a for loop over run artifacts in a sub-agent"
+     },
+     {
+      "tool": "Bash",
+      "where": "sub-agent",
+      "reason": "`git clone` of fullsend-ai/agents failed: no route to github.com from the sandbox"
+     },
+     {
+      "tool": "Bash",
+      "where": "sub-agent",
+      "reason": "the tarball download of fullsend-ai/agents was denied by the sandbox"
+     },
+     {
+      "tool": "Bash",
+      "where": "sub-agent",
+      "reason": "Tirith blocked a for loop over issue references in a sub-agent"
+     },
+     {
+      "tool": "Bash",
+      "where": "sub-agent",
+      "reason": "`gh api` returned 404 for issue references that are pull requests or do not exist"
+     },
+     {
+      "tool": "Bash",
+      "where": "main",
+      "reason": "the main agent's script for writing the result file failed with a Python traceback; the next attempt worked"
+     }
+    ],
+    "memory_calls": [],
+    "cost_usd_exact": 5.0658,
+    "proposals": [
+     {
+      "target_repo": "fullsend-ai/agents",
+      "filed_as": null,
+      "title": "post-review: when a supplied open finding ID is re-minted because its thread went outdated, record the old ID as superseded instead of carrying both open"
+     }
+    ]
+   },
+   "fix": {
+    "files": 3,
+    "additions": 201,
+    "deletions": 1,
+    "production_lines_changed": "internal/cli/repos.go +59 -1: reload, validate and entry-still-listed check inline in runReposUninstall, plus missingRepos; install's guard untouched",
+    "new_tests": "3 test functions, 132 lines (2 from the code agent, 1 added by the fix agent)",
+    "docs": "docs/cli/repos.md +10"
+   },
+   "totals": {
+    "issue_to_approval_seconds": null,
+    "issue_to_last_verdict_seconds": 3141,
+    "agent_job_seconds": 3104,
+    "tokens": {
+     "input_including_cache": 11463548,
+     "uncached_input": 380,
+     "cache_read": 10384461,
+     "cache_write": 1078707,
+     "output": 175166,
+     "reasoning_output": 28352
+    },
+    "cost_usd": 10.2811,
+    "turns": 148,
+    "tool_calls": 204,
+    "failed_calls": 6,
+    "memory_calls": 0,
+    "refused_memory_calls": 0,
+    "memory_seconds": 0,
+    "review_rounds": 2,
+    "fix_runs": 1
+   }
+  }
+ },
+ "check": "trace token, tool-call and failure counts equal the transcript sums (main + sub-agents) for all 12 agent runs",
+ "caveats": [
+  "CI drift: from this pair on, CI on main is green in the memory repo (after its PR #11) and red in the baseline, on TestLivePerRepoScaffoldFilesMatchInstallRender only",
+  "the two sides ran at the same moment (issues posted one second apart)",
+  "the baseline was merged with changes requested, on the maintainer's decision, after its second fix run was cancelled",
+  "one pair; agents vary from run to run"
+ ]
+}
