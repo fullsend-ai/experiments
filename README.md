@@ -34,6 +34,7 @@ Experiments for the fullsend platform — each tests a hypothesis about autonomo
 | 0026 | [Statistical significance for non-deterministic evals](0026-eval-statistical-significance/) | Concluded |
 | 0027 | [Software Development Life Cycle](0027-sdlc/) | Concluded |
 | 0029 | [Gemara-assessed auto-merge for Fullsend PRs](0029-gemara-auto-merge/) | Concluded |
+| 0031 | [GitLab ID token gate for forge credentials](0031-gitlab-id-token-gate/) | Active |
 
 ## Conventions
 
