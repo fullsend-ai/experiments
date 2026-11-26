@@ -1,0 +1,36 @@
+---
+agent: agents/github-mcp-poc.md
+model: sonnet
+effort: low
+image: ghcr.io/fullsend-ai/fullsend-sandbox@sha256:8e17e6120e17debdcabff5eb331a7cb7757b09ec3d586010c9d7956fd1fc5633
+policy: policies/base.yaml
+
+role: triage
+slug: github-mcp-poc
+
+openshell:
+  profiles:
+    - profiles/github-mcp.yaml
+
+providers:
+  - vertex-ai
+  - providers/github-mcp.yaml
+
+host_files:
+  - src: "${GOOGLE_APPLICATION_CREDENTIALS}"
+    dest: /tmp/.gcp-credentials.json
+
+env:
+  sandbox:
+    CLAUDE_CODE_USE_VERTEX: "1"
+    ANTHROPIC_VERTEX_PROJECT_ID: "${ANTHROPIC_VERTEX_PROJECT_ID}"
+    CLOUD_ML_REGION: "${CLOUD_ML_REGION}"
+    GOOGLE_APPLICATION_CREDENTIALS: /tmp/.gcp-credentials.json
+
+skills:
+  - skills/github-mcp-report
+
+plugins:
+  - plugins/github-mcp
+
+timeout_minutes: 10

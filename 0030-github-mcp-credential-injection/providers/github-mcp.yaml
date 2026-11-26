@@ -1,0 +1,5 @@
+---
+name: github-mcp
+type: github-mcp-poc
+credentials:
+  GITHUB_MCP_PAT: "${GITHUB_MCP_PAT}"
